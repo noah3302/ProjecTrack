@@ -144,6 +144,12 @@ export default function Navbar() {
                 </MenuItem>
               </Link>
 
+              <Link to="/vorschlage" style={unterseiten}>
+                <MenuItem>
+                  <Typography sx={{ fontFamily: 'monospace', fontWeight: 200, fontSize: 20, }}>Vorschläge</Typography>
+                </MenuItem>
+              </Link>
+
             </Box>
 
 

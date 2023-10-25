@@ -10,6 +10,8 @@ import { AuthContextProvider } from "./context/Authcontext";
 import Protected from "./components/Protected";
 import About from "./pages/About";
 import Projekt from "./pages/Projekt";
+import Vorschlage from "./pages/Vorschlage";
+import Createproject from "./pages/Createproject";
 
 
 function App() {
@@ -25,7 +27,9 @@ function App() {
           <Route path="/profil" element={<Protected><Profil/></Protected>}/>
           <Route path="/about" element={<Protected><About/></Protected>}/>
           <Route path="/projekt" element={<Protected><Projekt/></Protected>}/>
-        </Routes>
+          <Route path="/vorschlage" element={<Protected><Vorschlage/></Protected>}/>
+          <Route path="/createproject" element={<Protected><Createproject/></Protected>}/>
+       </Routes>
       </AuthContextProvider>
     </>
   );

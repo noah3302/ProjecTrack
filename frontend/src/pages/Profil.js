@@ -6,19 +6,20 @@ export default function Profil() {
 
     const input = {
         margin:"1rem",
-        backgroundColor:"withe"
+        backgroundColor:"withe",
+        width:"18rem"
     }
     
   return (
     <>
         <Box sx={{marginTop:"8rem"}}>
-            <Card sx={{marginLeft:"auto",marginRight:"auto", width:"20rem", backgroundColor:"lightgrey"}}>
-                <Typography align="center">Persönliche Daten</Typography>
+            <Card sx={{marginLeft:"auto",marginRight:"auto", width:"20rem", padding:"2rem"}}>
+                <Typography align="center" variant='h5' mb={"1rem"}>Persönliche Daten</Typography>
                 <TextField style={input} label="Vorname" id="textinput" defaultValue="Vorname" />
                 <TextField style={input} label="Nachname" id="textinput" defaultValue="Nachname" />
                 <TextField style={input} label="Nickname" id="textinput" defaultValue="Nickname" />
-                <Button sx={{marginLeft:"1rem",marginBottom:"1rem", backgroundColor:"blue", color:"white"}}>speichern</Button>
-                <Button sx={{float:"right", backgroundColor:"red", color:"white", marginRight:"1rem",marginBottom:"1rem"}}>Profil löschen</Button>
+                <Button color="success" sx={{marginLeft:"1rem"}}>Speichern</Button>
+                <Button color='error' sx={{float:"right", marginRight:"1rem"}}>Profil löschen</Button>
             </Card>
         </Box>
     </>
