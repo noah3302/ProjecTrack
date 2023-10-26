@@ -13,7 +13,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import { useNavigate } from 'react-router-dom';
-import { UserAuth } from "../context/Authcontext";
+import { UserAuth } from "../Context/Authcontext";
 
 
 /**Navbar im eingeloggten Zustand */

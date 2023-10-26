@@ -84,8 +84,10 @@ const Createproject = () => {
     'Samuel',
   ];
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase;
-
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase || customPhaseValues.some((el, index, arr) => {
+    return el === ''
+  })
+  
   return (
     <Box sx={{ marginTop: '8rem' }}>
       <Card sx={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', padding: '2rem' }}>
@@ -150,8 +152,7 @@ const Createproject = () => {
                 </Grid>
               ))}
               <Grid item xs={12}>
-                <Button onClick={handleAddCustomPhase} sx={{ outline: '1px solid green', color: 'green'}}
->
+                <Button onClick={handleAddCustomPhase} sx={{ outline: '1px solid green', color: 'green'}}>
                   Hinzufügen
                 </Button>
               </Grid>

@@ -1,6 +1,6 @@
 import React, { Children } from "react";
 import { Navigate } from "react-router-dom";
-import { UserAuth } from "../context/Authcontext";
+import { UserAuth } from "../Context/Authcontext";
 
 const Protected = ({children}) => {
 
