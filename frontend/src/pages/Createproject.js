@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Grid, IconButton, Typography, MenuItem } from '@mui/material';
-import { Card } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -34,7 +33,7 @@ const Createproject = () => {
     setSelectedPhase(event.target.value);
 
     if (event.target.value === 'Custom') {
-      setCustomPhaseValues(['todo', 'inprogress', 'done']);
+      setCustomPhaseValues(['todo', 'doing', 'done']);
     }
   };
 
@@ -61,7 +60,7 @@ const Createproject = () => {
   };
 
 
-  const options = ['Standard (todo-inprogress-done)', 'Custom'];
+  const options = ['Standard (todo-doing-done)', 'Custom'];
   const nicknamen = [
     'Anna',
     'Ben',
@@ -84,13 +83,20 @@ const Createproject = () => {
     'Samuel',
   ];
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase || customPhaseValues.some((el, index, arr) => {
-    return el === ''
-  })
+  const customphasenfilled = () => {
+    if(selectedPhase === 'Standard (todo-inprogress-done)'){
+      const filled = true
+    }else{
+      const filled = !customPhaseValues.every((el, index, arr) => {
+        return el !== ''
+      })
+    }
+  };
+
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase 
   
   return (
-    <Box sx={{ marginTop: '8rem' }}>
-      <Card sx={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', padding: '2rem' }}>
+      <Box sx={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', padding: '2rem' }}>
         <Typography align="center" variant="h5" mb={'1rem'}>
           Projekt erstellen
         </Typography>
@@ -169,13 +175,12 @@ const Createproject = () => {
             Projekt erstellen
           </Button>
         </Box>
-        <Typography m="1rem">Name = {name}</Typography>
+        {/* <Typography m="1rem">Name = {name}</Typography>
         <Typography m="1rem">Beschreibung = {beschreibung}</Typography>
         <Typography m="1rem">Mitglieder = {selectedMembers.join(', ')}</Typography>
         <Typography m="1rem">Phasenauswahl = {selectedPhase}</Typography>
-        <Typography m="1rem">customPhaseValues = {customPhaseValues.join(', ')}</Typography>
-      </Card>
-    </Box>
+        <Typography m="1rem">customPhaseValues = {customPhaseValues.join(', ')}</Typography> */}
+      </Box>
   );
 };
 
