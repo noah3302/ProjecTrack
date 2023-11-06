@@ -3,6 +3,10 @@ import { TextField, Button, Box, Grid, IconButton, Typography, MenuItem } from '
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 
 const Createproject = () => {
   const [name, setName] = useState('');
@@ -18,7 +22,7 @@ const Createproject = () => {
 
   const navigation = () => {
     console.log('Projekt erstellt');
-    navigate('/home');
+    navigate('/project');
   };
 
   const handleBeschreibungChange = (event) => {
@@ -59,128 +63,140 @@ const Createproject = () => {
     width: '100%',
   };
 
+  const phaseninput = {
+    marginBottom: '1rem',
+    marginTop: '1rem',
+    backgroundColor: 'white',
+    width: '100%',
+  };
 
   const options = ['Standard (todo-doing-done)', 'Custom'];
   const nicknamen = [
-    'Anna',
-    'Ben',
-    'Charlie',
-    'David',
-    'Emma',
-    'Fiona',
-    'George',
-    'Hannah',
-    'Isabella',
-    'Jack',
-    'Katherine',
-    'Liam',
-    'Mia',
-    'Noah',
-    'Olivia',
-    'Paul',
-    'Quinn',
-    'Ruby',
-    'Samuel',
+    'Alex88',
+    'Bob7a8',
+    'Grace12',
+    'Charlie9b',
+    'Eva2c4',
+    'Liam123',
+    'Sophia69',
+    'Samuel99',
+    'Hannah3y',
+    'Ruby234',
+    'David9a7',
+    'Frank15',
+    'Quinn77',
+    'Jack0p2',
+    'Ivy34',
+    'Katie6z',
+    'Olivia12',
+    'Paul1a4',
+    'Mia9b',
+    'Noah8x7'
   ];
 
   const customphasenfilled = () => {
-    if(selectedPhase === 'Standard (todo-inprogress-done)'){
+    if (selectedPhase === 'Standard (todo-inprogress-done)') {
       const filled = true
-    }else{
+    } else {
       const filled = !customPhaseValues.every((el, index, arr) => {
         return el !== ''
       })
     }
   };
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase 
-  
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase
+
   return (
-      <Box sx={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', padding: '2rem' }}>
-        <Typography align="center" variant="h5" mb={'1rem'}>
-          Projekt erstellen
-        </Typography>
-        <TextField required style={input} label="Projektname" value={name} onChange={handleNameChange} error={!name} />
-        <TextField
-          required
-          multiline
-          style={input} 
-          label="Projektbeschreibung"
-          value={beschreibung}
-          onChange={handleBeschreibungChange}
-          error={!beschreibung}
-        />
+    <Box sx={{overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight:"40rem", padding: '2rem' }}>
+      <Typography align="center" variant="h5" mb={'1rem'}>
+        Projekt erstellen
+      </Typography>
+      <TextField required style={input} label="Projektname" value={name} onChange={handleNameChange} error={!name} />
+      <TextField
+        required
+        multiline
+        style={input}
+        label="Projektbeschreibung"
+        value={beschreibung}
+        onChange={handleBeschreibungChange}
+        error={!beschreibung}
+      />
 
-        <Autocomplete
+      <Autocomplete
         multiple
-        style={input} 
-        options={nicknamen}  // Use the neunicknamen array as options
+        style={input}
+        options={nicknamen}
         renderInput={(params) => (
-            <TextField {...params} label="Mitglieder" />
+          <TextField {...params} label="Mitglieder" />
         )}
-        value={selectedMembers}  // Set the selected members
-        onChange={handleMembersChange}  // Handle member selection
+        value={selectedMembers}
+        onChange={handleMembersChange}
         sx={{ width: '500px' }}
-        />
+      />
 
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DemoContainer components={['DateRangePicker']}>
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} />
+        </DemoContainer>
+      </LocalizationProvider>
 
-        <TextField required error={!selectedPhase} style={input} label="Phasenauswahl" select value={selectedPhase} onChange={handlePhasenChange} multiple>
-          {options.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-        {selectedPhase === 'Custom' && (
-          <>
-            <Grid container spacing={1}>
-              {customPhaseValues.map((value, index) => (
-                <Grid container item spacing={1} alignItems="center" key={index}>
-                  <Grid item xs={10}>
-                    <TextField
-                      required
-                      error={!value}
-                      style={input}
-                      label={`Phasenauswahl ${index + 1}`}
-                      value={value}
-                      onChange={(e) => handleCustomPhaseChange(index, e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleRemoveCustomPhase(index)}
-                      style={{ marginLeft: '10px', marginTop: '10px' }}
-                    >
-                      X
-                    </IconButton>
-                  </Grid>
+      <TextField required error={!selectedPhase} style={phaseninput} label="Phasenauswahl" select value={selectedPhase} onChange={handlePhasenChange} multiple>
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </TextField>
+      {selectedPhase === 'Custom' && (
+        <>
+          <Grid container spacing={1}>
+            {customPhaseValues.map((value, index) => (
+              <Grid container item spacing={1} alignItems="center" key={index}>
+                <Grid item xs={10}>
+                  <TextField
+                    required
+                    error={!value}
+                    style={input}
+                    label={`Phasenauswahl ${index + 1}`}
+                    value={value}
+                    onChange={(e) => handleCustomPhaseChange(index, e.target.value)}
+                  />
                 </Grid>
-              ))}
-              <Grid item xs={12}>
-                <Button onClick={handleAddCustomPhase} sx={{ outline: '1px solid green', color: 'green'}}>
-                  Hinzufügen
-                </Button>
+                <Grid item xs={2}>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleRemoveCustomPhase(index)}
+                    style={{ marginLeft: '10px', marginTop: '10px' }}
+                  >
+                    X
+                  </IconButton>
+                </Grid>
               </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Button onClick={handleAddCustomPhase} sx={{ outline: '1px solid green', color: 'green' }}>
+                Hinzufügen
+              </Button>
             </Grid>
-          </>
-        )}
-        <Box mt="1rem" sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button
-            sx={{ outline: '1px solid green', color: 'green' }}
-            onClick={navigation}
-            endIcon={<SendIcon />}
-            disabled={isButtonDisabled}
-          >
-            Projekt erstellen
-          </Button>
-        </Box>
-        {/* <Typography m="1rem">Name = {name}</Typography>
+          </Grid>
+        </>
+      )}
+      <Box mt="1rem" sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          sx={{ outline: '1px solid green', color: 'green' }}
+          onClick={navigation}
+          endIcon={<SendIcon />}
+          disabled={isButtonDisabled}
+        >
+          Projekt erstellen
+        </Button>
+      </Box>
+      {/* <Typography m="1rem">Name = {name}</Typography>
         <Typography m="1rem">Beschreibung = {beschreibung}</Typography>
         <Typography m="1rem">Mitglieder = {selectedMembers.join(', ')}</Typography>
         <Typography m="1rem">Phasenauswahl = {selectedPhase}</Typography>
         <Typography m="1rem">customPhaseValues = {customPhaseValues.join(', ')}</Typography> */}
-      </Box>
+    </Box>
   );
 };
 

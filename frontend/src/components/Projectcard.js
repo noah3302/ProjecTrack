@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -6,15 +6,18 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { useState } from 'react';
 import Createproject from '../pages/Createproject';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Projectcard = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [projectNames, setProjectNames] = useState([]);
+  const navigate = useNavigate();
+
 
   const projekte = {
     "Projekte": [
@@ -56,6 +59,11 @@ const Projectcard = () => {
     ]
   };
 
+  useEffect(() => {
+    const names = projekte.Projekte.map(meineprojekte => meineprojekte.name);
+    setProjectNames(names);
+  }, []);
+
   const style = {
     position: 'absolute',
     top: '50%',
@@ -73,34 +81,20 @@ const Projectcard = () => {
     width: '100%',
   };
 
-  const dummy = [
-    'Anna',
-    'Ben',
-    'Charlie',
-    'David',
-    'Emma',
-    'Fiona',
-    'George',
-    'Hannah',
-    'Isabella',
-    'Jack',
-    'Katherine',
-    'Liam',
-    'Mia',
-    'Noah',
-    'Olivia',
-    'Paul',
-    'Quinn',
-    'Ruby',
-    'Samuel',
-  ];
+  const navigateToProject = (newValue) => {
+    navigate("/projekt");
+    console.log(newValue)
+  };
 
   return (
     <Box sx={{ minWidth: 150 }}>
 
       <Autocomplete
         style={input}
-        options={dummy}  // Use the neunicknamen array as options
+        options={projectNames}
+        onChange={(event, newValue) => {
+          navigateToProject(newValue);
+        }}
         renderInput={(params) => (
           <TextField {...params} label="Projektsuche" />
         )}
@@ -109,8 +103,8 @@ const Projectcard = () => {
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {projekte.Projekte.map(meineprojekte => (
-          <Grid item sm={6} md={3} key={meineprojekte.name}>
-            <Card variant="outlined">
+          <Grid item xs={6} sm={4} md={3} key={meineprojekte.name}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Typography typography="h6" color="text.primary">
                   {meineprojekte.name}
@@ -131,11 +125,15 @@ const Projectcard = () => {
             </Card>
           </Grid>
         ))}
-        <Grid item sm={6} md={3}>
+        <Grid item xs={6} sm={4} md={3} >
           <Box onClick={handleOpen}>
-            <Card variant="outlined" mr={"auto"} ml={"auto"}>
-              <Typography color="text.secondary">Neues Projekt anlegen</Typography>
-              <AddIcon sx={{ fontSize: 180, color: "black" }} />
+            <Card sx={{ height: '100%' }}>
+              <Typography color="#bdbdbd" align={"center"} >
+                Neues Projekt erstellen
+              </Typography>
+              <Typography color="#bdbdbd" align={"center"} fontSize={120}>
+                +
+              </Typography>
             </Card>
           </Box>
         </Grid>

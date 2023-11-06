@@ -9,9 +9,7 @@ import Divider from "@mui/material/Divider";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import ChatIcon from '@mui/icons-material/Chat';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import HandshakeIcon from '@mui/icons-material/Handshake';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from "../Context/Authcontext";
 
@@ -123,19 +121,6 @@ export default function Navbar() {
                 }}
               >ProjecTrack</Typography>
             </Link>
-            {/* <Box
-              component="img"
-              sx={{
-                height: 40,
-                display: {
-                  xs: 'none',
-                  sp: 'none',
-                  sm: 'block'
-                }
-              }}
-              alt="Flirtify Logo"
-              src={Logo}>
-            </Box> */}
             <Box sx={{ flexGrow: 1, justifyContent: "right", width: "75%", margin: 1, display: { md: 'flex', textAlign: "center", xs: "none" } }}>
 
               <Link to="/anfragen" style={unterseiten}>

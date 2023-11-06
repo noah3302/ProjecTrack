@@ -12,9 +12,17 @@ const Home = () => {
 
     return (
         <>
-            <Typography>Home</Typography>
-            <Typography>aktueller user: {user?.displayName}</Typography>
-            <Box m={"1rem"} >
+            <Box
+                sx={{
+                    mt:"6rem",
+                    display: 'flex',
+                    justifyContent: 'center',
+                    p: 1,
+                    borderRadius: 1,
+                }} >
+                <Typography typography={"h4"}>Herzlich Willkommen {user?.displayName}</Typography>
+            </Box>
+            <Box m={"3rem"} >
                 <Projectcard></Projectcard>
             </Box>
         </>
