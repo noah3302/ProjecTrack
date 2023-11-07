@@ -19,10 +19,10 @@ USE `projectrack`;
 
 -- USER TABELLE
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `nachname` varchar(100) NOT NULL DEFAULT '',
   `vorname` varchar(100) NOT NULL DEFAULT '',
@@ -35,9 +35,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `user`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES
 (1,'Brahner','Laurenz','laurenz123',"laurenzmail.de"),
 (2,'Fröhlich','Peter','Peteristlustig',"PeterLustiggmail.com"),
 (3,'Lipa','Dua','Duasing',"duazmail.de"),
@@ -45,7 +45,7 @@ INSERT INTO `users` VALUES
 (5,'Bohn','Sara','Sara2003',"saramail.de"),
 (6,'geri','Anna','Annal',"annagmail.com");
 
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
