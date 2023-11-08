@@ -1,4 +1,4 @@
-from backend.bo.BuisnessObject import BusinessObject
+from backend.server.bo.BuisnessObject import BusinessObject
 
 
 class User(BusinessObject):
