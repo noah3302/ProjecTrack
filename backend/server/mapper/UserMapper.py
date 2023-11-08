@@ -14,7 +14,7 @@ class UserMapper(Mapper):
 
         for (user_id, nachname,vorname, nickname, google_id) in tuples:
             user = User()
-            user.set_id(id)
+            user.set_id(user_id)
             user.set_nachname(nachname)
             user.set_vorname(vorname)
             user.set_nickname(nickname)
@@ -36,7 +36,7 @@ class UserMapper(Mapper):
         try:
             (user_id, nachname,vorname, nickname, google_id) = tuples[0]
             user = User()
-            user.set_id(id)
+            user.set_id(user_id)
             user.set_nachname(nachname)
             user.set_vorname(vorname)
             user.set_nickname(nickname)
@@ -61,7 +61,7 @@ class UserMapper(Mapper):
         try:
             (user_id, nachname,vorname, nickname, google_id) = tuples[0]
             user = User()
-            user.set_id(id)
+            user.set_id(user_id)
             user.set_nachname(nachname)
             user.set_vorname(vorname)
             user.set_nickname(nickname)
@@ -86,7 +86,7 @@ class UserMapper(Mapper):
         try:
             (user_id, nachname,vorname, nickname, google_id) = tuples[0]
             user = User()
-            user.set_id(id)
+            user.set_id(user_id)
             user.set_nachname(nachname)
             user.set_vorname(vorname)
             user.set_nickname(nickname)
