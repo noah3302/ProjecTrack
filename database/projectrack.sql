@@ -54,7 +54,6 @@ DROP TABLE IF EXISTS `mitglieder`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mitglieder` (
   `boId` int(11) NOT NULL DEFAULT '0',
-  `role` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `project_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`boId`),
@@ -65,12 +64,12 @@ CREATE TABLE `mitglieder` (
 LOCK TABLES `mitglieder` WRITE;
 /*!40000 ALTER TABLE `mitglieder` DISABLE KEYS */;
 INSERT INTO `mitglieder` VALUES
-(1,1,'1','laurenz123'),
-(2,1,'2','Peteristlustig'),
-(3,1,'3','Duasing'),
-(4,2,'1','Iristest'),
-(5,2,'2','Sara2003'),
-(6,2,'3','Annal');
+(1,'1','laurenz123'),
+(2,'2','Peteristlustig'),
+(3,'3','Duasing'),
+(4,'1','Iristest'),
+(5,'2','Sara2003'),
+(6,'3','Annal');
 
 /*!40000 ALTER TABLE `mitglieder` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -125,4 +124,59 @@ INSERT INTO `phasen` VALUES
 (6,6,'todo','2');
 
 /*!40000 ALTER TABLE `phasen` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `task`;
+/*!40101 SET @saved_cs_client     = @character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `task` (
+  `task_id` int(11) NOT NULL AUTO_INCREMENT ,
+  `taskname` varchar(110) NOT NULL DEFAULT '',
+  `beschreibung` varchar(110) NOT NULL DEFAULT '',
+  `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `user_id` int(11) NOT NULL DEFAULT  '0',
+  `phasen_id` int(11) NOT NULL DEFAULT  '0',
+  PRIMARY KEY (`task_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
+  FOREIGN KEY (`phasen_id`) REFERENCES `phasen` (`phasen_id`) on delete cascade
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `task` WRITE;
+/*!40000 ALTER TABLE `task` DISABLE KEYS */;
+INSERT INTO `task` VALUES
+(1,'Firebase','To Do', "2024-06-10 12:00:00",'1','1'),
+(2,'authcontext','In Ptogress', "2024-06-10 12:00:00",'2','3'),
+(3,'login','beschreibung', "2024-06-10 12:00:00",'3','2'),
+(4,'createprofil','beschreibung', "2024-06-10 12:00:00",'3','1'),
+(5,'home','beschreibung', "2024-06-10 12:00:00",'1','2'),
+(6,'about','beschreibung', "2024-06-10 12:00:00",'2','1');
+
+/*!40000 ALTER TABLE `task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `comment`;
+/*!40101 SET @saved_cs_client     = @character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comment` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT ,
+  `comment` varchar(110) NOT NULL DEFAULT '',
+  `erstellungsdatum` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `user_id` int(11) NOT NULL DEFAULT  '0',
+  `task_id` int(11) NOT NULL DEFAULT  '0',
+  PRIMARY KEY (`comment_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
+  FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`) on delete cascade
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `comment` WRITE;
+/*!40000 ALTER TABLE `comment` DISABLE KEYS */;
+INSERT INTO `comment` VALUES
+(1,'ich mag kuchen', "2024-06-10 12:00:00",'1','1'),
+(2,'ich mag kuchen', "2024-06-10 12:00:00",'2','3'),
+(3,'ich mag kuchen', "2024-06-10 12:00:00",'3','2'),
+(4,'ich mag kuchen', "2024-06-10 12:00:00",'3','1'),
+(5,'ich mag kuchen', "2024-06-10 12:00:00",'1','2'),
+(6,'ich mag kuchen', "2024-06-10 12:00:00",'2','1');
+
+/*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
