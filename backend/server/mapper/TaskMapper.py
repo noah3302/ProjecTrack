@@ -13,7 +13,7 @@ class TaskMapper(Mapper):
 
         for (task_id, taskname, beschreibung, enddate, user_id, phasen_id) in tuples:
             task = Task()
-            task.set_task_id(task_id)
+            task.set_id(task_id)
             task.set_taskname(taskname)
             task.set_beschreibung(beschreibung)
             task.set_enddate(enddate)
@@ -36,7 +36,7 @@ class TaskMapper(Mapper):
         try:
             (task_id, taskname,beschreibung, enddatum, user_id, phasen_id) = tuples[0]
             task = Task()
-            task.set_task_id(task_id)
+            task.set_id(task_id)
             task.set_taskname(taskname)
             task.set_beschreibung(beschreibung)
             task.set_enddatum(enddatum)
@@ -63,7 +63,7 @@ class TaskMapper(Mapper):
         try:
             (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) = tuples[0]
             task = Task()
-            task.set_task_id(task_id)
+            task.set_id(task_id)
             task.set_taskname(taskname)
             task.set_beschreibung(beschreibung)
             task.set_enddatum(enddatum)
@@ -90,7 +90,7 @@ class TaskMapper(Mapper):
         try:
             (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) = tuples[0]
             task = Task()
-            task.set_task_id(task_id)
+            task.set_id(task_id)
             task.set_taskname(taskname)
             task.set_beschreibung(beschreibung)
             task.set_enddatum(enddatum)
@@ -105,7 +105,7 @@ class TaskMapper(Mapper):
         cursor.close()
         return result
 
-    def insert(self, task_id):
+    def insert(self, task):
         cursor = self._cnx.cursor()
         cursor.execute("SELECT COUNT(*) FROM task")
         count = cursor.fetchone()[0]
@@ -116,7 +116,7 @@ class TaskMapper(Mapper):
             maxid = cursor.fetchone()[0]
             task.set_id(maxid + 1)
         command = "INSERT INTO task (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) VALUES (%s, %s, %s, %s, %s)"
-        data = (task.get_task_id(), task.get_taskname(), user.get_beschreibung(), user.get_enddatum(), user.get_user_id(), user.get_phasen_id())
+        data = (task.get_id(), task.get_taskname(), task.get_beschreibung(), task.get_enddatum(), task.get_user_id(), task.get_phasen_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -127,7 +127,7 @@ class TaskMapper(Mapper):
         cursor = self._cnx.cursor()
 
         command = "UPDATE task SET task_id=%s, taskname=%s, beschreibung=%s, enddatum=%s, user_id=%s, phasen_id=%s WHERE task_id=%s"
-        data = (task.get_task_id(), task.get_taskname(), task.get_enddatum(), task.get_user_id(), task.get_phasen_id())
+        data = (task.get_id(), task.get_taskname(), task.get_enddatum(), task.get_user_id(), task.get_phasen_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
