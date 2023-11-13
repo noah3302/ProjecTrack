@@ -2,7 +2,7 @@ import { Typography, Box } from "@mui/material";
 import React, { useEffect } from "react";
 import { GoogleButton } from "react-google-button";
 import { useNavigate } from "react-router-dom";
-import {UserAuth} from "../Context/Authcontext";
+import {UserAuth} from "../context/Authcontext";
 
 const Signin = () => {
 

@@ -1,6 +1,6 @@
 import { Typography, Box } from "@mui/material";
 import React from "react";
-import { UserAuth } from "../Context/Authcontext";
+import { UserAuth } from "../context/Authcontext";
 import Projectcard from "../components/Projectcard";
 
 
