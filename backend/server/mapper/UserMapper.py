@@ -9,7 +9,7 @@ class UserMapper(Mapper):
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT user_id, nachname, vorname, nickname, google_id FROM user")
+        cursor.execute("SELECT * FROM user")
         tuples = cursor.fetchall()
 
         for (user_id, nachname,vorname, nickname, google_id) in tuples:
@@ -19,6 +19,21 @@ class UserMapper(Mapper):
             user.set_vorname(vorname)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
+            result.append(user)
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+    def find_all_nicknames(self):
+        result = []
+        cursor = self._cnx.cursor()
+        cursor.execute("SELECT nickname FROM user")
+        tuples = cursor.fetchall()
+
+        for (nickname,) in tuples:
+            user = User()
+            user.set_nickname(nickname)
             result.append(user)
 
         self._cnx.commit()
@@ -108,9 +123,9 @@ class UserMapper(Mapper):
         if count == 0:
             user.set_id(1)
         else:
-            cursor.execute("SELECT MAX(user_id) AS maxid FROM user")
-            maxid = cursor.fetchone()[0]
-            user.set_id(maxid + 1)
+            cursor.execute("SELECT MAX(user_id) AS maxuser_id FROM user")
+            maxuser_id = cursor.fetchone()[0]
+            user.set_id(maxuser_id + 1)
         command = "INSERT INTO user (user_id, nachname, vorname, nickname, google_id) VALUES (%s, %s, %s, %s, %s)"
         data = (user.get_id(), user.get_nachname(), user.get_vorname(), user.get_nickname(), user.get_google_id())
         cursor.execute(command, data)
@@ -138,5 +153,15 @@ class UserMapper(Mapper):
 
 if __name__ == "__main__":
     with UserMapper() as mapper:
-        result = mapper.find_by_key(2)
-        print(result)
+        user = User()
+        user.set_id(7)
+        user.set_nachname("Bruan")
+        user.set_vorname("noah")
+        user.set_nickname("Noah3003")
+        user.set_google_id("googleid123")
+        result = mapper.insert(user)
+        #result = mapper.find_all()
+        #for f in result:
+            #print(f)
+
+        #print(result)

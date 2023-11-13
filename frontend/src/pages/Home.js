@@ -1,6 +1,6 @@
 import { Typography, Box } from "@mui/material";
 import React from "react";
-import { UserAuth } from "../context/Authcontext";
+import { UserAuth } from "../Context/Authcontext";
 import Projectcard from "../components/Projectcard";
 
 
@@ -21,6 +21,7 @@ const Home = () => {
                     borderRadius: 1,
                 }} >
                 <Typography typography={"h4"}>Herzlich Willkommen {user?.displayName}</Typography>
+                <Typography typography={"h4"}>Herzlich Willkommen {user?.uid}</Typography>
             </Box>
             <Box m={"3rem"} >
                 <Projectcard></Projectcard>

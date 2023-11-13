@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
@@ -6,13 +6,24 @@ import Box from '@mui/material/Box';
 import { useNavigate } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
+import { apiget, apipost } from '../API/Api';
+import { UserAuth } from "../Context/Authcontext";
 
 export default function Createprofil() {
     const navigate = useNavigate();
+    const { user } = UserAuth()
+
+    useEffect (() => {
+        apiget("users/nicknames").then((data) => {
+            setNicknames(data.nicknames)
+          })
+    }, []);
+
+    const [nicknames, setNicknames] = useState('');
     const [vorname, setVorname] = useState('');
     const [nachname, setNachname] = useState('');
     const [nickname, setNickname] = useState('');
-    const [helper, setHelper] = useState(''); // Zustand für den Helper-Text
+    const [helper, setHelper] = useState(''); 
 
     const input = {
         marginTop: "1rem",
@@ -22,7 +33,20 @@ export default function Createprofil() {
 
     const isButtonDisabled = !vorname || !nachname || !nickname
 
-    const navigation = () => {
+
+    const navigation = async () => {
+        try {
+            await apipost(`users`, {
+                id: 0,
+                nachname: nachname,
+                vorname: vorname,
+                nickname: nickname,
+                google_id: { user: user && user.uid }, 
+              });
+            navigate("/home");
+          } catch (error) {
+            console.log(error);
+          }
         console.log('Profil erstellt');
         navigate('/home');
     };
@@ -36,9 +60,9 @@ export default function Createprofil() {
     };
 
     const handlenicknameChange = (event) => {
-        const regex = /^[a-zA-Z0-9]{6,12}$/;
+        const regex = /^[a-zA-Z0-9]{4,12}$/;
         if (regex.test(event.target.value)) {
-            if (nicknamen.includes(event.target.value)) {
+            if (nicknames.includes(event.target.value)) {
                 setHelper("Der Nickname existiert bereits"); 
                 setNickname("");
             } else {
@@ -46,34 +70,11 @@ export default function Createprofil() {
                 setHelper(''); 
             }
         } else {
-            setHelper("Der Nickname muss aus 6 bis 12 Buchstaben und/oder Zahlen bestehen."); 
+            setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen."); 
             setNickname("");
         }
 
     };
-
-    const nicknamen = [
-        'Alex88',
-        'Bob7a8',
-        'Grace12',
-        'Charlie9b',
-        'Eva2c4',
-        'Liam123',
-        'Sophia69',
-        'Samuel99',
-        'Hannah3y',
-        'Ruby234',
-        'David9a7',
-        'Frank15',
-        'Quinn77',
-        'Jack0p2',
-        'Ivy34',
-        'Katie6z',
-        'Olivia12',
-        'Paul1a4',
-        'Mia9b',
-        'Noah8x7'
-    ];
 
     return (
         <>
@@ -92,7 +93,7 @@ export default function Createprofil() {
                             endIcon={<SendIcon />}
                             disabled={isButtonDisabled}
                         >
-                            Projekt erstellen
+                            Profil erstellen
                         </Button>
                     </Box>
                 </Card>

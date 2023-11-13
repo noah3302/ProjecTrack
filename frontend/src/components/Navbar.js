@@ -11,7 +11,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { useNavigate } from 'react-router-dom';
-import { UserAuth } from "../context/Authcontext";
+import { UserAuth } from "../Context/Authcontext";
 
 
 /**Navbar im eingeloggten Zustand */

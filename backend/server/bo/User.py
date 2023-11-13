@@ -39,14 +39,14 @@ class User(BusinessObject):
 
 
     def __str__(self):
-        return "user_id: {}\nnachname: {}\nvorname: {}\nnickname: {}\ngoogle_id: {}\n".format(self.get_id(),
+        return "id: {}\nnachname: {}\nvorname: {}\nnickname: {}\ngoogle_id: {}\n".format(self.get_id(),
                                                                                     self._nachname,self._vorname,
-                                                                                    self._nickname, self._google_id,)
+                                                                                    self._nickname, self._google_id)
 
     @staticmethod
     def from_dict(dictio=dict()):
         obj = User()
-        obj.set_id(dictio["user_id"])
+        obj.set_id(dictio["id"])
         obj.set_nachname(dictio["nachname"])
         obj.set_vorname(dictio["vorname"])
         obj.set_nickname(dictio["nickname"])
