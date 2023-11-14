@@ -41,13 +41,12 @@ export default function Createprofil() {
                 nachname: nachname,
                 vorname: vorname,
                 nickname: nickname,
-                google_id: { user: user && user.uid }, 
+                google_id: user?.userid, 
               });
             navigate("/home");
           } catch (error) {
             console.log(error);
           }
-        console.log('Profil erstellt');
         navigate('/home');
     };
 

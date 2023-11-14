@@ -55,7 +55,6 @@ class ProjectrackAdministration(object):
             nicknames = []
             for user in users:
                 nicknames.append(user.get_nickname())
-
             return nicknames
 
 
@@ -71,9 +70,10 @@ class ProjectrackAdministration(object):
      user mit bestimmter google_id ausgeben
      """
 
-    def get_user_by_google_id(self, number):
+    def get_user_by_google_id(self, google_id):
         with UserMapper() as mapper:
-            return mapper.find_by_google_id(number)
+            user_exists = mapper.find_by_google_id(google_id)
+            return user_exists
 
     """
      user mit bestimmtem nickname ausgeben
@@ -82,6 +82,8 @@ class ProjectrackAdministration(object):
     def get_user_by_nickname(self, number):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
+
+
 
 
 if __name__ == "__main__":

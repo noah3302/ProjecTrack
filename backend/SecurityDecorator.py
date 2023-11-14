@@ -29,17 +29,6 @@ def secured(function):
                 # reich angemeldet hat. Ansonstend erfüllt der User nicht die Anforderungen, um vollständigen Zugriff
                 # auf unsere Website zu erlangen
                 if claims is not None:
-                    adm = ProjectrackAdministration()
-                    nachname = claims.get("nachname")
-                    vorname = claims.get("vorname")
-                    nickname = claims.get("nickname")
-                    google_id = claims.get("google_id")
-
-                    # wichtig für das System ist es, herauszufinden, ob der User bereits vorhanden ist. Dies erfolgt
-                    # über die GoogleId des Users
-                    user = adm.get_user_by_google_id(google_id)
-                    if user is None:
-                        adm.create_user(nachname, vorname, nickname, google_id)
 
                     objects = function(*args, **kwargs)
                     return objects

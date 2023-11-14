@@ -24,7 +24,6 @@ export function apiget(endpoint) {
   // of the api
   return fetch(`${baseURL}${endpoint}`)
     .then((response) => { 
-        console.log(response);
       try {
         if (response.ok) {
           return response.json();

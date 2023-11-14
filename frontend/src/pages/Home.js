@@ -8,7 +8,6 @@ import Projectcard from "../components/Projectcard";
 
 const Home = () => {
     const { user } = UserAuth()
-    console.log("aktueller User", user)
 
     return (
         <>

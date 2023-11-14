@@ -36,7 +36,6 @@ user = api.inherit('User', bo, {
 })
 
 
-
 """User"""
 
 
@@ -56,7 +55,7 @@ class UserListOperations(Resource):
 
     @api.marshal_with(user, code=200)
     @api.expect(user)
-    #@secured
+    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = User.from_dict(api.payload)
@@ -72,13 +71,29 @@ class UserListOperations(Resource):
         else:
             return "", 500
 
+@api.route('/existusers/<id>')
+@api.response(500, 'Falls es zu einem serverseitigen error kommt')
+@api.param('id', 'ID des User-Objekts')
+class UserOperations(Resource):
+    @secured
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        user = adm.get_user_by_google_id(id)
+        if user:
+            return {"exist": True}
+        else:
+            return {"exist": False}
+
+
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserNicknamenOperations(Resource):
+    @secured
     def get(self):
         adm = ProjectrackAdministration()
         nicknames = adm.get_all_nicknames()
         return {"nicknames": nicknames}
+
 
 
 if __name__ == '__main__':
