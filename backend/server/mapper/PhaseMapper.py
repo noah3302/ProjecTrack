@@ -27,7 +27,7 @@ class PhaseMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT phasen_id, phasenname, projekt_id FROM phasen WHERE phasen_id='{}'".format(key)
+        command = ("SELECT phasen_id, phasenname, projekt_id FROM phasen WHERE phasen_id='{}'").format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
@@ -41,6 +41,24 @@ class PhaseMapper(Mapper):
 
         except IndexError:
             result = None
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+    def get_phasen_by_project_id(self, project_id):
+        result = []
+        cursor = self._cnx.cursor()
+        command = ("SELECT phasen_id, phasenname, indx FROM phasen WHERE project_id = '{}'").format(project_id)
+        cursor.execute(command)
+        tuples = cursor.fetchall()
+
+        for (phasen_id, phasenname, indx) in tuples:
+            phasen = Phase()
+            phasen.set_id(phasen_id)
+            phasen.set_phasenname(phasenname)
+            phasen.set_indx(indx)
+            result.append(phasen)
 
         self._cnx.commit()
         cursor.close()
@@ -85,5 +103,5 @@ class PhaseMapper(Mapper):
 
 if __name__ == "__main__":
     with PhaseMapper() as mapper:
-        result = mapper.find_by_key(2)
+        result = mapper.get_phasen_by_project_id(1)
         print(result)

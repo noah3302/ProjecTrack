@@ -1,5 +1,7 @@
 from server.bo.User import User
 from server.bo.Task import Task
+from server.bo.ProjectBO import Project
+from server.bo.Phase import Phase
 
 
 
@@ -10,6 +12,8 @@ import google.oauth2.id_token
 
 from server.mapper.UserMapper import UserMapper
 from server.mapper.TaskMapper import TaskMapper
+from server.mapper.ProjectMapper import ProjectMapper
+from server.mapper.PhaseMapper import PhaseMapper
 
 
 class ProjectrackAdministration(object):
@@ -84,15 +88,31 @@ class ProjectrackAdministration(object):
             return mapper.find_by_nickname(number)
 
 
+    """Arbeitsstatistik"""
+
+    def get_arbeitsstatistik_by_project_id(self, number):
+        user_phase_task_count = {}
+        users_dict = {}  # Annahme: Dictionary mit UserId und Nickname
+
+        with ProjectMapper() as mapper:
+            users_dict = mapper.get_members_by_project_id(number)  # Erhalte das Dictionary mit UserId und Nickname
+
+        with PhaseMapper() as mapper:
+            phase_ids = [phase.get_id() for phase in mapper.get_phasen_by_project_id(number)]  # Erhalte die Phasenids
+
+        with TaskMapper() as mapper:
+            for user_id, user_nickname in users_dict.items():
+                user_phase_task_count[user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
+                for phase_id in phase_ids:
+                    tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
+                    task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
+                    user_phase_task_count[user_nickname][
+                        phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+
+        return user_phase_task_count
 
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    nachname = "Bruan"
-    vorname = "noah"
-    nickname = "Noah3003"
-    google_id = "googleid123"
-    pa = adm.create_user(nachname, vorname, nickname, google_id)
+    pa = adm.get_arbeitsstatistik_by_project_id(1)
     print(pa)
-    #for f in pa:
-        #print(f)

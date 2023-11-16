@@ -78,17 +78,15 @@ class TaskMapper(Mapper):
             cursor.close()
             return result
 
-    def find_by_phasen_id(self, phasen_id):
-        result = None
+    def find_by_phase_id(self, key):
+        result = []
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, taskname, beschreibung, enddatum, user_id, phasen_id FROM task WHERE task_id='{}'".format(
-            phasen_id)
+        command = "SELECT task_id, taskname, beschreibung, enddate, user_id, phasen_id FROM task WHERE phasen_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        try:
-            (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) = tuples[0]
+        for (task_id, taskname, beschreibung, enddatum, user_id, phasen_id,) in tuples:
             task = Task()
             task.set_id(task_id)
             task.set_taskname(taskname)
@@ -96,10 +94,22 @@ class TaskMapper(Mapper):
             task.set_enddatum(enddatum)
             task.set_user_id(user_id)
             task.set_phasen_id(phasen_id)
-            result = task
+            result.append(task)
 
-        except IndexError:
-            result = None
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+    def find_by_phase_id_and_user_id(self, phasen_id, user_id):
+        result = []  # Initialisiere result als leere Liste
+
+        cursor = self._cnx.cursor()
+        command = ("SELECT task_id FROM task WHERE phasen_id='{}' and user_id = '{}'").format(phasen_id, user_id)
+        cursor.execute(command)
+        task_ids = cursor.fetchall()
+
+        for (task_id,) in task_ids:
+            result.append(task_id)  # Füge die task_id zur Ergebnisliste hinzu
 
         self._cnx.commit()
         cursor.close()
@@ -141,5 +151,7 @@ class TaskMapper(Mapper):
 
 if __name__ == "__main__":
     with TaskMapper() as mapper:
-        result = mapper.find_by_key(2)
+        result = mapper.find_by_phase_id_and_user_id(1, 1)
         print(result)
+        #for f in result:
+            #print(f)

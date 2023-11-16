@@ -94,6 +94,15 @@ class UserNicknamenOperations(Resource):
         nicknames = adm.get_all_nicknames()
         return {"nicknames": nicknames}
 
+@api.route('/arbeitsstatistik/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'Projekt id')
+class UserListOperations(Resource):
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        arbeitsstatistik = adm.get_arbeitsstatistik_by_project_id(id)
+        return {"name": arbeitsstatistik}
+
 
 
 if __name__ == '__main__':

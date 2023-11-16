@@ -6,7 +6,7 @@ class Task(BusinessObject):
         self._taskname = ""
         self._beschreibung = ""
         self._enddatum = ""
-        self._user_id =""
+        self._user_id = ""
         self._phasen_id = ""
 
     def get_id(self):
