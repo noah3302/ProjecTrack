@@ -64,12 +64,12 @@ CREATE TABLE `mitglieder` (
 LOCK TABLES `mitglieder` WRITE;
 /*!40000 ALTER TABLE `mitglieder` DISABLE KEYS */;
 INSERT INTO `mitglieder` VALUES
-(1,'1','laurenz123'),
-(2,'2','Peteristlustig'),
-(3,'3','Duasing'),
-(4,'1','Iristest'),
-(5,'2','Sara2003'),
-(6,'3','Annal');
+(1,'1','1'),
+(2,'2','1'),
+(3,'3','1'),
+(4,'4','2'),
+(5,'5','2'),
+(6,'6','2');
 
 /*!40000 ALTER TABLE `mitglieder` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -107,21 +107,21 @@ DROP TABLE IF EXISTS `phasen`;
 CREATE TABLE `phasen` (
   `phasen_id` int(11) NOT NULL AUTO_INCREMENT ,
   `phasenname` varchar(110) NOT NULL DEFAULT '',
-  `index` int(11) NOT NULL DEFAULT '0',
+  `indx` varchar(110) NOT NULL DEFAULT '',
   `project_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`phasen_id`),
+ PRIMARY KEY (`phasen_id`),
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `phasen` WRITE;
 /*!40000 ALTER TABLE `phasen` DISABLE KEYS */;
 INSERT INTO `phasen` VALUES
-(1,1,'To Do','1'),
-(2,2,'In Ptogress','2'),
-(3,3,'Done','3'),
-(4,4,'R4R','3'),
-(5,5,'Brainstorming','1'),
-(6,6,'todo','2');
+(1,'To Do','1','1'),
+(2,'In Ptogress','2','1'),
+(3,'Done','4','1'),
+(4,'R4R','3','1'),
+(5,'Brainstorming','2','2'),
+(6,'todo','2','2');
 
 /*!40000 ALTER TABLE `phasen` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -149,7 +149,25 @@ INSERT INTO `task` VALUES
 (3,'login','beschreibung', "2024-06-10 12:00:00",'3','2'),
 (4,'createprofil','beschreibung', "2024-06-10 12:00:00",'3','1'),
 (5,'home','beschreibung', "2024-06-10 12:00:00",'1','2'),
-(6,'about','beschreibung', "2024-06-10 12:00:00",'2','1');
+(6,'test1','beschreibung', "2024-06-10 12:00:00",'2','1'),
+(7,'test3','To Do', "2024-06-10 12:00:00",'1','1'),
+(8,'tes2','In Ptogress', "2024-06-10 12:00:00",'2','3'),
+(9,'tese2','beschreibung', "2024-06-10 12:00:00",'3','2'),
+(10,'createprofil','beschreibung', "2024-06-10 12:00:00",'3','1'),
+(11,'home','beschreibung', "2024-06-10 12:00:00",'1','2'),
+(12,'about','beschreibung', "2024-06-10 12:00:00",'1','1'),
+(13,'Firebase','To Do', "2024-06-10 12:00:00",'1','1'),
+(14,'authcontext','In Ptogress', "2024-06-10 12:00:00",'2','3'),
+(15,'login','beschreibung', "2024-06-10 12:00:00",'3','2'),
+(16,'createprofil','beschreibung', "2024-06-10 12:00:00",'3','3'),
+(17,'home','beschreibung', "2024-06-10 12:00:00",'2','4'),
+(18,'test1','beschreibung', "2024-06-10 12:00:00",'2','4'),
+(19,'test3','To Do', "2024-06-10 12:00:00",'1','1'),
+(20,'tes2','In Ptogress', "2024-06-10 12:00:00",'2','4'),
+(21,'tese2','beschreibung', "2024-06-10 12:00:00",'2','3'),
+(22,'createprofil','beschreibung', "2024-06-10 12:00:00",'2','4'),
+(23,'home','beschreibung', "2024-06-10 12:00:00",'1','3'),
+(24,'about','beschreibung', "2024-06-10 12:00:00",'1','3');
 
 /*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
