@@ -51,7 +51,9 @@ class Project(BusinessObject):
                                                                                     self._founder, self._start_date, self._end_date,)
 
     @staticmethod
-    def from_dict(dictio=dict()):
+    def from_dict(dictio=None):
+        if dictio is None:
+            dictio = dict()
         obj = Project()
         obj.set_id(dictio["project_id"])
         obj.set_project_description(dictio["project_description"])
