@@ -26,7 +26,7 @@ function App() {
           <Route path="/anfragen" element={<Protected><Anfragen/></Protected>}/>
           <Route path="/profil" element={<Protected><Profil/></Protected>}/>
           <Route path="/about" element={<Protected><About/></Protected>}/>
-          <Route path="/projekt" element={<Protected><Projekt/></Protected>}/>
+          <Route path="/projekt/:selectedProject" element={<Protected><Projekt/></Protected>}/>
           <Route path="/vorschlage" element={<Protected><Vorschlage/></Protected>}/>
           <Route path="/createproject" element={<Protected><Createproject/></Protected>}/>
        </Routes>
