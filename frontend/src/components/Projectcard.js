@@ -81,9 +81,11 @@ const Projectcard = () => {
     width: '100%',
   };
 
-  const navigateToProject = (newValue) => {
-    navigate("/projekt");
-    console.log(newValue)
+  //Navigieren zur ausgewählten Projektseite
+  const navigateToProject = (selectedProject) => {     
+    if (selectedProject) {
+      navigate(`/projekt/${selectedProject}`);
+    }
   };
 
   return (
@@ -104,7 +106,11 @@ const Projectcard = () => {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {projekte.Projekte.map(meineprojekte => (
           <Grid item xs={6} sm={4} md={3} key={meineprojekte.name}>
-            <Card sx={{ height: '100%' }}>
+            <Card
+              sx={{ height: '100%' }}
+              onClick={() => navigateToProject(meineprojekte.name)}     //Navigieren zur ausgewählten Projektseite
+              style={{ cursor: 'pointer' }}
+            >
               <CardContent>
                 <Typography typography="h6" color="text.primary">
                   {meineprojekte.name}
