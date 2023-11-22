@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import Modal from "@mui/material/Modal";
-import {
-  Button,
-  Typography,
-  Box,
-  IconButton,
-  Card,
-  CardContent,
-  CardActions,
-} from "@mui/material";
+import {Button, Typography, Box, IconButton, Card, CardContent, CardActions} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
@@ -22,6 +14,9 @@ export default function Projekt() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [isPopUpOpen, setPopUpOpen] = useState(false);
+  const [phaseName, setPhaseName] = useState("Discussion");    //Beispielname der Phase
+  //const [projectName, setProjectName] = useState(""); //Zustand Projektname
+
 
   // Arbeitsstatistik
   const style = {
@@ -92,6 +87,29 @@ export default function Projekt() {
     setPopUpOpen(false);
   };
 
+  //Phasennamen bearbeiten                                - speichern fehlt noch !
+  const handleEditPhaseName = () => {
+    const newPhaseName = prompt("Wie soll ihre Phase heißen?:", phaseName);
+    if (newPhaseName !== null && newPhaseName !== "") {
+      setPhaseName(newPhaseName);
+    }
+  };
+  
+
+  // //Projektname aus der Datenbank laden
+  // const loadProjectName = () => {
+  //   fetchProjectName().then((projectNameFromDB) => {
+  //     setProjectName(projectNameFromDB);
+  //   }).catch((error) => {
+  //     console.error("Fehler beim Laden des Projektnamens: ", error);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   loadProjectName();
+  // }, []); 
+
+
   return (
     <>
       <div style={headerStyle}>
@@ -118,7 +136,7 @@ export default function Projekt() {
                     <ArrowLeftIcon />
                   </IconButton>
                   <Typography variant="h5">To do</Typography>
-                  <IconButton>
+                  <IconButton onClick={handleEditPhaseName}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <div style={iconStyle}>
@@ -147,7 +165,7 @@ export default function Projekt() {
                     <ArrowLeftIcon />
                   </IconButton>
                   <Typography variant="h5">Doing</Typography>
-                  <IconButton>
+                  <IconButton onClick={handleEditPhaseName}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <div style={iconStyle}>
@@ -176,7 +194,7 @@ export default function Projekt() {
                     <ArrowLeftIcon />
                   </IconButton>
                   <Typography variant="h5">Done</Typography>
-                  <IconButton>
+                  <IconButton onClick={handleEditPhaseName}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <div style={iconStyle}>
