@@ -6,7 +6,7 @@ export default function About() {
   return (
     <>
         <Box>
-            <Typography sx={{align:"center", marginTop:"5rem"}}>Offene Anfragen</Typography>
+            <Typography sx={{align:"center", marginTop:"5rem"}}>About</Typography>
         </Box>
     </>
   );
