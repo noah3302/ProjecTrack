@@ -103,6 +103,15 @@ class UserListOperations(Resource):
         arbeitsstatistik = adm.get_arbeitsstatistik_by_project_id(id)
         return {"name": arbeitsstatistik}
 
+@api.route('/projects')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class UserListOperations(Resource):
+    @api.marshal_list_with(user)
+    def get(self):
+        adm = ProjectrackAdministration()
+        users = adm.get_all_users()
+        return users
+
 
 
 if __name__ == '__main__':

@@ -41,6 +41,28 @@ class ProjectMapper(Mapper):
         cursor.close()
         return result
 
+    def get_projects_by_user_id(self, user_id):
+        result = []
+        cursor = self._cnx.cursor()
+        command = ("SELECT project.* FROM project JOIN mitglieder ON project.project_id = mitglieder.project_id "
+                   "WHERE mitglieder.user_id = '{}';").format(user_id)
+        cursor.execute(command)
+        tuples = cursor.fetchall()
+
+        for (id, title, discription, founder, startdate, enddate) in tuples:
+            project = Project()
+            project.set_id(id)
+            project.set_project_title(title)
+            project.set_project_description(discription)
+            project.set_founder(founder)
+            project.set_start_date(startdate)
+            project.set_end_date(enddate)
+            result.append(project)
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
     def find_by_key(self, key):
         result = None
 
@@ -105,5 +127,7 @@ class ProjectMapper(Mapper):
 
 if __name__ == "__main__":
     with ProjectMapper() as mapper:
-        result = mapper.find_by_key(2)
-        print(result)
+        result = mapper.get_project_by_user_id(1)
+        for f in result:
+            print(f)
+

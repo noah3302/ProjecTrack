@@ -40,6 +40,25 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
+    def get_members_by_project_id(self, project_id):
+        result = []
+        cursor = self._cnx.cursor()
+        command = ("SELECT user.user_id, user.nickname FROM user JOIN mitglieder ON user.user_id = mitglieder.user_id "
+                   "WHERE mitglieder.project_id = '{}';").format(project_id)
+        cursor.execute(command)
+        tuples = cursor.fetchall()
+
+        for (user_id, nickname) in tuples:
+            user = User()
+            user.set_id(user_id)
+            user.set_nickname(nickname)
+            result.append(user)
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+
     def find_by_key(self, key):
         result = None
 

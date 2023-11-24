@@ -6,7 +6,7 @@ class Phase(BusinessObject):
         super().__init__()
         self._phasenname = ""
         self._indx = ""
-        self._projekt_id = ""
+        self._project_id = ""
 
     def get_id(self):
         return self._id
@@ -24,16 +24,16 @@ class Phase(BusinessObject):
         self._indx = indx
 
 
-    def get_projekt_id(self):
-        return self._projekt_id
+    def get_project_id(self):
+        return self._project_id
 
-    def set_projekt_id(self, projekt_id):
-        self._projekt_id = projekt_id
+    def set_project_id(self, project_id):
+        self._project_id = project_id
 
 
     def __str__(self):
-        return "id: {}\nphasenname: {}\nindx {}\nprojekt_id {}\n".format(self.get_id(),
-                                                 self._phasenname, self._indx, self._projekt_id)
+        return "id: {}\nphasenname: {}\nindx {}\nproject_id {}\n".format(self.get_id(),
+                                                 self._phasenname, self._indx, self._project_id)
 
     @staticmethod
     def from_dict(dictio=dict()):
@@ -41,6 +41,6 @@ class Phase(BusinessObject):
         obj.set_id(dictio["id"])
         obj.set_phasenname(dictio["phasenname"])
         obj.set_indx(dictio["index"])
-        obj.set_projekt_id(dictio["projekt_id"])
+        obj.set_project_id(dictio["project_id"])
 
         return obj

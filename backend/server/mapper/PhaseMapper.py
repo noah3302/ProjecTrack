@@ -14,7 +14,7 @@ class PhaseMapper(Mapper):
 
         for (phasen_id, phasenname, project_id) in tuples:
             phasen = Phase()
-            phasen.set_phasen_id(phasen_id)
+            phasen.set_id(phasen_id)
             phasen.set_phasenname(phasenname)
             phasen.set_project_id(project_id)
             result.append(phasen)
@@ -34,7 +34,7 @@ class PhaseMapper(Mapper):
         try:
             (phasen_id, phasenname, project_id) = tuples[0]
             phasen = Phase()
-            phasen.set_phasen_id(phasen_id)
+            phasen.set_id(phasen_id)
             phasen.set_phasenname(phasenname)
             phasen.set_project_id(project_id)
             result = phasen
@@ -55,7 +55,7 @@ class PhaseMapper(Mapper):
 
         for (phasen_id, phasenname, indx) in tuples:
             phasen = Phase()
-            phasen.set_phasen_id(phasen_id)
+            phasen.set_id(phasen_id)
             phasen.set_phasenname(phasenname)
             phasen.set_indx(indx)
             result.append(phasen)
