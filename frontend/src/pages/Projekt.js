@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@mui/material/Modal";
-import {Button, Typography, Box, IconButton, Card, CardContent, CardActions} from "@mui/material";
+import {Button, Typography, Box, IconButton, Card, CardContent, CardActions, TextField} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
@@ -14,9 +14,52 @@ export default function Projekt() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [isPopUpOpen, setPopUpOpen] = useState(false);
-  const [phaseName, setPhaseName] = useState("Discussion");    //Beispielname der Phase
+  const [phaseName, setPhaseName] = useState("Discussion"); //Beispielname der Phase
+  const [project, setProject] = useState("");
+  const [Sopra, setSopra] = useState([]);
   //const [projectName, setProjectName] = useState(""); //Zustand Projektname
 
+  //JSON-Dummy
+  const initialSopra = [
+    {
+      phasenid: "2",
+      indx: "1",
+      Phasenname: "todo",
+      Tasks: [
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+      ],
+    },
+    {
+      phasenid: "3",
+      indx: "2",
+      Phasenname: "doing",
+      Tasks: [
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+      ],
+    },
+    {
+      phasenid: "4",
+      indx: "3",
+      Phasenname: "done",
+      Tasks: [
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+        { Taskid: "1" },
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    setSopra(initialSopra); 
+    setProject(initialSopra); 
+  }, []);
 
   // Arbeitsstatistik
   const style = {
@@ -76,7 +119,7 @@ export default function Projekt() {
     marginRight: "auto",
   };
 
-  // PopUp Fenster 
+  // PopUp Fenster schließen und öffnen
   const handleOpenPopUp = () => {
     console.log("PopUp-Fenster wird geöffnet");
     setPopUpOpen(true);
@@ -91,10 +134,64 @@ export default function Projekt() {
   const handleEditPhaseName = () => {
     const newPhaseName = prompt("Wie soll ihre Phase heißen?:", phaseName);
     if (newPhaseName !== null && newPhaseName !== "") {
-      setPhaseName(newPhaseName);
+      changePhaseName(0, newPhaseName);
     }
   };
+
+  const changePhaseName = (index, newName) => {
+    if (newName !== null && newName !== "") {
+      setProject((prevState) => {
+        const updatedData = [...prevState];
+        updatedData[index].Phasenname = newName;
+        console.log(project);
+        return updatedData;
+      });
+    }
+  };
+
+  const lowerIndex = (index) => {
+    setProject((prevState) => {
+      if (index > 0) {
+        const updatedData = [...prevState];
+        // Tauscht Indx-Positionen
+        [updatedData[index], updatedData[index - 1]] = [updatedData[index - 1], updatedData[index]];
   
+        updatedData.forEach((card, i) => card.indx = i + 1);
+  
+        console.log('Updated Project:', updatedData);
+        return updatedData;
+      }
+  
+      return prevState;
+    });
+  };
+
+//Verschiebung der Phasen nach links
+  const moveLeftAndLowerIndex = (index) => {
+    if (index > 0) {
+      setSopra((prevSopra) => {
+        const updatedSopra = [...prevSopra];
+        [updatedSopra[index], updatedSopra[index - 1]] = [updatedSopra[index - 1], updatedSopra[index]];
+        updatedSopra.forEach((phase, i) => {
+          phase.indx = i + 1;
+        });
+  
+        return updatedSopra;
+      });
+    }
+  };
+
+  //Verschiebung der Phasen nach rechts
+  const handleMoveRight = (index) => {
+    if (index < Sopra.length - 1) {
+      setSopra((prevSopra) => {
+        const updatedSopra = [...prevSopra];
+        [updatedSopra[index], updatedSopra[index + 1]] = [updatedSopra[index + 1], updatedSopra[index]];
+
+        return updatedSopra;
+      });
+    }
+  };
 
   // //Projektname aus der Datenbank laden
   // const loadProjectName = () => {
@@ -107,8 +204,7 @@ export default function Projekt() {
 
   // useEffect(() => {
   //   loadProjectName();
-  // }, []); 
-
+  // }, []);
 
   return (
     <>
@@ -226,9 +322,9 @@ export default function Projekt() {
               </CardContent>
             </Card>
           </div>
-        </div>       
+        </div>
       </>
-      <Modal    
+      <Modal
         open={isPopUpOpen}
         style={{
           display: "flex",
@@ -239,10 +335,30 @@ export default function Projekt() {
         <div style={{ backgroundColor: "#D3D3D3", padding: "20px" }}>
           <h3>Neue Aufgabe erstellen</h3>
           <Tasks />
-          <Button onClick={handleClosePopUp}>Schließen</Button>  
+          <Button onClick={handleClosePopUp}>Schließen</Button>
           <Button onClick={handleClosePopUp}>Hinzufügen</Button>
         </div>
+
+        {/* ab hier neu */}
       </Modal>
+      <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+  {Sopra.map((phase, index) => (
+   <Card key={phase.phasenid} style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <IconButton style={iconStyle} onClick={() => {moveLeftAndLowerIndex(index)}}>
+          <ArrowLeftIcon />
+        </IconButton>
+        <TextField
+          id="phasenname"
+          defaultValue={phase.Phasenname}
+          onChange={(event) => changePhaseName(index, event.target.value)}
+        />
+        <IconButton style={iconStyle} onClick={() => {handleMoveRight(index)}}>
+         <ArrowRightIcon />
+        </IconButton>
+      </div>
+    </Card>
+  ))}
+</Box>
     </>
   );
 }
