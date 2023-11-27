@@ -106,7 +106,7 @@ class ProjectrackAdministration(object):
                     "project_id": project.get_id(),
                     "project_title": project.get_project_title(),
                     "project_description": project.get_project_description(),
-                    "founder": project.get_founder(),
+                    "nickname": project.get_nickname(),
                     "start_date": project.get_start_date(),
                     "end_date": project.get_end_date(),
                     "members": project_members

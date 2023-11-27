@@ -71,6 +71,7 @@ class UserListOperations(Resource):
         else:
             return "", 500
 
+
 @api.route('/existusers/<id>')
 @api.response(500, 'Falls es zu einem serverseitigen error kommt')
 @api.param('id', 'ID des User-Objekts')
@@ -94,6 +95,7 @@ class UserNicknamenOperations(Resource):
         nicknames = adm.get_all_nicknames()
         return {"nicknames": nicknames}
 
+
 @api.route('/arbeitsstatistik/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'Projekt id')
@@ -103,8 +105,10 @@ class UserListOperations(Resource):
         arbeitsstatistik = adm.get_arbeitsstatistik_by_project_id(id)
         return {"name": arbeitsstatistik}
 
-@api.route('/projects')
+
+@api.route('/projects <int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'Projekt id')
 class UserListOperations(Resource):
     @api.marshal_list_with(user)
     def get(self):
@@ -112,6 +116,16 @@ class UserListOperations(Resource):
         users = adm.get_all_users()
         return users
 
+    project = api.inherit('Project', bo, {
+        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'nickname': fields.String(attribute='_nickname', description='nickname des users'),
+        'project_description': fields.String(attribute='_project_description',
+                                             description='project_description des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+        'members': fields.String(attribute='_google_id', description='members des Projects')
+    })
 
 
 if __name__ == '__main__':
