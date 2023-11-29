@@ -34,6 +34,16 @@ user = api.inherit('User', bo, {
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
+project = api.inherit('Project', bo, {
+        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'nickname': fields.String(attribute='_nickname', description='nickname des users'),
+        'project_description': fields.String(attribute='_project_description',
+                                             description='project_description des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+        'members': fields.String(attribute='_google_id', description='members des Projects')
+    })
 
 
 """User"""
@@ -106,26 +116,15 @@ class UserListOperations(Resource):
         return {"name": arbeitsstatistik}
 
 
-@api.route('/projects <int:id>')
+@api.route('/project/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'Projekt id')
+@api.param('id', 'project_id')
 class UserListOperations(Resource):
-    @api.marshal_list_with(user)
+    @api.marshal_list_with(project)
     def get(self):
         adm = ProjectrackAdministration()
-        users = adm.get_all_users()
-        return users
-
-    project = api.inherit('Project', bo, {
-        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
-        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
-        'nickname': fields.String(attribute='_nickname', description='nickname des users'),
-        'project_description': fields.String(attribute='_project_description',
-                                             description='project_description des Projects'),
-        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
-        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
-        'members': fields.String(attribute='_google_id', description='members des Projects')
-    })
+        projects = adm.get_projects_by_user_id()
+        return projects
 
 
 if __name__ == '__main__':

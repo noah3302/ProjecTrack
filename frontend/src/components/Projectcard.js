@@ -10,54 +10,27 @@ import Createproject from '../pages/Createproject';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import api from '../API/Api';
 
 const Projectcard = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [projectNames, setProjectNames] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+}
 
 
-  const projekte = {
-    "Projekte": [
-      {
-        "name": "Sopra",
-        "beschreibung": "Hier steht eine lange und unnötige Beschreibung von einem Projekt",
-        "Mitglieder": ["anna", "mike", "Horst"]
-      },
-      {
-        "name": "UXD",
-        "beschreibung": "Test2",
-        "Mitglieder": ["anna2", "mike2", "Horst2"]
-      },
-      {
-        "name": "Smart office",
-        "beschreibung": "Test3",
-        "Mitglieder": ["anna3", "mike3", "Horst3"]
-      },
-      {
-        "name": "Proposal",
-        "beschreibung": "Test4",
-        "Mitglieder": ["anna4", "mike4", "Horst4"]
-      },
-      {
-        "name": "Datingapp",
-        "beschreibung": "Test5",
-        "Mitglieder": ["anna5", "mike5", "Horst5"]
-      },
-      {
-        "name": "Sportfreaks",
-        "beschreibung": "Test6",
-        "Mitglieder": ["anna6", "mike6", "Horst6"]
-      },
-      {
-        "name": "Gamer",
-        "beschreibung": "Test7",
-        "Mitglieder": ["anna7", "mike7", "Horst7"]
-      }
-    ]
-  };
+  const projekte = () => {
+    const [project, setProjectNames] = useState([]);
+
+    useEffect (() => {
+      api.getprojects()
+        .then( data => setProjectNames(data))
+        .catch(error => console.error('Fehler beim Laden des Projektes', error));
+    }, []);
+ 
+
 
   useEffect(() => {
     const names = projekte.Projekte.map(meineprojekte => meineprojekte.name);
