@@ -6,6 +6,7 @@ from SecurityDecorator import secured
 
 
 from server.bo.User import User
+from server.bo.ProjectBO import Project
 
 from server.admin import ProjectrackAdministration
 
@@ -96,6 +97,22 @@ class UserOperations(Resource):
             return {"exist": False}
 
 
+@api.route('/google_user/<string:uid>')
+@api.response(500, 'Falls es zu einem serverseitigen error kommt')
+@api.param('id', 'ID des User-Objekts')
+class UserOperations(Resource):
+    @api.marshal_with(user)
+    @secured
+    def get(self, uid):
+        adm = ProjectrackAdministration()
+        user = adm.get_user_by_google_id(uid)
+        print(user)
+        if user:
+            return user, 200
+        else:
+            return "", 405
+
+
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserNicknamenOperations(Resource):
@@ -116,14 +133,39 @@ class UserListOperations(Resource):
         return {"name": arbeitsstatistik}
 
 
-@api.route('/project/<int:id>')
+@api.route('/projects')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class ProjectOperations(Resource):
+    @api.marshal_with(project)
+    @api.expect(project)
+    @secured
+    def post(self):
+        adm = ProjectrackAdministration()
+        proposal = Project.from_dict(api.payload)
+
+        print(proposal)
+        print(api.payload)
+
+        if proposal is not None:
+            p = adm.create_user(
+                proposal.get_nachname(),
+                proposal.get_vorname(),
+                proposal.get_nickname(),
+                proposal.get_google_id()
+            )
+            return p, 200
+        else:
+            return "", 500
+
+
+@api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'project_id')
-class UserListOperations(Resource):
+class UserProjectOperations(Resource):
     @api.marshal_list_with(project)
-    def get(self):
+    def get(self, id):
         adm = ProjectrackAdministration()
-        projects = adm.get_projects_by_user_id()
+        projects = adm.get_projects_by_user_id(id)
         return projects
 
 
