@@ -43,6 +43,8 @@ export default function Createprofil() {
                 nickname: nickname,
                 google_id: user?.userid, 
               });
+
+              console.log("usess: ", id, nachname, vorname, nickname, user?.userid)
             navigate("/home");
           } catch (error) {
             console.log(error);
@@ -57,6 +59,8 @@ export default function Createprofil() {
     const handlenachnameChange = (event) => {
         setNachname(event.target.value);
     };
+
+    
 
     const handlenicknameChange = (event) => {
         const regex = /^[a-zA-Z0-9]{4,12}$/;
