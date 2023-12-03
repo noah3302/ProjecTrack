@@ -76,8 +76,10 @@ class ProjectrackAdministration(object):
 
     def get_user_by_google_id(self, google_id):
         with UserMapper() as mapper:
-            user_exists = mapper.find_by_google_id(google_id)
-            return user_exists
+            user = mapper.find_by_google_id(google_id)
+            # if user is not None:
+            #    user = mapper.
+            return user
 
     """
      user mit bestimmtem nickname ausgeben
@@ -87,10 +89,10 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
 
-    def get_projects_by_user_id(self, number):
+    def get_projects_by_user_id(self, user_id):
         projects = []
         with ProjectMapper() as mapper:
-            result = mapper.get_projects_by_user_id(number)
+            result = mapper.get_projects_by_user_id(user_id)
             for project in result:
                 with UserMapper() as mapper:
                     mitglieder = mapper.get_members_by_project_id(project.get_id())

@@ -6,6 +6,7 @@ from SecurityDecorator import secured
 
 
 from server.bo.User import User
+from server.bo.ProjectBO import Project
 
 from server.admin import ProjectrackAdministration
 
@@ -34,6 +35,16 @@ user = api.inherit('User', bo, {
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
+project = api.inherit('Project', bo, {
+        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'nickname': fields.String(attribute='_nickname', description='nickname des users'),
+        'project_description': fields.String(attribute='_project_description',
+                                             description='project_description des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+        'members': fields.String(attribute='_google_id', description='members des Projects')
+    })
 
 
 """User"""
@@ -71,6 +82,7 @@ class UserListOperations(Resource):
         else:
             return "", 500
 
+
 @api.route('/existusers/<id>')
 @api.response(500, 'Falls es zu einem serverseitigen error kommt')
 @api.param('id', 'ID des User-Objekts')
@@ -85,6 +97,22 @@ class UserOperations(Resource):
             return {"exist": False}
 
 
+@api.route('/google_user/<string:uid>')
+@api.response(500, 'Falls es zu einem serverseitigen error kommt')
+@api.param('id', 'ID des User-Objekts')
+class UserOperations(Resource):
+    @api.marshal_with(user)
+    @secured
+    def get(self, uid):
+        adm = ProjectrackAdministration()
+        user = adm.get_user_by_google_id(uid)
+        print(user)
+        if user:
+            return user, 200
+        else:
+            return "", 405
+
+
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserNicknamenOperations(Resource):
@@ -93,6 +121,7 @@ class UserNicknamenOperations(Resource):
         adm = ProjectrackAdministration()
         nicknames = adm.get_all_nicknames()
         return {"nicknames": nicknames}
+
 
 @api.route('/arbeitsstatistik/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
@@ -103,15 +132,41 @@ class UserListOperations(Resource):
         arbeitsstatistik = adm.get_arbeitsstatistik_by_project_id(id)
         return {"name": arbeitsstatistik}
 
+
 @api.route('/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-class UserListOperations(Resource):
-    @api.marshal_list_with(user)
-    def get(self):
+class ProjectOperations(Resource):
+    @api.marshal_with(project)
+    @api.expect(project)
+    @secured
+    def post(self):
         adm = ProjectrackAdministration()
-        users = adm.get_all_users()
-        return users
+        proposal = Project.from_dict(api.payload)
 
+        print(proposal)
+        print(api.payload)
+
+        if proposal is not None:
+            p = adm.create_user(
+                proposal.get_nachname(),
+                proposal.get_vorname(),
+                proposal.get_nickname(),
+                proposal.get_google_id()
+            )
+            return p, 200
+        else:
+            return "", 500
+
+
+@api.route('/user/<int:id>/projects')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'project_id')
+class UserProjectOperations(Resource):
+    @api.marshal_list_with(project)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        projects = adm.get_projects_by_user_id(id)
+        return projects
 
 
 if __name__ == '__main__':

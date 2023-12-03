@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import GoogleButton from "react-google-button";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../Context/Authcontext";
@@ -7,11 +7,13 @@ import { apiget } from "../API/Api";
 
 export default function Signin() {
   const { googleSignIn, user } = UserAuth();
+  const [signInDone, setSignInDone] = useState();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
+      setSignInDone(true);
     } catch (error) {
       console.error("Fehler bei der Anmeldung:", error);
     }
@@ -19,29 +21,25 @@ export default function Signin() {
 
   useEffect(() => {
     const checkExistingUser = async () => {
-      if (user && user.userid) { 
-        try {
-          const fetchedUser = await apiget(`existusers/${user.userid}`);
-          if (fetchedUser && fetchedUser.exist) {
-            navigate("/home");
-          } else {
-            navigate("/createprofil");
-          }
-        } catch (error) {
-          console.error("Fehler bei der Überprüfung des Benutzers:", error);
+      if (signInDone) {
+        console.log(user)
+        if (user && user.id) {
+          navigate("/home");
+        } else {
+          navigate("/createprofil");
         }
       }
     };
-  
+
     checkExistingUser();
-  }, [user, navigate]);  
+  }, [user, signInDone]);
 
   return (
     <>
       <Box sx={{ maxWidth: "40rem", marginRight: "auto", marginLeft: "auto", marginTop: "8rem" }}>
         <Typography align="center">Herzlich willkommen bei ProjecTrack</Typography>
         <Typography mt={"1rem"} align="center">Hier kannst du dich anmelden/registrieren:</Typography>
-        <GoogleButton sx={{ marginTop: "3rem" }} onClick={handleGoogleSignIn} />
+        <GoogleButton style={{ margin: "2rem auto" }} onClick={handleGoogleSignIn} />
       </Box>
     </>
   );
