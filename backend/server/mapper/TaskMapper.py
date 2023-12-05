@@ -8,15 +8,15 @@ class TaskMapper(Mapper):
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT task_id, taskname, beschreibung, enddate, user_id, phasen_id FROM task")
+        cursor.execute("SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task")
         tuples = cursor.fetchall()
 
-        for (task_id, taskname, beschreibung, enddate, user_id, phasen_id) in tuples:
+        for (task_id, tasktitle, description, duedate, user_id, phasen_id) in tuples:
             task = Task()
             task.set_id(task_id)
-            task.set_taskname(taskname)
-            task.set_beschreibung(beschreibung)
-            task.set_enddate(enddate)
+            task.set_tasktitle(tasktitle)
+            task.set_description(description)
+            task.set_duedate(duedate)
             task.set_user_id(user_id)
             task.set_phasen_id(phasen_id)
             result.append(task)
@@ -29,17 +29,17 @@ class TaskMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, taskname, beschreibung, enddate, user_id, phasen_id FROM task WHERE task_id='{}'".format(key)
+        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE task_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (task_id, taskname,beschreibung, enddatum, user_id, phasen_id) = tuples[0]
+            (task_id, tasktitle,description, duedate, user_id, phasen_id) = tuples[0]
             task = Task()
             task.set_id(task_id)
-            task.set_taskname(taskname)
-            task.set_beschreibung(beschreibung)
-            task.set_enddatum(enddatum)
+            task.set_tasktitle(tasktitle)
+            task.set_description(description)
+            task.set_duedate(duedate)
             task.set_user_id(user_id)
             task.set_phasen_id(phasen_id)
             result = task
@@ -55,18 +55,18 @@ class TaskMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, taskname, beschreibung, enddate, user_id, phasen_id FROM task WHERE task_id='{}'".format(
+        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE task_id='{}'".format(
         user_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) = tuples[0]
+            (task_id, tasktitle, description, duedate, user_id, phasen_id) = tuples[0]
             task = Task()
             task.set_id(task_id)
-            task.set_taskname(taskname)
-            task.set_beschreibung(beschreibung)
-            task.set_enddatum(enddatum)
+            task.set_tasktitle(tasktitle)
+            task.set_description(description)
+            task.set_duedate(duedate)
             task.set_user_id(user_id)
             task.set_phasen_id(phasen_id)
             result = task
@@ -82,16 +82,16 @@ class TaskMapper(Mapper):
         result = []
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, taskname, beschreibung, enddate, user_id, phasen_id FROM task WHERE phasen_id='{}'".format(key)
+        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE phasen_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (task_id, taskname, beschreibung, enddatum, user_id, phasen_id,) in tuples:
+        for (task_id, tasktitle, description, duedate, user_id, phasen_id,) in tuples:
             task = Task()
             task.set_id(task_id)
-            task.set_taskname(taskname)
-            task.set_beschreibung(beschreibung)
-            task.set_enddatum(enddatum)
+            task.set_tasktitle(tasktitle)
+            task.set_description(description)
+            task.set_duedate(duedate)
             task.set_user_id(user_id)
             task.set_phasen_id(phasen_id)
             result.append(task)
@@ -125,8 +125,8 @@ class TaskMapper(Mapper):
             cursor.execute("SELECT MAX(task_id) AS maxid FROM task")
             maxid = cursor.fetchone()[0]
             task.set_id(maxid + 1)
-        command = "INSERT INTO task (task_id, taskname, beschreibung, enddatum, user_id, phasen_id) VALUES (%s, %s, %s, %s, %s)"
-        data = (task.get_id(), task.get_taskname(), task.get_beschreibung(), task.get_enddatum(), task.get_user_id(), task.get_phasen_id())
+        command = "INSERT INTO task (task_id, tasktitle, description, duedate, user_id, phasen_id) VALUES (%s, %s, %s, %s, %s)"
+        data = (task.get_id(), task.get_tasktitle(), task.get_description(), task.get_duedate(), task.get_user_id(), task.get_phasen_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -136,8 +136,8 @@ class TaskMapper(Mapper):
     def update(self, task):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE task SET task_id=%s, taskname=%s, beschreibung=%s, enddatum=%s, user_id=%s, phasen_id=%s WHERE task_id=%s"
-        data = (task.get_id(), task.get_taskname(), task.get_enddatum(), task.get_user_id(), task.get_phasen_id())
+        command = "UPDATE task SET task_id=%s, tasktitle=%s, description=%s, duedate=%s, user_id=%s, phasen_id=%s WHERE task_id=%s"
+        data = (task.get_id(), task.get_tasktitle(), task.get_duedate(), task.get_user_id(), task.get_phasen_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
@@ -151,7 +151,7 @@ class TaskMapper(Mapper):
 
 if __name__ == "__main__":
     with TaskMapper() as mapper:
-        result = mapper.find_by_phase_id_and_user_id(1, 1)
+        result = mapper.find_by_phase_id(1)
         print(result)
         #for f in result:
             #print(f)

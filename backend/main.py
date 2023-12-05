@@ -35,7 +35,7 @@ user = api.inherit('User', bo, {
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
 project = api.inherit('Project', bo, {
-        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
+        'project_id': fields.String(attribute='_id', description='Project_id des Projects'),
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
         'project_description': fields.String(attribute='_project_description',
@@ -44,6 +44,23 @@ project = api.inherit('Project', bo, {
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
         'members': fields.String(attribute='_google_id', description='members des Projects')
     })
+
+task = api.inherit('Task', bo, {
+        'task_id': fields.String(attribute='_id', description='ID der Task'),
+        'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
+        'description': fields.String(attribute='_description', description='Beschreibung der Task'),
+        'duedate': fields.String(attribute='_duedate',
+                                             description='Due Date für die Task'),
+        'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
+        'phasen_id': fields.String(attribute='_phasen_id', description='phase_id der Task')
+})
+
+phase = api.inherit('Phase', bo, {
+        'id': fields.String(attribute='_id', description='ID der Phase'),
+        'phasenname': fields.String(attribute='_phasenname', description='Name der Phase'),
+        'indx': fields.String(attribute='_indx', description='indx ist die reihenfolge der phasen'),
+        'project_id': fields.String(attribute='_project_id', description='project_id der Phase')
+})
 
 
 """User"""
@@ -125,6 +142,26 @@ class UserListOperations(Resource):
         adm = ProjectrackAdministration()
         projects = adm.get_projects_by_user_id()
         return projects
+
+@api.route('/phase/task/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phase_id')
+class UserListOperations(Resource):
+    @api.marshal_list_with(task)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        tasks = adm.get_task_by_phase_id(id)
+        return tasks
+
+@api.route('/phase/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'project_id')
+class UserListOperations(Resource):
+    @api.marshal_list_with(phase)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        phases = adm.get_phase_by_project_id(id)
+        return phases
 
 
 if __name__ == '__main__':

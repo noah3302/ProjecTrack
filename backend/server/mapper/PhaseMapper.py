@@ -106,5 +106,6 @@ class PhaseMapper(Mapper):
 
 if __name__ == "__main__":
     with PhaseMapper() as mapper:
-        result = mapper.delete(2)
-        print(result)
+        result = mapper.get_phasen_by_project_id(1)
+        for f in result:
+            print(f)

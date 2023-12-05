@@ -1,52 +1,53 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import { Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, IconButton } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { apiget } from "../API/Api";
 
-export default function Tasks() {
-  const [selectedDate, setSelectedDueDate] = useState("");
+const Task = ({ phasenid }) => {
+  const [taskData, setTaskData] = useState(null);
 
-  const handleDueDate = (event) => {
-    setSelectedDueDate(event.target.value);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log(phasenid);
+        const response = await apiget(`phase/task/${phasenid}`);
+        setTaskData(response);
+      } catch (error) {
+        console.error("Fehler beim Abrufen der Phasen:", error);
+      }
+    };
+
+    fetchData();
+  }, [phasenid]);
+
+  if (!taskData) {
+    return <div>Laden...</div>;
+  }
+
+  const taskBoxStyle = {
+    backgroundColor: "orange",
+    minHeight: "100px",
+    padding: "10px",
+    marginBottom: "10px",
+    width: "90%",
+    boxSizing: "border-box",
   };
 
   return (
-    <Box
-      sx={{ width: "250px", "& .MuiTextField-root": { marginTop: "20px" } }} //Der Abstand von den Textfeldern wird hier angegeben.
-      
-    >
-      <div>
-        <TextField                                 //Titel einfügen
-          required
-          id="outlined-required-title"
-          label="Titel"                          
-          placeholder="neuer Händler"
-        />
-        <TextField                                // Beschreibung einfügen
-          required
-          id="outlined-required-description"
-          label="Beschreibung"
-          placeholder="Suche einen neuen Händler."
-        />
-
-        <TextField                                 // Mitglied einer Task zuweisen
-          required
-          id="outlined-required-description"
-          label="einem Mitglied zuweisen"
-          placeholder="Max009"
-        />
-
-        <TextField
-          id="outlined-date"
-          label="Due Date"                        // Fälligkeitsdatum auswählen
-          type="date"
-          value={selectedDate}
-          onChange={handleDueDate}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </div>
+    <Box style={taskBoxStyle}>
+      <Typography>{taskData.Taskname}</Typography>
+      <Typography>{taskData.Beschreibung}</Typography>
+      <IconButton
+        style={{
+          position: "absolute",
+          bottom: "5px",
+          right: "5px",
+        }}
+      >
+        <DeleteOutlineIcon />
+      </IconButton>
     </Box>
   );
-}
+};
+
+export default Task;

@@ -138,6 +138,22 @@ class ProjectrackAdministration(object):
 
         return user_phase_task_count
 
+    """Tasks"""
+
+    """Tasks by phasenid"""
+
+    def get_task_by_phase_id(self, number):
+        with TaskMapper() as mapper:
+            return mapper.find_by_phase_id(number)
+
+    """Phasen"""
+
+    """Phasen by projectid"""
+
+    def get_phase_by_project_id(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.get_phasen_by_project_id(number)
+
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
