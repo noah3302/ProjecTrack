@@ -113,9 +113,7 @@ class ProjectrackAdministration(object):
                     "end_date": project.get_end_date(),
                     "members": project_members
                 })
-
-        for project in projects:
-            print(project)
+        return projects
 
     """Arbeitsstatistik"""
 

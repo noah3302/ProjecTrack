@@ -160,13 +160,13 @@ class ProjectOperations(Resource):
 
 @api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'project_id')
 class UserProjectOperations(Resource):
-    @api.marshal_list_with(project)
+    #@api.marshal_list_with(project)
     def get(self, id):
         adm = ProjectrackAdministration()
         projects = adm.get_projects_by_user_id(id)
-        return projects
+        print (projects)
+        return {"projects":projects}
 
 
 if __name__ == '__main__':

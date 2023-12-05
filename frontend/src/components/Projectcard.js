@@ -27,8 +27,8 @@ const Projectcard = () => {
       // apiget(`user/${user.id}/projects`).then((result) => {
       apiget(`user/${1}/projects`).then((result) => {
         console.log(result)
-        setProjects(result)
-        const pNames = result.map(project => project.project_title)
+        setProjects(result.projects)
+        const pNames = result.projects.map(project => project.project_title)
         setProjectsNames(pNames)
       });
       // setProject(result)
@@ -116,33 +116,33 @@ const Projectcard = () => {
       />
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {/* {projekte.Projekte.map(meineprojekte => (
-          <Grid item xs={6} sm={4} md={3} key={meineprojekte.name}>
+        {projects.map(project => (
+          <Grid item xs={6} sm={4} md={3} key={project.name}>
             <Card
               sx={{ height: '100%' }}
-              onClick={() => navigateToProject(meineprojekte.name)}     //Navigieren zur ausgewählten Projektseite
+              onClick={() => navigateToProject(project.name)}     //Navigieren zur ausgewählten Projektseite
               style={{ cursor: 'pointer' }}
             >
               <CardContent>
                 <Typography typography="h6" color="text.primary">
-                  {meineprojekte.name}
+                  {project.project_title}
                 </Typography>
                 <Typography sx={{ mt: 2 }} color="text.secondary">
                   Beschreibung:
                 </Typography>
                 <Typography variant="body2">
-                  {meineprojekte.beschreibung}
+                  {project.project_description}
                 </Typography>
                 <Typography sx={{ mt: 2 }} color="text.secondary">
                   Mitglieder:
                 </Typography>
                 <Typography variant="body2">
-                  {meineprojekte.Mitglieder.join(', ')}
+                  {project.members.join(', ')}
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
-        ))} */}
+        ))}
         <Grid item xs={6} sm={4} md={3} >
           <Box onClick={handleOpen}>
             <Card sx={{ height: '100%' }}>
