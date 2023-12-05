@@ -94,9 +94,9 @@ class PhaseMapper(Mapper):
         self._cnx.commit()
         cursor.close()
 
-    def delete(self, phasen):
+    def delete(self, phasen_id):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM phasen WHERE phasen_id='{}'".format(phasen.get_phasen_id())
+        command = "DELETE FROM phasen WHERE phasen_id='{}'".format(phasen_id)
         cursor.execute(command)
         self._cnx.commit()
         cursor.close()

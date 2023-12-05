@@ -145,7 +145,7 @@ class UserListOperations(Resource):
 
 @api.route('/phase/task/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'phase_id')
+@api.param('id', 'id')
 class UserListOperations(Resource):
     @api.marshal_list_with(task)
     def get(self, id):
@@ -155,13 +155,53 @@ class UserListOperations(Resource):
 
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'project_id')
+@api.param('id', 'phasen_id')
 class UserListOperations(Resource):
     @api.marshal_list_with(phase)
     def get(self, id):
         adm = ProjectrackAdministration()
         phases = adm.get_phase_by_project_id(id)
         return phases
+
+    @api.marshal_with(phase, code=200)
+    @api.expect(phase)
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.create_phase(
+                proposal.get_id(),
+                proposal.get_phasenname(),
+                proposal.get_indx(),
+                proposal.get_project_id(id)
+            )
+            return u, 200
+        else:
+            return "", 500
+
+    @api.marshal_with(phase, code=200)
+    @api.expect(phase)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.put_phase(
+                proposal.get_id(),
+                proposal.get_phasenname(),
+                proposal.get_indx(),
+                proposal.get_project_id(id)
+            )
+            return u, 200
+        else:
+            return "", 500
+
+    @api.marshal_with(phase, code=200)
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        phases = adm.delete_phase(id)
+        return phases, 200
 
 
 if __name__ == '__main__':

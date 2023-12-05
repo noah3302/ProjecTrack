@@ -154,6 +154,19 @@ class ProjectrackAdministration(object):
         with PhaseMapper() as mapper:
             return mapper.get_phasen_by_project_id(number)
 
+    """Phasen hinzufügen zu projekt"""
+    def create_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.insert(number)
+
+    """Phasen aus projekt löschen"""
+    def delete_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.delete(number)
+
+    def put_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.update(number)
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
