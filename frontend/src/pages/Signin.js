@@ -22,6 +22,7 @@ export default function Signin() {
       if (user && user.userid) { 
         try {
           const fetchedUser = await apiget(`existusers/${user.userid}`);
+          console.log("fetchedUser", fetchedUser)
           if (fetchedUser && fetchedUser.exist) {
             navigate("/home");
           } else {

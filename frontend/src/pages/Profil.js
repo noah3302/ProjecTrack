@@ -12,7 +12,7 @@ import { UserAuth } from '../Context/Authcontext';
 export default function Profil() {
   const { user, setUser } = UserAuth();
 
-  console.log("user", user)
+
 
   const [vorname, setVorname] = useState('');
   const [nachname, setNachname] = useState('');
@@ -28,13 +28,20 @@ export default function Profil() {
 
   const fetchUserData = async () => {
     try {
-      const userData = await apiget(`user/${user.userid}`);
-      if (userData) {
-        setVorname(userData.vorname || '');
-        setNachname(userData.nachname || '');
-        setNickname(userData.nickname || '');
-        setIsEditMode(true);
-        console.log("userDAta",userData)
+      const userData = await apiget(`users`);
+      if (userData && userData.length > 0) {
+        // Find the user with the specific google_id
+        const userWithGoogleId = userData.find(userArray => userArray.google_id === user.userid);
+  
+        if (userWithGoogleId) {
+          setVorname(userWithGoogleId.vorname || '');
+          setNachname(userWithGoogleId.nachname || '');
+          setNickname(userWithGoogleId.nickname || '');
+          setIsEditMode(true);
+          console.log("userData", userWithGoogleId);
+        } else {
+          console.log("User with the specified google_id not found");
+        }
       }
     } catch (error) {
       console.error('Fehler beim Laden des Profils:', error);
