@@ -11,19 +11,19 @@ import { UserAuth } from "../Context/Authcontext";
 
 export default function Createprofil() {
     const navigate = useNavigate();
-    const { user } = UserAuth()
+    const { user, setUser } = UserAuth()
 
-    useEffect (() => {
+    useEffect(() => {
         apiget("users/nicknames").then((data) => {
             setNicknames(data.nicknames)
-          })
+        })
     }, []);
 
     const [nicknames, setNicknames] = useState('');
     const [vorname, setVorname] = useState('');
     const [nachname, setNachname] = useState('');
     const [nickname, setNickname] = useState('');
-    const [helper, setHelper] = useState(''); 
+    const [helper, setHelper] = useState('');
 
     const input = {
         marginTop: "1rem",
@@ -36,20 +36,21 @@ export default function Createprofil() {
 
     const navigation = async () => {
         try {
-            await apipost(`users`, {
+            const existingUser = await apipost(`users`, {
                 id: 0,
                 nachname: nachname,
                 vorname: vorname,
                 nickname: nickname,
-                google_id: user?.userid, 
-              });
+                google_id: user?.userid,
+            });
 
-              console.log("usess: ", id, nachname, vorname, nickname, user?.userid)
+            await setUser({ ...user, ['id']: existingUser.id })
+
             navigate("/home");
-          } catch (error) {
+        } catch (error) {
             console.log(error);
-          }
-        navigate('/home');
+        }
+        // navigate('/home');
     };
 
     const handlevornameChange = (event) => {
@@ -66,14 +67,14 @@ export default function Createprofil() {
         const regex = /^[a-zA-Z0-9]{4,12}$/;
         if (regex.test(event.target.value)) {
             if (nicknames.includes(event.target.value)) {
-                setHelper("Der Nickname existiert bereits"); 
+                setHelper("Der Nickname existiert bereits");
                 setNickname("");
             } else {
                 setNickname(event.target.value);
-                setHelper(''); 
+                setHelper('');
             }
         } else {
-            setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen."); 
+            setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.");
             setNickname("");
         }
 

@@ -10,58 +10,25 @@ import Createproject from '../pages/Createproject';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { apiget } from '../API/Api';
+import { UserAuth } from '../Context/Authcontext';
 
 const Projectcard = () => {
+  const { user } = UserAuth();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [projectNames, setProjectNames] = useState([]);
   const navigate = useNavigate();
-
-
-  const projekte = {
-    "Projekte": [
-      {
-        "name": "Sopra",
-        "beschreibung": "Hier steht eine lange und unnötige Beschreibung von einem Projekt",
-        "Mitglieder": ["anna", "mike", "Horst"]
-      },
-      {
-        "name": "UXD",
-        "beschreibung": "Test2",
-        "Mitglieder": ["anna2", "mike2", "Horst2"]
-      },
-      {
-        "name": "Smart office",
-        "beschreibung": "Test3",
-        "Mitglieder": ["anna3", "mike3", "Horst3"]
-      },
-      {
-        "name": "Proposal",
-        "beschreibung": "Test4",
-        "Mitglieder": ["anna4", "mike4", "Horst4"]
-      },
-      {
-        "name": "Datingapp",
-        "beschreibung": "Test5",
-        "Mitglieder": ["anna5", "mike5", "Horst5"]
-      },
-      {
-        "name": "Sportfreaks",
-        "beschreibung": "Test6",
-        "Mitglieder": ["anna6", "mike6", "Horst6"]
-      },
-      {
-        "name": "Gamer",
-        "beschreibung": "Test7",
-        "Mitglieder": ["anna7", "mike7", "Horst7"]
-      }
-    ]
-  };
+  const [projects, setProjects] = useState([]);
+  const [projectsNames, setProjectsNames] = useState({});
 
   useEffect(() => {
-    const names = projekte.Projekte.map(meineprojekte => meineprojekte.name);
-    setProjectNames(names);
+    apiget(`user/${user.id}/projects`).then((result) => {
+      // apiget(`user/${7}/projects`).then((result) => {
+      setProjects(result.projects)
+      console.log(result.projects)
+      setProjectsNames(result.projects.reduce((o, project) => ({ ...o, [project.project_title]: project.project_id }), {}))
+    });
   }, []);
 
   const style = {
@@ -82,9 +49,9 @@ const Projectcard = () => {
   };
 
   //Navigieren zur ausgewählten Projektseite
-  const navigateToProject = (selectedProject) => {     
+  const navigateToProject = (selectedProject) => {
     if (selectedProject) {
-      navigate(`/projekt/${selectedProject}`);
+      navigate(`/project/${projectsNames[selectedProject]}`);
     }
   };
 
@@ -93,7 +60,7 @@ const Projectcard = () => {
 
       <Autocomplete
         style={input}
-        options={projectNames}
+        options={Object.keys(projectsNames)}
         onChange={(event, newValue) => {
           navigateToProject(newValue);
         }}
@@ -104,28 +71,28 @@ const Projectcard = () => {
       />
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {projekte.Projekte.map(meineprojekte => (
-          <Grid item xs={6} sm={4} md={3} key={meineprojekte.name}>
+        {projects.map(project => (
+          <Grid item xs={6} sm={4} md={3} key={project.project_id}>
             <Card
               sx={{ height: '100%' }}
-              onClick={() => navigateToProject(meineprojekte.name)}     //Navigieren zur ausgewählten Projektseite
+              onClick={() => navigateToProject(project.project_title)}     //Navigieren zur ausgewählten Projektseite
               style={{ cursor: 'pointer' }}
             >
               <CardContent>
                 <Typography typography="h6" color="text.primary">
-                  {meineprojekte.name}
+                  {project.project_title}
                 </Typography>
                 <Typography sx={{ mt: 2 }} color="text.secondary">
                   Beschreibung:
                 </Typography>
                 <Typography variant="body2">
-                  {meineprojekte.beschreibung}
+                  {project.project_description}
                 </Typography>
                 <Typography sx={{ mt: 2 }} color="text.secondary">
                   Mitglieder:
                 </Typography>
                 <Typography variant="body2">
-                  {meineprojekte.Mitglieder.join(', ')}
+                  {project.members.join(', ')}
                 </Typography>
               </CardContent>
             </Card>

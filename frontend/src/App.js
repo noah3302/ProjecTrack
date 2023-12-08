@@ -23,8 +23,7 @@ function App() {
           <Route path="/home" element={<Protected><Home/></Protected>}/>
           <Route path="/profil" element={<Protected><Profil/></Protected>}/>
           <Route path="/about" element={<Protected><About/></Protected>}/>
-          <Route path="/projekt/:selectedProject" element={<Protected><Projekt/></Protected>}/>
-          <Route path="/createproject" element={<Protected><Createproject/></Protected>}/>
+          <Route path="/project/:id" element={<Protected><Projekt/></Protected>}/>
        </Routes>
       </AuthContextProvider>
     </>

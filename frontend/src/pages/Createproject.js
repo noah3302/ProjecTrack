@@ -7,6 +7,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { apipost } from '../API/Api';
+import { UserAuth } from "../Context/Authcontext";
 
 const Createproject = () => {
   const [name, setName] = useState('');
@@ -14,15 +16,29 @@ const Createproject = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedPhase, setSelectedPhase] = useState('');
   const [customPhaseValues, setCustomPhaseValues] = useState(['']);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('Z')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('Z')[0]);
   const navigate = useNavigate();
+  const { user } = UserAuth();
+
 
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
 
-  const navigation = () => {
+  const navigation = async () => {
     console.log('Projekt erstellt');
-    navigate('/project');
+
+    const createdProject = await apipost('projects', {
+      project_id: 0,
+      project_title: name,
+      project_description: beschreibung,
+      founder: user.id,
+      start_date: startDate,
+      end_date: endDate
+    })
+
+    navigate(`/project/${createdProject.id}`);
   };
 
   const handleBeschreibungChange = (event) => {
@@ -107,7 +123,7 @@ const Createproject = () => {
   const isButtonDisabled = !name || !beschreibung || !selectedPhase
 
   return (
-    <Box sx={{overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight:"40rem", padding: '2rem' }}>
+    <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
       <Typography align="center" variant="h5" mb={'1rem'}>
         Projekt erstellen
       </Typography>
@@ -136,7 +152,10 @@ const Createproject = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} />
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e=>{
+            setStartDate(e[0].$d.toISOString().split('Z')[0])
+            setEndDate(e[0].$d.toISOString().split('Z')[0])
+          }} />
         </DemoContainer>
       </LocalizationProvider>
 
