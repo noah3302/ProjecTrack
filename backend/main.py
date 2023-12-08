@@ -1,3 +1,4 @@
+import phases
 from flask import Flask
 from flask import request as http_request
 from flask_cors import CORS
@@ -6,7 +7,8 @@ from SecurityDecorator import secured
 
 
 from server.bo.User import User
-
+from server.bo.ProjectBO import Project
+from server.bo.Phase import Phase
 from server.admin import ProjectrackAdministration
 
 
@@ -42,7 +44,6 @@ project = api.inherit('Project', bo, {
                                              description='project_description des Projects'),
         'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
-        'members': fields.String(attribute='_google_id', description='members des Projects')
     })
 
 task = api.inherit('Task', bo, {
@@ -55,13 +56,13 @@ task = api.inherit('Task', bo, {
         'phasen_id': fields.String(attribute='_phasen_id', description='phase_id der Task')
 })
 
-phase = api.inherit('Phase', bo, {
-        'id': fields.String(attribute='_id', description='ID der Phase'),
-        'phasenname': fields.String(attribute='_phasenname', description='Name der Phase'),
-        'indx': fields.String(attribute='_indx', description='indx ist die reihenfolge der phasen'),
-        'project_id': fields.String(attribute='_project_id', description='project_id der Phase')
-})
-
+phase = api.inherit('phase', bo, {
+        'phasen_id': fields.String(attribute='_phasen_id', description='Phasen_id des Projects'),
+        'phasenname': fields.String(attribute='_phasenname', description='Phasenname des Projects'),
+        'indx': fields.String(attribute='_indx', description='index der Phase'),
+        'project_id': fields.String(attribute='_project_id',
+                                             description='Project_id der Phase'),
+    })
 
 """User"""
 
@@ -113,6 +114,22 @@ class UserOperations(Resource):
             return {"exist": False}
 
 
+@api.route('/google_user/<string:uid>')
+@api.response(500, 'Falls es zu einem serverseitigen error kommt')
+@api.param('id', 'ID des User-Objekts')
+class UserOperations(Resource):
+    @api.marshal_with(user)
+    @secured
+    def get(self, uid):
+        adm = ProjectrackAdministration()
+        user = adm.get_user_by_google_id(uid)
+        print(user)
+        if user:
+            return user, 200
+        else:
+            return "", 405
+
+
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserNicknamenOperations(Resource):
@@ -133,15 +150,50 @@ class UserListOperations(Resource):
         return {"name": arbeitsstatistik}
 
 
-@api.route('/project/<int:id>')
+@api.route('/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'project_id')
-class UserListOperations(Resource):
-    @api.marshal_list_with(project)
-    def get(self):
+class ProjectOperations(Resource):
+    @api.marshal_with(project)
+    @api.expect(project)
+    @secured
+    def post(self):
         adm = ProjectrackAdministration()
-        projects = adm.get_projects_by_user_id()
-        return projects
+        proposal = Project.from_dict(api.payload)
+
+        print(proposal)
+        print(api.payload)
+
+        if proposal is not None:
+            p = adm.create_project(proposal)
+            return p, 200
+        else:
+            return "", 500
+
+
+@api.route('/user/<int:id>/projects')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class UserProjectOperations(Resource):
+    #@api.marshal_list_with(project)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        projects = adm.get_projects_by_user_id(id)
+        print (projects)
+        return {"projects":projects}
+
+
+@api.route('/Phase')
+@api.response(500, "Falls es zu serverseitigen Fehler kommt")
+class PhaseListOperations(Resource):
+    @api.marshal_list_with(phase)
+    def get(self):
+        return phase
+@api.marshal_with(phase, code=201)
+@api.expect(phase)
+@secured
+def post(self):
+    data = api.payload
+    print(data)
+
 
 @api.route('/phase/task/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")

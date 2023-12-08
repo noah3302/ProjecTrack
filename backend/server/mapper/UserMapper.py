@@ -61,7 +61,6 @@ class UserMapper(Mapper):
 
     def find_by_key(self, key):
         result = None
-
         cursor = self._cnx.cursor()
         command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE user_id='{}'".format(key)
         cursor.execute(command)
@@ -85,17 +84,29 @@ class UserMapper(Mapper):
         return result
 
     def find_by_google_id(self, google_id):
+        result = None
         cursor = self._cnx.cursor()
         command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        user_exists = len(tuples) > 0  # Überprüfen, ob ein Benutzer mit der google_id existiert
+        try:
+            (user_id, nachname, vorname, nickname, google_id) = tuples[0]
+            user = User()
+            user.set_id(user_id)
+            user.set_nachname(nachname)
+            user.set_vorname(vorname)
+            user.set_nickname(nickname)
+            user.set_google_id(google_id)
+            result = user
+
+        except IndexError:
+            result = None
 
         self._cnx.commit()
         cursor.close()
 
-        return user_exists
+        return result
 
     def exist_by_google_id(self, google_id):
         result = None

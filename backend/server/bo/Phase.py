@@ -4,6 +4,7 @@ from backend.server.bo.BuisnessObject import BusinessObject
 class Phase(BusinessObject):
     def __init__(self):
         super().__init__()
+        self._id=""
         self._phasenname = ""
         self._indx = ""
         self._project_id = ""

@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth } from '../pages/firebase';
+import { apiget } from '../API/Api';
 
 const AuthContext = createContext();
 
@@ -12,19 +13,29 @@ export const AuthContextProvider = ({ children }) => {
       const provider = new GoogleAuthProvider();
       try {
         const result = await signInWithPopup(auth, provider);
+
+        // Setze den Authentifizierungs-Token als Cookie
+        const token = await result.user.getIdToken();
+        document.cookie = `token=${token};path=/`;
+
         const { uid, displayName, photoURL } = result.user;
+        
+        const g_user = await apiget(`google_user/${uid}`)
+
+        console.log(g_user)
+
+        const userId = g_user.id ? g_user.id : false
+
         const currentUser = {
           username: displayName,
           profilePicture: photoURL,
           userid: uid,
+          id: userId
         };
 
         setUser(currentUser);
         broadcastAuthState(currentUser);
 
-        // Setze den Authentifizierungs-Token als Cookie
-        const token = await result.user.getIdToken();
-        document.cookie = `token=${token};path=/`;
       } catch (error) {
         console.error("Error signing in:", error);
       }
@@ -80,7 +91,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ googleSignIn, logOut, user }}>
+    <AuthContext.Provider value={{ googleSignIn, logOut, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
