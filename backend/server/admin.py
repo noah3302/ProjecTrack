@@ -81,7 +81,7 @@ class ProjectrackAdministration(object):
             #    user = mapper.
             return user
 
-    """
+    """r
      user mit bestimmtem nickname ausgeben
      """
 
@@ -114,6 +114,10 @@ class ProjectrackAdministration(object):
                     "members": project_members
                 })
         return projects
+
+    def create_project(self, project):
+        with ProjectMapper() as mapper:
+            return mapper.insert(project)
 
     """Arbeitsstatistik"""
 

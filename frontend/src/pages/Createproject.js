@@ -15,6 +15,8 @@ const Createproject = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedPhase, setSelectedPhase] = useState('');
   const [customPhaseValues, setCustomPhaseValues] = useState(['']);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('Z')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('Z')[0]);
   const navigate = useNavigate();
 
   const handleNameChange = (event) => {
@@ -26,12 +28,11 @@ const Createproject = () => {
 
     const createdProject = await apipost('projects', {
       project_id: 0,
-      project_description: '',
-      project_title: '',
-      founder: '',
-      start_date: '',
-      end_date: '',
-      members: selectedMembers
+      project_title: name,
+      project_description: beschreibung,
+      founder: user.id,
+      start_date: startDate,
+      end_date: endDate
     })
 
     navigate(`/project/${createdProject.id}`);
@@ -148,7 +149,10 @@ const Createproject = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} />
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e=>{
+            setStartDate(e[0].$d.toISOString().split('Z')[0])
+            setEndDate(e[0].$d.toISOString().split('Z')[0])
+          }} />
         </DemoContainer>
       </LocalizationProvider>
 

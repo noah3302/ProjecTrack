@@ -20,61 +20,16 @@ const Projectcard = () => {
   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
-  const [projectsNames, setProjectsNames] = useState([]);
+  const [projectsNames, setProjectsNames] = useState({});
 
-    useEffect (() => {
-      console.log(user)
-      // apiget(`user/${user.id}/projects`).then((result) => {
-      apiget(`user/${1}/projects`).then((result) => {
-        console.log(result)
-        setProjects(result.projects)
-        const pNames = result.projects.map(project => project.project_title)
-        setProjectsNames(pNames)
-      });
-      // setProject(result)
-      // const names = result.map(Projekte => Projekte.name);
-    }, []);
-
-    
-   // "Projekte": [
-     // {
-       // "name": "Sopra",
-        // "beschreibung": "Hier steht eine lange und unnötige Beschreibung von einem Projekt",
-       // "Mitglieder": ["anna", "mike", "Horst"]
-     // },
-      //{
-        //"name": "UXD",
-        //"beschreibung": "Test2",
-        //"Mitglieder": ["anna2", "mike2", "Horst2"]
-      //},
-      //{
-        //"name": "Smart office",
-        //"beschreibung": "Test3",
-        //"Mitglieder": ["anna3", "mike3", "Horst3"]
-      //},
-      //{
-        //"name": "Proposal",
-        //"beschreibung": "Test4",
-        //"Mitglieder": ["anna4", "mike4", "Horst4"]
-      //},
-      //{
-        //"name": "Datingapp",
-        //"beschreibung": "Test5",
-        //"Mitglieder": ["anna5", "mike5", "Horst5"]
-      //},
-      //{
-        //"name": "Sportfreaks",
-        //"beschreibung": "Test6",
-        //"Mitglieder": ["anna6", "mike6", "Horst6"]
-      //},
-      //{
-        //"name": "Gamer",
-        //"beschreibung": "Test7",
-        //"Mitglieder": ["anna7", "mike7", "Horst7"]
-      //}
-    //]
-  //};
-
+  useEffect(() => {
+    apiget(`user/${user.id}/projects`).then((result) => {
+      // apiget(`user/${7}/projects`).then((result) => {
+      setProjects(result.projects)
+      console.log(result.projects)
+      setProjectsNames(result.projects.reduce((o, project) => ({ ...o, [project.project_title]: project.project_id }), {}))
+    });
+  }, []);
 
   const style = {
     position: 'absolute',
@@ -94,9 +49,9 @@ const Projectcard = () => {
   };
 
   //Navigieren zur ausgewählten Projektseite
-  const navigateToProject = (selectedProject) => {     
+  const navigateToProject = (selectedProject) => {
     if (selectedProject) {
-      navigate(`/projekt/${selectedProject}`);
+      navigate(`/projekt/${projectsNames[selectedProject]}`);
     }
   };
 
@@ -105,7 +60,7 @@ const Projectcard = () => {
 
       <Autocomplete
         style={input}
-        options={projectsNames}
+        options={Object.keys(projectsNames)}
         onChange={(event, newValue) => {
           navigateToProject(newValue);
         }}
@@ -117,10 +72,10 @@ const Projectcard = () => {
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {projects.map(project => (
-          <Grid item xs={6} sm={4} md={3} key={project.name}>
+          <Grid item xs={6} sm={4} md={3} key={project.project_id}>
             <Card
               sx={{ height: '100%' }}
-              onClick={() => navigateToProject(project.name)}     //Navigieren zur ausgewählten Projektseite
+              onClick={() => navigateToProject(project.project_title)}     //Navigieren zur ausgewählten Projektseite
               style={{ cursor: 'pointer' }}
             >
               <CardContent>
