@@ -4,16 +4,16 @@ import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-
-
+ 
+ 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   let { id } = useParams();
-
-
-
+ 
+ 
+ 
   // Arbeitsstatistik
   const style = {
     position: "absolute",
@@ -36,7 +36,7 @@ export default function Projekt() {
   const buttonStyle = {
     marginLeft: "5px", // Abstand zw. Buttons Arbeitsstatistik und Mitglieder
   };
-
+ 
   return (
     <>
       <div style={headerStyle}>
