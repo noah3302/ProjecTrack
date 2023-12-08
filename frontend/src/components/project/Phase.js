@@ -162,7 +162,7 @@ const Phase = () => {
             try {
                 const updatedData = [...project];
                 updatedData[index].Phasenname = newName;
-                await apipost(`phase/${projectid}`, updatedData);
+                await apiput(`phase/${projectid}`, updatedData);
                 setProject(updatedData);
             } catch (error) {
                 console.log(error);

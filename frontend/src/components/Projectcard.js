@@ -51,7 +51,7 @@ const Projectcard = () => {
   //Navigieren zur ausgewählten Projektseite
   const navigateToProject = (selectedProject) => {
     if (selectedProject) {
-      navigate(`/projekt/${projectsNames[selectedProject]}`);
+      navigate(`/project/${projectsNames[selectedProject]}`);
     }
   };
 

@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { apipost } from '../API/Api';
+import { UserAuth } from "../Context/Authcontext";
 
 const Createproject = () => {
   const [name, setName] = useState('');
@@ -18,6 +19,8 @@ const Createproject = () => {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('Z')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('Z')[0]);
   const navigate = useNavigate();
+  const { user } = UserAuth();
+
 
   const handleNameChange = (event) => {
     setName(event.target.value);
