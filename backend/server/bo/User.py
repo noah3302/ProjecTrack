@@ -40,7 +40,7 @@ class User(BusinessObject):
 
     def __str__(self):
         return "id: {}\nsurname: {}\nname: {}\nnickname: {}\ngoogle_id: {}\n".format(self.get_id(),
-                                                                                    self._surname,self._name,
+                                                                                    self._surname, self._name,
                                                                                     self._nickname, self._google_id)
 
     @staticmethod

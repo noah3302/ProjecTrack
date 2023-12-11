@@ -24,8 +24,8 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL DEFAULT '0',
-  `nachname` varchar(100) NOT NULL DEFAULT '',
-  `vorname` varchar(100) NOT NULL DEFAULT '',
+  `surname` varchar(100) NOT NULL DEFAULT '',
+  `name` varchar(100) NOT NULL DEFAULT '',
   `nickname` varchar(100) NOT NULL DEFAULT '',
   `google_id` varchar(100) NOT NUll Default '',
   PRIMARY KEY (`user_id`)
@@ -49,21 +49,21 @@ INSERT INTO `user` VALUES
 UNLOCK TABLES;
 
 
-DROP TABLE IF EXISTS `mitglieder`;
+DROP TABLE IF EXISTS `members`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mitglieder` (
+CREATE TABLE `members` (
   `boId` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `project_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`boId`),
-  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade, 
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `mitglieder` WRITE;
-/*!40000 ALTER TABLE `mitglieder` DISABLE KEYS */;
-INSERT INTO `mitglieder` VALUES
+LOCK TABLES `members` WRITE;
+/*!40000 ALTER TABLE `members` DISABLE KEYS */;
+INSERT INTO `members` VALUES
 (1,'1','1'),
 (2,'2','1'),
 (3,'3','1'),
@@ -71,7 +71,7 @@ INSERT INTO `mitglieder` VALUES
 (5,'5','2'),
 (6,'6','2');
 
-/*!40000 ALTER TABLE `mitglieder` ENABLE KEYS */;
+/*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -80,8 +80,8 @@ DROP TABLE IF EXISTS `project`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `project` (
   `project_id` int(11) NOT NULL AUTO_INCREMENT,
-  `titel` varchar(110) NOT NULL DEFAULT '',
-  `discribtion` varchar(110) NOT NULL DEFAULT '',
+  `title` varchar(110) NOT NULL DEFAULT '',
+  `discription` varchar(110) NOT NULL DEFAULT '',
   `founder` varchar(110) NOT NULL DEFAULT '',
   `startdate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -101,21 +101,21 @@ INSERT INTO `project` VALUES
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 UNLOCK TABLES;
 
-DROP TABLE IF EXISTS `phasen`;
+DROP TABLE IF EXISTS `phases`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `phasen` (
-  `phasen_id` int(11) NOT NULL AUTO_INCREMENT ,
-  `phasenname` varchar(110) NOT NULL DEFAULT '',
+CREATE TABLE `phases` (
+  `phases_id` int(11) NOT NULL AUTO_INCREMENT ,
+  `phasename` varchar(110) NOT NULL DEFAULT '',
   `indx` varchar(110) NOT NULL DEFAULT '',
   `project_id` int(11) NOT NULL DEFAULT '0',
- PRIMARY KEY (`phasen_id`),
+ PRIMARY KEY (`phases_id`),
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `phasen` WRITE;
-/*!40000 ALTER TABLE `phasen` DISABLE KEYS */;
-INSERT INTO `phasen` VALUES
+LOCK TABLES `phases` WRITE;
+/*!40000 ALTER TABLE `phases` DISABLE KEYS */;
+INSERT INTO `phases` VALUES
 (1,'To Do','1','1'),
 (2,'In Ptogress','2','1'),
 (3,'Done','4','1'),
@@ -123,7 +123,7 @@ INSERT INTO `phasen` VALUES
 (5,'Brainstorming','2','2'),
 (6,'todo','2','2');
 
-/*!40000 ALTER TABLE `phasen` ENABLE KEYS */;
+/*!40000 ALTER TABLE `phases` ENABLE KEYS */;
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `task`;
@@ -131,14 +131,14 @@ DROP TABLE IF EXISTS `task`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `task` (
   `task_id` int(11) NOT NULL AUTO_INCREMENT ,
-  `taskname` varchar(110) NOT NULL DEFAULT '',
-  `beschreibung` varchar(110) NOT NULL DEFAULT '',
-  `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `tasktitle` varchar(110) NOT NULL DEFAULT '',
+  `description` varchar(110) NOT NULL DEFAULT '',
+  `duedate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `user_id` int(11) NOT NULL DEFAULT  '0',
-  `phasen_id` int(11) NOT NULL DEFAULT  '0',
+  `phases_id` int(11) NOT NULL DEFAULT  '0',
   PRIMARY KEY (`task_id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
-  FOREIGN KEY (`phasen_id`) REFERENCES `phasen` (`phasen_id`) on delete cascade
+  FOREIGN KEY (`phases_id`) REFERENCES `phases` (`phases_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `task` WRITE;
@@ -178,7 +178,7 @@ DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
   `comment_id` int(11) NOT NULL AUTO_INCREMENT ,
   `comment` varchar(110) NOT NULL DEFAULT '',
-  `erstellungsdatum` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `creationdate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `user_id` int(11) NOT NULL DEFAULT  '0',
   `task_id` int(11) NOT NULL DEFAULT  '0',
   PRIMARY KEY (`comment_id`),
