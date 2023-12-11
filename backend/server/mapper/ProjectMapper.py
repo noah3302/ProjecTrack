@@ -1,5 +1,6 @@
 from backend.server.mapper.Mapper import Mapper
 from backend.server.bo.ProjectBO import Project
+import json
 
 
 class ProjectMapper(Mapper):
@@ -55,8 +56,8 @@ class ProjectMapper(Mapper):
             project.set_project_title(title)
             project.set_project_description(discription)
             project.set_founder(founder)
-            project.set_start_date(startdate)
-            project.set_end_date(enddate)
+            project.set_start_date(startdate.isoformat())
+            project.set_end_date(enddate.isoformat())
             result.append(project)
 
         self._cnx.commit()

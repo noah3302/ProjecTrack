@@ -81,7 +81,7 @@ class ProjectrackAdministration(object):
             #    user = mapper.
             return user
 
-    """
+    """r
      user mit bestimmtem nickname ausgeben
      """
 
@@ -113,9 +113,11 @@ class ProjectrackAdministration(object):
                     "end_date": project.get_end_date(),
                     "members": project_members
                 })
+        return projects
 
-        for project in projects:
-            print(project)
+    def create_project(self, project):
+        with ProjectMapper() as mapper:
+            return mapper.insert(project)
 
     """Arbeitsstatistik"""
 
@@ -140,6 +142,35 @@ class ProjectrackAdministration(object):
 
         return user_phase_task_count
 
+    """Tasks"""
+
+    """Tasks by phasenid"""
+
+    def get_task_by_phase_id(self, number):
+        with TaskMapper() as mapper:
+            return mapper.find_by_phase_id(number)
+
+    """Phasen"""
+
+    """Phasen by projectid"""
+
+    def get_phase_by_project_id(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.get_phasen_by_project_id(number)
+
+    """Phasen hinzufügen zu projekt"""
+    def create_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.insert(number)
+
+    """Phasen aus projekt löschen"""
+    def delete_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.delete(number)
+
+    def put_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.update(number)
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()

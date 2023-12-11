@@ -1,13 +1,14 @@
-import * as React from 'react';
-import { Typography, Box } from '@mui/material';
+import React from "react";
+import { Box, Typography} from "@mui/material";
 
 export default function About() {
 
+
   return (
     <>
-        <Box>
-            <Typography sx={{align:"center", marginTop:"5rem"}}>About</Typography>
-        </Box>
+      <Box>
+        <Typography>Hier ist About</Typography>
+      </Box>
     </>
   );
 }
