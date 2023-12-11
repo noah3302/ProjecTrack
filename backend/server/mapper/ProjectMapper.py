@@ -30,8 +30,8 @@ class ProjectMapper(Mapper):
     def get_members_by_project_id(self, project_id):
         result = {}
         cursor = self._cnx.cursor()
-        command = ("SELECT user.user_id, user.nickname FROM user JOIN mitglieder ON user.user_id = mitglieder.user_id "
-                   "WHERE mitglieder.project_id = '{}';").format(project_id)
+        command = ("SELECT user.user_id, user.nickname FROM user JOIN members ON user.user_id = members.user_id "
+                   "WHERE members.project_id = '{}';").format(project_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
@@ -45,8 +45,8 @@ class ProjectMapper(Mapper):
     def get_projects_by_user_id(self, user_id):
         result = []
         cursor = self._cnx.cursor()
-        command = ("SELECT project.* FROM project JOIN mitglieder ON project.project_id = mitglieder.project_id "
-                   "WHERE mitglieder.user_id = '{}';").format(user_id)
+        command = ("SELECT project.* FROM project JOIN members ON project.project_id = members.project_id "
+                   "WHERE members.user_id = '{}';").format(user_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
@@ -128,7 +128,7 @@ class ProjectMapper(Mapper):
 
 if __name__ == "__main__":
     with ProjectMapper() as mapper:
-        result = mapper.get_project_by_user_id(1)
+        result = mapper.get_projects_by_user_id(1)
         for f in result:
             print(f)
 

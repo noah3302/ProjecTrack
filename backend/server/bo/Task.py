@@ -4,10 +4,10 @@ class Task(BusinessObject):
     def __init__(self):
         super().__init__()
         self._tasktitle = ""
-        self._desciption = ""
+        self._description = ""
         self._duedate = ""
         self._user_id = ""
-        self._phasen_id = ""
+        self._phases_id = ""
 
     def get_id(self):
         return self._id
@@ -35,17 +35,17 @@ class Task(BusinessObject):
     def set_user_id(self, user_id):
         self._user_id = user_id
 
-    def get_phasen_id(self):
-        return self._phasen_id
+    def get_phases_id(self):
+        return self._phases_id
 
-    def set_phasen_id(self, phasen_id):
-        self._phasen_id = phasen_id
+    def set_phases_id(self, phases_id):
+        self._phases_id = phases_id
 
     def __str__(self):
-        return "task_id: {}\ntasktitle: {}\ndescription: {}\nduedate: {}\nuser_id: {}\nphasen_id {}\n".format(
+        return "task_id: {}\ntasktitle: {}\ndescription: {}\nduedate: {}\nuser_id: {}\nphases_id {}\n".format(
                                                                                 self.get_id(), self._tasktitle,
                                                                                     self._description, self._duedate,
-                                                                                    self._user_id, self._phasen_id,)
+                                                                                    self._user_id, self._phases_id,)
 
     @staticmethod
     def from_dict(dictio=dict()):
@@ -55,6 +55,6 @@ class Task(BusinessObject):
         obj.set_description(dictio["description"])
         obj.set_duedate(dictio["duedate"])
         obj.set_user_id(dictio["user_id"])
-        obj.set_phasen_id(dictio["phasen_id"])
+        obj.set_phasen_id(dictio["phases_id"])
 
         return obj

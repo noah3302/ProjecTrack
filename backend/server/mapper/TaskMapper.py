@@ -8,17 +8,17 @@ class TaskMapper(Mapper):
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task")
+        cursor.execute("SELECT task_id, tasktitle, description, duedate, user_id, phases_id FROM task")
         tuples = cursor.fetchall()
 
-        for (task_id, tasktitle, description, duedate, user_id, phasen_id) in tuples:
+        for (task_id, tasktitle, description, duedate, user_id, phases_id) in tuples:
             task = Task()
             task.set_id(task_id)
             task.set_tasktitle(tasktitle)
             task.set_description(description)
             task.set_duedate(duedate)
             task.set_user_id(user_id)
-            task.set_phasen_id(phasen_id)
+            task.set_phases_id(phases_id)
             result.append(task)
 
         self._cnx.commit()
@@ -29,19 +29,20 @@ class TaskMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE task_id='{}'".format(key)
+        command = ("SELECT task_id, tasktitle, description, duedate, user_id, phases_id FROM task WHERE task_id='{}'"
+                   .format(key))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (task_id, tasktitle,description, duedate, user_id, phasen_id) = tuples[0]
+            (task_id, tasktitle,description, duedate, user_id, phases_id) = tuples[0]
             task = Task()
             task.set_id(task_id)
             task.set_tasktitle(tasktitle)
             task.set_description(description)
             task.set_duedate(duedate)
             task.set_user_id(user_id)
-            task.set_phasen_id(phasen_id)
+            task.set_phases_id(phases_id)
             result = task
 
         except IndexError:
@@ -55,20 +56,21 @@ class TaskMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE task_id='{}'".format(
-        user_id)
+        command = ("SELECT task_id, tasktitle, description, duedate, user_id, phases_id FROM task WHERE task_id='{}'"
+        .format(
+        user_id))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (task_id, tasktitle, description, duedate, user_id, phasen_id) = tuples[0]
+            (task_id, tasktitle, description, duedate, user_id, phases_id) = tuples[0]
             task = Task()
             task.set_id(task_id)
             task.set_tasktitle(tasktitle)
             task.set_description(description)
             task.set_duedate(duedate)
             task.set_user_id(user_id)
-            task.set_phasen_id(phasen_id)
+            task.set_phases_id(phases_id)
             result = task
 
         except IndexError:
@@ -82,29 +84,30 @@ class TaskMapper(Mapper):
         result = []
 
         cursor = self._cnx.cursor()
-        command = "SELECT task_id, tasktitle, description, duedate, user_id, phasen_id FROM task WHERE phasen_id='{}'".format(key)
+        command = ("SELECT task_id, tasktitle, description, duedate, user_id, phases_id FROM task WHERE phases_id='{}'"
+                   .format(key))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (task_id, tasktitle, description, duedate, user_id, phasen_id,) in tuples:
+        for (task_id, tasktitle, description, duedate, user_id, phases_id,) in tuples:
             task = Task()
             task.set_id(task_id)
             task.set_tasktitle(tasktitle)
             task.set_description(description)
             task.set_duedate(duedate)
             task.set_user_id(user_id)
-            task.set_phasen_id(phasen_id)
+            task.set_phases_id(phases_id)
             result.append(task)
 
         self._cnx.commit()
         cursor.close()
         return result
 
-    def find_by_phase_id_and_user_id(self, phasen_id, user_id):
+    def find_by_phase_id_and_user_id(self, phases_id, user_id):
         result = []  # Initialisiere result als leere Liste
 
         cursor = self._cnx.cursor()
-        command = ("SELECT task_id FROM task WHERE phasen_id='{}' and user_id = '{}'").format(phasen_id, user_id)
+        command = ("SELECT task_id FROM task WHERE phases_id='{}' and user_id = '{}'").format(phases_id, user_id)
         cursor.execute(command)
         task_ids = cursor.fetchall()
 
@@ -125,8 +128,10 @@ class TaskMapper(Mapper):
             cursor.execute("SELECT MAX(task_id) AS maxid FROM task")
             maxid = cursor.fetchone()[0]
             task.set_id(maxid + 1)
-        command = "INSERT INTO task (task_id, tasktitle, description, duedate, user_id, phasen_id) VALUES (%s, %s, %s, %s, %s)"
-        data = (task.get_id(), task.get_tasktitle(), task.get_description(), task.get_duedate(), task.get_user_id(), task.get_phasen_id())
+        command = ("INSERT INTO task (task_id, tasktitle, description, duedate, user_id, phases_id) VALUES "
+                   "(%s, %s, %s, %s, %s)")
+        data = (task.get_id(), task.get_tasktitle(), task.get_description(), task.get_duedate(), task.get_user_id(),
+                task.get_phases_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -136,8 +141,9 @@ class TaskMapper(Mapper):
     def update(self, task):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE task SET task_id=%s, tasktitle=%s, description=%s, duedate=%s, user_id=%s, phasen_id=%s WHERE task_id=%s"
-        data = (task.get_id(), task.get_tasktitle(), task.get_duedate(), task.get_user_id(), task.get_phasen_id())
+        command = ("UPDATE task SET task_id=%s, tasktitle=%s, description=%s, duedate=%s, user_id=%s, phases_id=%s "
+                   "WHERE task_id=%s")
+        data = (task.get_id(), task.get_tasktitle(), task.get_duedate(), task.get_user_id(), task.get_phases_id())
 
         cursor.execute(command, data)
         self._cnx.commit()

@@ -29,10 +29,10 @@ class ProjectrackAdministration(object):
     Neuen User anlegen
     """
 
-    def create_user(self, nachname, vorname, nickname, google_id):
+    def create_user(self, surname, name, nickname, google_id):
         user = User()
-        user.set_nachname(nachname)
-        user.set_vorname(vorname)
+        user.set_surname(surname)
+        user.set_name(name)
         user.set_nickname(nickname)
         user.set_google_id(google_id)
 
@@ -95,14 +95,14 @@ class ProjectrackAdministration(object):
             result = mapper.get_projects_by_user_id(user_id)
             for project in result:
                 with UserMapper() as mapper:
-                    mitglieder = mapper.get_members_by_project_id(project.get_id())
+                    members = mapper.get_members_by_project_id(project.get_id())
                     project_members = []
-                    for mitglied in mitglieder:
+                    for member in members:
                         #project_members.append({
-                            #"user_id": mitglied.get_id(),
-                            #"nickname": mitglied.get_nickname(),
+                            #"user_id": member.get_id(),
+                            #"nickname": member.get_nickname(),
                         #})
-                        project_members.append(mitglied.get_nickname())
+                        project_members.append(member.get_nickname())
 
                 projects.append({
                     "project_id": project.get_id(),
@@ -129,7 +129,7 @@ class ProjectrackAdministration(object):
             users_dict = mapper.get_members_by_project_id(number)  # Erhalte das Dictionary mit UserId und Nickname
 
         with PhaseMapper() as mapper:
-            phase_ids = [phase.get_id() for phase in mapper.get_phasen_by_project_id(number)]  # Erhalte die Phasenids
+            phase_ids = [phase.get_id() for phase in mapper.get_phases_by_project_id(number)]  # Erhalte die Phasenids
 
         with TaskMapper() as mapper:
             for user_id, user_nickname in users_dict.items():
@@ -156,7 +156,7 @@ class ProjectrackAdministration(object):
 
     def get_phase_by_project_id(self, number):
         with PhaseMapper() as mapper:
-            return mapper.get_phasen_by_project_id(number)
+            return mapper.get_phases_by_project_id(number)
 
     """Phasen hinzufügen zu projekt"""
     def create_phase(self, number):

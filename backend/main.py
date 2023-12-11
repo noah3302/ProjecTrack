@@ -23,15 +23,15 @@ api = api.namespace('projectrack')
 """Business Object"""
 
 bo = api.model('BusinessObject', {
-    'id': fields.Integer(attribute='_id', description='primärschlüssel BO')
+    'id': fields.Integer(attribute='_id', description='primarykey BO')
 })
 
 """Api models für
  die restlichen bo klassen, sie erben alle von bo"""
 
 user = api.inherit('User', bo, {
-    'nachname': fields.String(attribute='_nachname', description='nachname des users'),
-    'vorname': fields.String(attribute='_vorname', description='vorname des users'),
+    'surname': fields.String(attribute='_surname', description='surname des users'),
+    'name': fields.String(attribute='_name', description='name des users'),
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
@@ -48,16 +48,16 @@ project = api.inherit('Project', bo, {
 task = api.inherit('Task', bo, {
         'task_id': fields.String(attribute='_id', description='ID der Task'),
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
-        'description': fields.String(attribute='_description', description='Beschreibung der Task'),
+        'description': fields.String(attribute='_description', description='description der Task'),
         'duedate': fields.String(attribute='_duedate',
                                              description='Due Date für die Task'),
         'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
-        'phasen_id': fields.String(attribute='_phasen_id', description='phase_id der Task')
+        'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
 })
 
 phase = api.inherit('phase', bo, {
-        'phasen_id': fields.String(attribute='_phasen_id', description='Phasen_id des Projects'),
-        'phasenname': fields.String(attribute='_phasenname', description='Phasenname des Projects'),
+        'phases_id': fields.String(attribute='_phases_id', description='Phases_id des Projects'),
+        'phasename': fields.String(attribute='_phasename', description='Phasename des Projects'),
         'indx': fields.String(attribute='_indx', description='index der Phase'),
         'project_id': fields.String(attribute='_project_id',
                                              description='Project_id der Phase'),
@@ -89,8 +89,8 @@ class UserListOperations(Resource):
 
         if proposal is not None:
             u = adm.create_user(
-                proposal.get_nachname(),
-                proposal.get_vorname(),
+                proposal.get_surname(),
+                proposal.get_name(),
                 proposal.get_nickname(),
                 proposal.get_google_id()
             )
@@ -131,7 +131,7 @@ class UserOperations(Resource):
 
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-class UserNicknamenOperations(Resource):
+class UserNicknameOperations(Resource):
     @secured
     def get(self):
         adm = ProjectrackAdministration()
@@ -206,7 +206,7 @@ class UserListOperations(Resource):
 
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'phasen_id')
+@api.param('id', 'phases_id')
 class UserListOperations(Resource):
     @api.marshal_list_with(phase)
     def get(self, id):
@@ -223,7 +223,7 @@ class UserListOperations(Resource):
         if proposal is not None:
             u = adm.create_phase(
                 proposal.get_id(),
-                proposal.get_phasenname(),
+                proposal.get_phasename(),
                 proposal.get_indx(),
                 proposal.get_project_id(id)
             )
@@ -240,7 +240,7 @@ class UserListOperations(Resource):
         if proposal is not None:
             u = adm.put_phase(
                 proposal.get_id(),
-                proposal.get_phasenname(),
+                proposal.get_phasename(),
                 proposal.get_indx(),
                 proposal.get_project_id(id)
             )

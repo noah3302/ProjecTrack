@@ -57,7 +57,7 @@ CREATE TABLE `mitglieder` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `project_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`boId`),
-  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade, 
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
