@@ -34,8 +34,8 @@ export default function Profil() {
         const userWithGoogleId = userData.find(userArray => userArray.google_id === user.userid);
   
         if (userWithGoogleId) {
-          setVorname(userWithGoogleId.vorname || '');
-          setNachname(userWithGoogleId.nachname || '');
+          setVorname(userWithGoogleId.surname || '');
+          setNachname(userWithGoogleId.name || '');
           setNickname(userWithGoogleId.nickname || '');
           setIsEditMode(true);
           console.log("userData", userWithGoogleId);

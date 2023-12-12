@@ -38,8 +38,8 @@ export default function Createprofil() {
         try {
             const existingUser = await apipost(`users`, {
                 id: 0,
-                nachname: nachname,
-                vorname: vorname,
+                surname: nachname,
+                name: vorname,
                 nickname: nickname,
                 google_id: user?.userid,
             });

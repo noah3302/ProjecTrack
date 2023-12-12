@@ -36,7 +36,6 @@ user = api.inherit('User', bo, {
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
 project = api.inherit('Project', bo, {
-        'project_id': fields.String(attribute='_id', description='Project_id des Projects'),
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
         'project_description': fields.String(attribute='_project_description',
@@ -46,7 +45,6 @@ project = api.inherit('Project', bo, {
     })
 
 task = api.inherit('Task', bo, {
-        'task_id': fields.String(attribute='_id', description='ID der Task'),
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
         'duedate': fields.String(attribute='_duedate',
@@ -56,7 +54,6 @@ task = api.inherit('Task', bo, {
 })
 
 phase = api.inherit('phase', bo, {
-        'phases_id': fields.String(attribute='_phases_id', description='Phases_id des Projects'),
         'phasename': fields.String(attribute='_phasename', description='Phasename des Projects'),
         'indx': fields.String(attribute='_indx', description='index der Phase'),
         'project_id': fields.String(attribute='_project_id',

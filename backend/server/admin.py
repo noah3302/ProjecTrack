@@ -137,8 +137,9 @@ class ProjectrackAdministration(object):
                 for phase_id in phase_ids:
                     tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
                     task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
-                    user_phase_task_count[user_nickname][
-                        phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+                    user_phase_task_count[user_nickname][phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+
+            print(user_phase_task_count)
 
         return user_phase_task_count
 

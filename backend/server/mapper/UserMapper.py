@@ -196,15 +196,15 @@ class UserMapper(Mapper):
 
 if __name__ == "__main__":
     with UserMapper() as mapper:
-        user = User()
-        user.set_id(7)
-        user.set_surname("Bruan")
-        user.set_name("noah")
-        user.set_nickname("Noah3003")
-        user.set_google_id("googleid123")
-        result = mapper.insert(user)
-        #result = mapper.find_all()
-        #for f in result:
-            #print(f)
+        #user = User()
+        #user.set_id(7)
+        #user.set_surname("Bruan")
+        #user.set_name("noah")
+        #user.set_nickname("Noah3003")
+        #user.set_google_id("googleid123")
+        #result = mapper.insert(user)
+        result = mapper.find_all()
+        for f in result:
+            print(f)
 
         #print(result)

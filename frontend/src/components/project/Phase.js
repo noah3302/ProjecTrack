@@ -20,23 +20,20 @@ const Phase = () => {
     const [phasenindex, setphasenindex] = useState(null);
 
     const projectid = 1;
-    useEffect(async () => {
-        try {
-            const response = await apiget(`phase/${projectid}`);
-            setProject(response);
-        } catch (error) {
-            console.error("Fehler beim Abrufen der Phasen:", error);
-        }
+    const phasenload = async() => {
+        const response = await apiget(`phase/${projectid}`);
+        setProject(response);
+        console.log(project);
+    };
+
+    useEffect( () => {
+        phasenload()
     }, []);
 
     const handleDeleteButtonClick = (phaseId) => {
         console.log("Delete button clicked with ID:", phaseId);
         handleDeletePhase(phaseId);
     };
-
-    useEffect(() => {
-        console.log(project);
-    });
 
     const handleAddTask = () => {
         handleClose2();
@@ -50,12 +47,12 @@ const Phase = () => {
             const newTaskId = isNaN(highestTaskId) ? 1 : highestTaskId + 1;
 
             const newTask = {
-                Taskid: String(newTaskId),
-                Taskname: title,
-                Beschreibung: description,
-                enddate: duedate,
-                userid: "1",
-                phasenid: phasenindex,
+                task_id: String(newTaskId),
+                tasktitle: title,
+                description: description,
+                duedate: duedate,
+                user_id: "1",
+                phases_id: phasenindex,
             };
 
             setProject((prevProject) => {
@@ -107,8 +104,8 @@ const Phase = () => {
     const addNewPhase = () => {
         if (newPhaseName.trim() !== "") {
             const newPhase = {
-                id: "",
-                phasenname: newPhaseName.trim(),
+                phases_id: "",
+                phasename: newPhaseName.trim(),
                 indx: String(project.length + 1),
                 project_id: "",
             };
@@ -269,7 +266,7 @@ const Phase = () => {
                                 </IconButton>
                                 <TextField
                                     id="phasenname"
-                                    defaultValue={phase.phasenname}
+                                    defaultValue={phase.phasename}
                                     onChange={(event) => changePhaseName(index, event.target.value)}
                                     variant="standard"
                                     sx={{

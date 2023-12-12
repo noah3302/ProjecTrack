@@ -9,6 +9,7 @@ export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const googleSignIn = async () => {
+    console.log(user);
     if (!user) {
       const provider = new GoogleAuthProvider();
       try {
@@ -28,12 +29,16 @@ export const AuthContextProvider = ({ children }) => {
 
         const currentUser = {
           username: displayName,
-          profilePicture: photoURL,
+          profilePicture : photoURL,
+          surname: g_user.surname,
+          name: g_user.name,
+          nickname: g_user.nickname,
           userid: uid,
           id: userId
         };
 
         setUser(currentUser);
+        localStorage.setItem("user", JSON.stringify(currentUser));
         broadcastAuthState(currentUser);
 
       } catch (error) {

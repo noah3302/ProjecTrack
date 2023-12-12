@@ -69,7 +69,9 @@ INSERT INTO `members` VALUES
 (3,'3','1'),
 (4,'4','2'),
 (5,'5','2'),
-(6,'6','2');
+(6,'7','1'),
+(7,'7','2'),
+(8,'6','2');
 
 /*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
