@@ -171,20 +171,114 @@ class UserProjectOperations(Resource):
         return {"projects":projects}
 
 
-@api.route('/Phase')
+@api.route('/phase')
 @api.response(500, "Falls es zu serverseitigen Fehler kommt")
 class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     def get(self):
         return phase
-@api.marshal_with(phase, code=201)
-@api.expect(phase)
-@secured
-def post(self):
-    data = api.payload
-    print(data)
+    @api.marshal_with(phase)
+    @api.expect(phase)
+    @secured
+    def post(self):
+        data = api.payload
+        print(data)
 
+@api.route('/project/<int:id>/user')
+@api.response(500, "Falls es zu serverseitigen Fehler kommt")
+class ProjectMemberListOperations(Resource):
+    @api.marshal_with(user)
+    @api.expect(user)
+    @secured
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
 
+        if proposal is not None:
+            member = adm.add_member_to_project(proposal, id)
+            return member, 200
+        else:
+            return "", 500
+
+<<<<<<< Updated upstream
+=======
+@api.route('/phase/task/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'id')
+class UserListOperations(Resource):
+    @api.marshal_list_with(task)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        tasks = adm.get_task_by_phase_id(id)
+        return tasks
+
+@api.route('/phase/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phases_id')
+class UserListOperations(Resource):
+    @api.marshal_list_with(phase)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        phases = adm.get_phase_by_project_id(id)
+        return phases
+
+    @api.marshal_with(phase, code=200)
+    @api.expect(phase)
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.create_phase(
+                proposal.get_id(),
+                proposal.get_phasename(),
+                proposal.get_indx(),
+                proposal.get_project_id(id)
+            )
+            return u, 200
+        else:
+            return "", 500
+
+    @api.marshal_with(phase, code=200)
+    @api.expect(phase)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.put_phase(
+                proposal.get_id(),
+                proposal.get_phasename(),
+                proposal.get_indx(),
+                proposal.get_project_id(id)
+            )
+            return u, 200
+        else:
+            return "", 500
+
+    @api.marshal_with(phase, code=200)
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        phases = adm.delete_phase(id)
+        return phases, 200
+
+@api.route('/project/<int:id>/phase')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phases_id')
+class ProjectPhaseListOperations(Resource):
+    @api.marshal_with(phase)
+    @api.expect(phase)
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Phase.from_dict(api.payload)
+
+        if proposal is not None:
+            proposal.set_project_id(id)
+            phase = adm.create_phase(proposal)
+            return phase, 200
+        else:
+            return "", 500
+>>>>>>> Stashed changes
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -39,8 +39,13 @@ class Phase(BusinessObject):
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Phase()
+<<<<<<< Updated upstream
         obj.set_id(dictio["id"])
         obj.set_phasenname(dictio["phasenname"])
+=======
+        obj.set_id(dictio["phases_id"])
+        obj.set_phasename(dictio["phasename"])
+>>>>>>> Stashed changes
         obj.set_indx(dictio["index"])
         obj.set_project_id(dictio["project_id"])
 
