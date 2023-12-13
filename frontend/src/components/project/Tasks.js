@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
-import { apiget } from "../../API/Api";
+import { apiget, apidelete } from "../../API/Api";
 
 const Task = ({ phasenid }) => {
   const [taskData, setTaskData] = useState(null);
@@ -49,11 +49,24 @@ const Task = ({ phasenid }) => {
     setAnchorEl(null);
   };
 
-  const handleDelete = () => {
-    // Logik für das Löschen des Tasks hier einfügen
-    console.log("Task gelöscht!");
+  // const handleDelete = () => {
+  //   // Logik für das Löschen des Tasks hier einfügen
+  //   console.log("Task gelöscht!");
+  //   handleClose();
+  // };
+
+  const handleDelete = async (taskId) => {
+    try {
+      await apidelete(`phase/task/${phasenid}/${taskId}`);
+      const updatedTasks = taskData.filter((task) => task.id !== taskId);
+      setTaskData(updatedTasks);
+      console.log("Task gelöscht!");
+    } catch (error) {
+      console.error("Fehler beim Löschen des Tasks:", error);
+    }
     handleClose();
   };
+
 
   const handleEdit = () => {
     // Logik für das Bearbeiten des Tasks hier einfügen
@@ -87,7 +100,7 @@ const Task = ({ phasenid }) => {
               <EditIcon style={{ marginRight: "10px" }} />
               Bearbeiten
             </MenuItem>
-            <MenuItem onClick={handleDelete}>
+            <MenuItem onClick={() => handleDelete(task.id)}>
               <DeleteOutlineIcon style={{ marginRight: "10px" }} />
               Löschen
             </MenuItem>

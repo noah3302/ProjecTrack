@@ -122,6 +122,14 @@ const Createproject = () => {
 
   const isButtonDisabled = !name || !beschreibung || !selectedPhase
 
+    const phaseStyle = {
+    display: 'flex',
+    overflowX: 'auto',
+    gap: '10px',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+  };
+
   return (
     <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
       <Typography align="center" variant="h5" mb={'1rem'}>

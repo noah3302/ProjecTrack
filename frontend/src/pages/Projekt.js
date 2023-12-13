@@ -1,18 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, TextField, Button, Typography} from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
- 
+import { apiget } from "../API/Api";
  
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [projectTitle, setProjectTitle] = useState('');
   let { id } = useParams();
- 
- 
+
+  // useEffect(() => {
+  //     const data = apiget('project/${id}');
+  //     setProjectTitle(data.title); 
+  //     },[]);
+
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await apiget(`project/${1}`); // Nutzung von `async/await`
+            setProjectTitle(data.project.title); 
+          } catch (error) {
+            console.error("Fehler beim Laden des Projekttitels:", error);
+          }
+        };
+    
+        fetchData();
+      }, []);    
+
  
   // Arbeitsstatistik
   const style = {
@@ -40,7 +58,7 @@ export default function Projekt() {
   return (
     <>
       <div style={headerStyle}>
-        <Typography variant="h6">PLATZHALTER Projektname</Typography>
+         <Typography variant="h6">{projectTitle}</Typography>
         <Button variant="contained" style={buttonStyle} onClick={handleOpen}>
           Arbeitsstatistik
         </Button>

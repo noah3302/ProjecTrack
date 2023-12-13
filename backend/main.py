@@ -35,11 +35,19 @@ user = api.inherit('User', bo, {
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
-project = api.inherit('Project', bo, {
+projectcard = api.inherit('Project', bo, {
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
         'project_description': fields.String(attribute='_project_description',
                                              description='project_description des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+    })
+
+project = api.inherit('Project', bo, {
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'project_description': fields.String(attribute='_project_description', description='project_description des Projects'),
+        'founder': fields.String(attribute='_founder', description='project_founder des Projects'),
         'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
     })
@@ -149,8 +157,8 @@ class UserListOperations(Resource):
 @api.route('/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectOperations(Resource):
-    @api.marshal_with(project)
-    @api.expect(project)
+    @api.marshal_with(projectcard)
+    @api.expect(projectcard)
     @secured
     def post(self):
         adm = ProjectrackAdministration()
@@ -164,6 +172,19 @@ class ProjectOperations(Resource):
             return p, 200
         else:
             return "", 500
+
+@api.route('/project/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param("id","project id")
+class ProjectOperation(Resource):
+
+    @api.marshal_list_with(project)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        proposal = adm.project_by_id(id)
+
+        return {proposal}
+
 
 
 @api.route('/user/<int:id>/projects')

@@ -89,6 +89,10 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
 
+    """Project"""
+    """Project by user id"""
+
+
     def get_projects_by_user_id(self, user_id):
         projects = []
         with ProjectMapper() as mapper:
@@ -115,9 +119,14 @@ class ProjectrackAdministration(object):
                 })
         return projects
 
+    """Create Projects"""
     def create_project(self, project):
         with ProjectMapper() as mapper:
             return mapper.insert(project)
+
+    def project_by_id(self, id):
+        with ProjectMapper() as mapper:
+            return mapper.find_by_key(id)
 
     """Arbeitsstatistik"""
 
@@ -175,5 +184,6 @@ class ProjectrackAdministration(object):
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    pa = adm.get_projects_by_user_id(1)
+    pa = adm.project_by_id(1)
+    print(pa)
 
