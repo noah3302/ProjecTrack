@@ -3,6 +3,7 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
+import Comment from "../project/Comment";
 import { apiget, apidelete } from "../../API/Api";
 
 const Task = ({ phasenid }) => {
@@ -28,7 +29,7 @@ const Task = ({ phasenid }) => {
 
   const taskBoxStyle = {
     backgroundColor: "#f5f5f5",
-    padding: "20px",
+    padding: "1rem",
     marginBottom: "20px",
     borderRadius: "8px",
     position: "relative",
@@ -111,6 +112,7 @@ const Task = ({ phasenid }) => {
           <Typography variant="body1">{task.description}</Typography>
           <Typography variant="subtitle1">Due-date:</Typography>
           <Typography variant="body1">{task.duedate}</Typography>
+          <Comment key={task.id} taskid={task.id} />
         </Box>
       ))}
     </>

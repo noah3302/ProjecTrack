@@ -175,8 +175,8 @@ const Phase = () => {
         flexDirection: "column",
         alignItems: "center",
         position: "relative",
-        width: "calc(33.33% - 20px)", // Drei Karten pro Reihe, mit 20px Abstand
-        marginRight: "20px", // Abstand zwischen den Karten
+        width: "calc(33.33% - 10px)", // Drei Karten pro Reihe, mit 20px Abstand
+        marginRight: "10px", // Abstand zwischen den Karten
     };
 
     // Stil für den Container der Phasen
@@ -184,7 +184,7 @@ const Phase = () => {
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "flex-start",
-        padding: "10px", // Außenabstand
+        padding: "1px", // Außenabstand
     };
 
     const iconStyle = {

@@ -2,6 +2,8 @@ from server.bo.User import User
 from server.bo.Task import Task
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
+from server.bo.Comment import Comment
+
 
 
 
@@ -14,6 +16,9 @@ from server.mapper.UserMapper import UserMapper
 from server.mapper.TaskMapper import TaskMapper
 from server.mapper.ProjectMapper import ProjectMapper
 from server.mapper.PhaseMapper import PhaseMapper
+from server.mapper.CommentMapper import CommentMapper
+from datetime import datetime
+
 
 
 class ProjectrackAdministration(object):
@@ -60,6 +65,17 @@ class ProjectrackAdministration(object):
             for user in users:
                 nicknames.append(user.get_nickname())
             return nicknames
+
+    """
+    Nickname für user id
+
+    """
+
+    def get_nickname(self, number):
+        with UserMapper() as mapper:
+            users = mapper.find_by_key(number)
+            nickname = users.get_nickname()
+            return nickname
 
 
     """
@@ -182,8 +198,44 @@ class ProjectrackAdministration(object):
         with PhaseMapper() as mapper:
             return mapper.update(number)
 
+
+    """Kommentare"""
+
+    """Kommentare über Task id bekommen"""
+
+    def get_comment_by_task_id(self, number):
+        with CommentMapper() as mapper:
+            return mapper.find_by_task_id(number)
+
+    def create_comment(self, comment, creationdate, user_id, task_id):
+        coment = Comment()
+        coment.set_comment(comment),
+        coment.set_creationdate(datetime.now().replace(microsecond=0)),
+        coment.set_user_id(user_id),
+        coment.set_task_id(task_id)
+
+        with CommentMapper() as mapper:
+            return mapper.insert(coment)
+
+    def delete_comment(self, number):
+        with CommentMapper() as mapper:
+            return mapper.delete(number)
+
+    def update_comment(self, id, comment, creationdate, user_id, task_id):
+        coment = Comment()
+        coment.set_id(id),
+        coment.set_comment(comment),
+        coment.set_creationdate(datetime.now().replace(microsecond=0)),
+        coment.set_user_id(user_id),
+        coment.set_task_id(task_id)
+        with CommentMapper() as mapper:
+            return mapper.update(coment)
+
+
+
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    pa = adm.project_by_id(1)
-    print(pa)
+    pa = adm.get_comment_by_task_id(1)
+    for f in pa:
+        print(f)
 

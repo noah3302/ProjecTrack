@@ -13,16 +13,12 @@ export default function Projekt() {
   const [projectTitle, setProjectTitle] = useState('');
   let { id } = useParams();
 
-  // useEffect(() => {
-  //     const data = apiget('project/${id}');
-  //     setProjectTitle(data.title); 
-  //     },[]);
 
       useEffect(() => {
         const fetchData = async () => {
           try {
-            const data = await apiget(`project/${1}`); // Nutzung von `async/await`
-            setProjectTitle(data.project.title); 
+            const data = await apiget(`project/${id}`); 
+            setProjectTitle(data.project_title); 
           } catch (error) {
             console.error("Fehler beim Laden des Projekttitels:", error);
           }
@@ -52,13 +48,13 @@ export default function Projekt() {
   };
   // Buttons im Header
   const buttonStyle = {
-    marginLeft: "5px", // Abstand zw. Buttons Arbeitsstatistik und Mitglieder
+    marginLeft: "5px", 
   };
  
   return (
     <>
       <div style={headerStyle}>
-         <Typography variant="h6">{projectTitle}</Typography>
+         <Typography variant="h6">Herzlich Willkommen in {projectTitle}</Typography>
         <Button variant="contained" style={buttonStyle} onClick={handleOpen}>
           Arbeitsstatistik
         </Button>

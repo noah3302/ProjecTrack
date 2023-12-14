@@ -72,6 +72,7 @@ class ProjectMapper(Mapper):
         command = "SELECT * FROM project WHERE project_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
+        print(tuples)
 
         try:
             (project_id, title, description, founder, start_date, end_date ) = tuples[0]
@@ -83,6 +84,7 @@ class ProjectMapper(Mapper):
             project.set_start_date(start_date)
             project.set_end_date(end_date)
             result = project
+            print(result)
 
         except IndexError:
             result = None
