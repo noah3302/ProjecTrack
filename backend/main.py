@@ -295,15 +295,17 @@ class ProjectPhaseListOperations(Resource):
     @api.marshal_with(phase)
     @api.expect(phase)
     def post(self, id):
-        adm = ProjectrackAdministration()
-        proposal = Phase.from_dict(api.payload)
-
-        if proposal is not None:
-            proposal.set_project_id(id)
-            phase = adm.create_phase(proposal)
-            return phase, 200
-        else:
-            return "", 500
+        # adm = ProjectrackAdministration()
+        # proposal = Phase.from_dict(api.payload)
+        print('payload', api.payload)
+        #
+        # if proposal is not None:
+        #     proposal.set_project_id(id)
+        #     phase = adm.create_phase(proposal)
+        #     return phase, 200
+        # else:
+        #     return "", 500
+        return '', 200
 
 if __name__ == '__main__':
     app.run(debug=True)

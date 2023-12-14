@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, Box, Grid, IconButton, Typography, MenuItem } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router-dom';
@@ -7,19 +7,36 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { apipost } from '../API/Api';
+import { apiget, apipost } from '../API/Api';
 import { UserAuth } from "../Context/Authcontext";
 
 const Createproject = () => {
   const [name, setName] = useState('');
   const [beschreibung, setBeschreibung] = useState('');
+  const [existingUsers, setExistingUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedPhase, setSelectedPhase] = useState('');
-  const [customPhaseValues, setCustomPhaseValues] = useState(['']);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('Z')[0]);
-  const [endDate, setEndDate] = useState(new Date().toISOString().split('Z')[0]);
+  const [customPhaseValues, setCustomPhaseValues] = useState(['todo', 'doing', 'done']);
+  // new Date().toISOString().split('Z')[0])
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const navigate = useNavigate();
   const { user } = UserAuth();
+
+  async function getExistingUsers() {
+    const allUsers = await apiget('/users')
+    setExistingUsers(allUsers)
+  }
+
+  useEffect(() => {
+    getExistingUsers()
+  }, []);
+
+  function getUserNames(array) {
+    return array.filter((exUser) => {
+      return exUser.id != user.id
+    }).map((exUser) => exUser.nickname);
+  }
 
 
   const handleNameChange = (event) => {
@@ -27,18 +44,28 @@ const Createproject = () => {
   };
 
   const navigation = async () => {
-    console.log('Projekt erstellt');
+    const data = customPhaseValues.map((phase, idx) => ({
+      id: 0,
+      phasename: phase,
+      indx: idx+1,
+      project_id: 1
+    }))
 
-    const createdProject = await apipost('projects', {
-      project_id: 0,
-      project_title: name,
-      project_description: beschreibung,
-      founder: user.id,
-      start_date: startDate,
-      end_date: endDate
-    })
+    const test = await apipost('project/1/phase', data)
 
-    navigate(`/project/${createdProject.id}`);
+    console.log(test)
+    // const createdProject = await apipost('projects', {
+    //   project_id: 0,
+    //   project_title: name,
+    //   project_description: beschreibung,
+    //   founder: user.id,
+    //   start_date: startDate,
+    //   end_date: endDate
+    // })
+
+
+
+    // navigate(`/project/${createdProject.id}`);
   };
 
   const handleBeschreibungChange = (event) => {
@@ -46,15 +73,14 @@ const Createproject = () => {
   };
 
   const handleMembersChange = (event, values) => {
-    setSelectedMembers(values);
+    const selected = existingUsers.filter(selectedUser => {
+      return values.includes(selectedUser.nickname)
+    })
+    setSelectedMembers(selected);
   };
 
   const handlePhasenChange = (event) => {
     setSelectedPhase(event.target.value);
-
-    if (event.target.value === 'Custom') {
-      setCustomPhaseValues(['todo', 'doing', 'done']);
-    }
   };
 
   const handleCustomPhaseChange = (index, value) => {
@@ -87,48 +113,17 @@ const Createproject = () => {
   };
 
   const options = ['Standard (todo-doing-done)', 'Custom'];
-  const nicknamen = [
-    'Alex88',
-    'Bob7a8',
-    'Grace12',
-    'Charlie9b',
-    'Eva2c4',
-    'Liam123',
-    'Sophia69',
-    'Samuel99',
-    'Hannah3y',
-    'Ruby234',
-    'David9a7',
-    'Frank15',
-    'Quinn77',
-    'Jack0p2',
-    'Ivy34',
-    'Katie6z',
-    'Olivia12',
-    'Paul1a4',
-    'Mia9b',
-    'Noah8x7'
-  ];
 
-  const customphasenfilled = () => {
-    if (selectedPhase === 'Standard (todo-inprogress-done)') {
-      const filled = true
-    } else {
-      const filled = !customPhaseValues.every((el, index, arr) => {
-        return el !== ''
-      })
-    }
-  };
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase
-
-    const phaseStyle = {
+  const phaseStyle = {
     display: 'flex',
     overflowX: 'auto',
     gap: '10px',
     marginTop: '1rem',
     marginBottom: '1rem',
   };
+
 
   return (
     <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
@@ -149,20 +144,20 @@ const Createproject = () => {
       <Autocomplete
         multiple
         style={input}
-        options={nicknamen}
+        options={getUserNames(existingUsers)}
         renderInput={(params) => (
           <TextField {...params} label="Mitglieder" />
         )}
-        value={selectedMembers}
+        value={selectedMembers.map((selectedUser) => selectedUser.nickname)}
         onChange={handleMembersChange}
         sx={{ width: '500px' }}
       />
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e=>{
-            setStartDate(e[0].$d.toISOString().split('Z')[0])
-            setEndDate(e[0].$d.toISOString().split('Z')[0])
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e => {
+            if (e[0]) setStartDate(e[0].$d.toISOString().split('Z')[0]);
+            if (e[1]) setEndDate(e[1].$d.toISOString().split('Z')[0]);
           }} />
         </DemoContainer>
       </LocalizationProvider>

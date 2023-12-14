@@ -165,8 +165,8 @@ class UserMapper(Mapper):
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
-
         return user
+
     def insert(self, user):
         cursor = self._cnx.cursor()
         # Überprüfung, ob bereits Einträge vorhanden sind
