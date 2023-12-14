@@ -52,24 +52,25 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `mitglieder`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mitglieder` (
-  `boId` int(11) NOT NULL DEFAULT '0',
-  `user_id` int(11) NOT NULL DEFAULT '0',
+CREATE TABLE `members` (
+  `user_id` int(11) NOT NULL DEFAULT '0', 
   `project_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`boId`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade, 
-  FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
+  FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade,
+  PRIMARY KEY (`user_id`, `project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `mitglieder` WRITE;
-/*!40000 ALTER TABLE `mitglieder` DISABLE KEYS */;
-INSERT INTO `mitglieder` VALUES
-(1,'1','1'),
-(2,'2','1'),
-(3,'3','1'),
-(4,'4','2'),
-(5,'5','2'),
-(6,'6','2');
+LOCK TABLES `members` WRITE;
+/*!40000 ALTER TABLE `members` DISABLE KEYS */;
+INSERT INTO `members` VALUES
+('1','1'),
+('2','1'),
+('3','1'),
+('4','2'),
+('5','2'),
+('7','1'),
+('7','2'),
+('6','2');
 
 /*!40000 ALTER TABLE `mitglieder` ENABLE KEYS */;
 UNLOCK TABLES;
