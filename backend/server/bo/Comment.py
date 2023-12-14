@@ -5,7 +5,7 @@ class Comment(BusinessObject):
         super().__init__()
         self._comment_id = 0
         self._comment = ""
-        self._erstellungsdatum = ""
+        self._creationdate = ""
         self._user_id = 0
         self._task_id = 0
 
@@ -21,11 +21,11 @@ class Comment(BusinessObject):
     def set_comment(self, comment):
         self._comment = comment
 
-    def get_erstellungsdatum(self):
-        return self._erstellungsdatum
+    def get_creationdate(self):
+        return self._creationdate
 
-    def set_erstellungsdatum(self, erstellungsdatum):
-        self._erstellungsdatum = erstellungsdatum
+    def set_creationdate(self, creationdate):
+        self._creationdate = creationdate
 
     def get_user_id(self):
         return self._user_id
@@ -40,15 +40,15 @@ class Comment(BusinessObject):
         self._task_id = task_id
 
     def __str__(self):
-        return "comment_id: {}\ncomment: {}\nerstellungsdatum: {}\nuser_id: {}\ntask_id: {}\n".format(
-            self._comment_id, self._comment, self._erstellungsdatum, self._user_id, self._task_id)
+        return "comment_id: {}\ncomment: {}\ncreationdate: {}\nuser_id: {}\ntask_id: {}\n".format(
+            self._comment_id, self._comment, self._creationdate, self._user_id, self._task_id)
 
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Comment()
         obj.set_comment_id(dictio["comment_id"])
         obj.set_comment(dictio["comment"])
-        obj.set_erstellungsdatum(dictio["erstellungsdatum"])
+        obj.set_creationdate(dictio["creationdate"])
         obj.set_user_id(dictio["user_id"])
         obj.set_task_id(dictio["task_id"])
 

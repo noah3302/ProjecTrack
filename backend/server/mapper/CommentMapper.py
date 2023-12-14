@@ -8,14 +8,14 @@ class CommentMapper(Mapper):
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT comment_id, comment, erstellungsdatum, user_id, task_id FROM comment")
+        cursor.execute("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment")
         tuples = cursor.fetchall()
 
-        for (comment_id, comment, erstellungsdatum, user_id, task_id) in tuples:
+        for (comment_id, comment, creationdate, user_id, task_id) in tuples:
             comment_obj = Comment()
             comment_obj.set_comment_id(comment_id)
             comment_obj.set_comment(comment)
-            comment_obj.set_erstellungsdatum(erstellungsdatum)
+            comment_obj.set_creationdate(creationdate)
             comment_obj.set_user_id(user_id)
             comment_obj.set_task_id(task_id)
             result.append(comment_obj)
@@ -28,16 +28,17 @@ class CommentMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT comment_id, comment, erstellungsdatum, user_id, task_id FROM comment WHERE comment_id='{}'".format(key)
+        command = ("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment WHERE comment_id='{}'"
+                   .format(key))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (comment_id, comment, erstellungsdatum, user_id, task_id) = tuples[0]
+            (comment_id, comment, creationdate, user_id, task_id) = tuples[0]
             comment_obj = Comment()
             comment_obj.set_comment_id(comment_id)
             comment_obj.set_comment(comment)
-            comment_obj.set_erstellungsdatum(erstellungsdatum)
+            comment_obj.set_creationdate(creationdate)
             comment_obj.set_user_id(user_id)
             comment_obj.set_task_id(task_id)
             result = comment_obj
@@ -52,15 +53,16 @@ class CommentMapper(Mapper):
     def find_by_user_id(self, user_id):
         result = []
         cursor = self._cnx.cursor()
-        command = "SELECT comment_id, comment, erstellungsdatum, user_id, task_id FROM comment WHERE user_id='{}'".format(user_id)
+        command = ("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment WHERE user_id='{}'"
+                   .format(user_id))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (comment_id, comment, erstellungsdatum, user_id, task_id) in tuples:
+        for (comment_id, comment, creationdate, user_id, task_id) in tuples:
             comment_obj = Comment()
             comment_obj.set_comment_id(comment_id)
             comment_obj.set_comment(comment)
-            comment_obj.set_erstellungsdatum(erstellungsdatum)
+            comment_obj.set_creationdate(creationdate)
             comment_obj.set_user_id(user_id)
             comment_obj.set_task_id(task_id)
             result.append(comment_obj)
@@ -72,15 +74,16 @@ class CommentMapper(Mapper):
     def find_by_task_id(self, task_id):
         result = []
         cursor = self._cnx.cursor()
-        command = "SELECT comment_id, comment, erstellungsdatum, user_id, task_id FROM comment WHERE task_id='{}'".format(task_id)
+        command = ("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment WHERE task_id='{}'"
+                   .format(task_id))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (comment_id, comment, erstellungsdatum, user_id, task_id) in tuples:
+        for (comment_id, comment, creationdate, user_id, task_id) in tuples:
             comment_obj = Comment()
             comment_obj.set_comment_id(comment_id)
             comment_obj.set_comment(comment)
-            comment_obj.set_erstellungsdatum(erstellungsdatum)
+            comment_obj.set_creationdate(creationdate)
             comment_obj.set_user_id(user_id)
             comment_obj.set_task_id(task_id)
             result.append(comment_obj)
@@ -92,15 +95,16 @@ class CommentMapper(Mapper):
     def find_by_comment(self, keyword):
         result = []
         cursor = self._cnx.cursor()
-        command = "SELECT comment_id, comment, erstellungsdatum, user_id, task_id FROM comment WHERE comment LIKE '%{}%'".format(keyword)
+        command = ("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment WHERE comment LIKE '%{}%'"
+                   .format(keyword))
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (comment_id, comment, erstellungsdatum, user_id, task_id) in tuples:
+        for (comment_id, comment, creationdate, user_id, task_id) in tuples:
             comment_obj = Comment()
             comment_obj.set_comment_id(comment_id)
             comment_obj.set_comment(comment)
-            comment_obj.set_erstellungsdatum(erstellungsdatum)
+            comment_obj.set_creationdate(creationdate)
             comment_obj.set_user_id(user_id)
             comment_obj.set_task_id(task_id)
             result.append(comment_obj)
@@ -112,9 +116,10 @@ class CommentMapper(Mapper):
 
     def insert(self, comment):
         cursor = self._cnx.cursor()
-        command = "INSERT INTO comment (comment_id, comment, erstellungsdatum, user_id, task_id) VALUES (%s, %s, %s, %s, %s)"
+        command = ("INSERT INTO comment (comment_id, comment, creationdate, user_id, task_id) VALUES "
+                   "(%s, %s, %s, %s, %s)")
         data = (
-            comment.get_comment_id(), comment.get_comment(), comment.get_erstellungsdatum(),
+            comment.get_comment_id(), comment.get_comment(), comment.get_creationdate(),
             comment.get_user_id(), comment.get_task_id()
         )
         cursor.execute(command, data)
@@ -126,9 +131,9 @@ class CommentMapper(Mapper):
     def update(self, comment):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE comment SET comment=%s, erstellungsdatum=%s, user_id=%s, task_id=%s WHERE comment_id=%s"
+        command = "UPDATE comment SET comment=%s, creationdate=%s, user_id=%s, task_id=%s WHERE comment_id=%s"
         data = (
-            comment.get_comment(), comment.get_erstellungsdatum(), comment.get_user_id(),
+            comment.get_comment(), comment.get_creationdate(), comment.get_user_id(),
             comment.get_task_id(), comment.get_comment_id()
         )
 

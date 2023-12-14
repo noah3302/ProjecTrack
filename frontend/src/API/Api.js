@@ -57,6 +57,46 @@ export function apidelete(endpoint, id) {
   });
 }
 
+// export const apidelete = async (endpoint) => {
+//   try {
+//     const response = await fetch(`https://example.com/api/${endpoint}`, {
+//       method: 'DELETE',
+//     });
+
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     throw new Error(`Fehler beim Löschen des Tasks: ${error.message}`);
+//   }
+// };
+
+// export function apidelete(endpoint, id) {
+//   const requestOptions = {
+//     method: "DELETE",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     // body: JSON.stringify(data) // Falls Sie Daten senden möchten, fügen Sie sie hier hinzu
+//   };
+
+//   return fetch(`${baseURL}${endpoint}/${id}`, requestOptions)
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+//       }
+//       return response.json();
+//     })
+//     .catch((error) => {
+//       throw new Error(`Fehler beim Löschen des Tasks: ${error.message}`);
+//     });
+// }
+
+
+
 // POST
 export function apipost(endpoint, data) {
   return fetch(`${baseURL}${endpoint}`, {
@@ -104,4 +144,21 @@ export function apipatch(endpoint, data) {
     // function to work  
     body: JSON.stringify(data)
   })
+}
+
+
+export function fetchDataFromDatabase(projectId) {
+  return fetch(`${baseURL}$/projects/${projectId}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data; // Hier erhalten Sie die Daten, einschließlich des project_title
+    })
+    .catch((error) => {
+      throw new Error(`Fehler beim Abrufen des Projekttitels: ${error.message}`);
+    });
 }

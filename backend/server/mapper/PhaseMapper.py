@@ -9,15 +9,15 @@ class PhaseMapper(Mapper):
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT phasen_id, phasenname, project_id FROM phasen")
+        cursor.execute("SELECT phases_id, phasename, project_id FROM phases")
         tuples = cursor.fetchall()
 
-        for (phasen_id, phasenname, project_id) in tuples:
-            phasen = Phase()
-            phasen.set_id(phasen_id)
-            phasen.set_phasenname(phasenname)
-            phasen.set_project_id(project_id)
-            result.append(phasen)
+        for (phases_id, phasename, project_id) in tuples:
+            phases = Phase()
+            phases.set_id(phases_id)
+            phases.set_phasename(phasename)
+            phases.set_project_id(project_id)
+            result.append(phases)
 
         self._cnx.commit()
         cursor.close()
@@ -27,17 +27,17 @@ class PhaseMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = ("SELECT phasen_id, phasenname, project_id FROM phasen WHERE phasen_id='{}'").format(key)
+        command = ("SELECT phases_id, phasename, project_id FROM phases WHERE phases_id='{}'").format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (phasen_id, phasenname, project_id) = tuples[0]
-            phasen = Phase()
-            phasen.set_id(phasen_id)
-            phasen.set_phasenname(phasenname)
-            phasen.set_project_id(project_id)
-            result = phasen
+            (phases_id, phasename, project_id) = tuples[0]
+            phases = Phase()
+            phases.set_id(phases_id)
+            phases.set_phasename(phasename)
+            phases.set_project_id(project_id)
+            result = phases
 
         except IndexError:
             result = None
@@ -46,19 +46,19 @@ class PhaseMapper(Mapper):
         cursor.close()
         return result
 
-    def get_phasen_by_project_id(self, project_id):
+    def get_phases_by_project_id(self, project_id):
         result = []
         cursor = self._cnx.cursor()
-        command = ("SELECT phasen_id, phasenname, indx FROM phasen WHERE project_id = '{}'").format(project_id)
+        command = ("SELECT phases_id, phasename, indx FROM phases WHERE project_id = '{}'").format(project_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (phasen_id, phasenname, indx) in tuples:
-            phasen = Phase()
-            phasen.set_id(phasen_id)
-            phasen.set_phasenname(phasenname)
-            phasen.set_indx(indx)
-            result.append(phasen)
+        for (phases_id, phasename, indx) in tuples:
+            phases = Phase()
+            phases.set_id(phases_id)
+            phases.set_phasename(phasename)
+            phases.set_indx(indx)
+            result.append(phases)
 
         self._cnx.commit()
         cursor.close()
@@ -66,37 +66,37 @@ class PhaseMapper(Mapper):
 
 
 
-    def insert(self, phasen):
+    def insert(self, phases):
         cursor = self._cnx.cursor()
-        cursor.execute("SELECT COUNT(*) FROM phasen")
+        cursor.execute("SELECT COUNT(*) FROM phases")
         count = cursor.fetchone()[0]
         if count == 0:
-            phasen.set_phasen_id(1)
+            phases.set_phases_id(1)
         else:
-            cursor.execute("SELECT MAX(phasen_id) AS maxid FROM phasen")
+            cursor.execute("SELECT MAX(phases_id) AS maxid FROM phases")
             maxid = cursor.fetchone()[0]
-            phasen.set_phasen_id(maxid + 1)
-        command = "INSERT INTO phasen (phasen_id, phasenname, project_id) VALUES (%s, %s, %s)"
-        data = (phasen.get_phasen_id(), phasen.get_phasenname(), phasen.get_project_id())
+            phases.set_phases_id(maxid + 1)
+        command = "INSERT INTO phases (phases_id, phasename, project_id) VALUES (%s, %s, %s)"
+        data = (phases.get_phases_id(), phases.get_phasename(), phases.get_project_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
 
-        return phasen
+        return phases
 
-    def update(self, phasen):
+    def update(self, phases):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE phasen SET phasen_id=%s, phasenname=%s, project_id=%s WHERE phasen_id=%s"
-        data = (phasen.get_phasen_id(), phasen.get_phasenname(), phasen.get_project_id())
+        command = "UPDATE phases SET phases_id=%s, phasename=%s, project_id=%s WHERE phases_id=%s"
+        data = (phases.get_phases_id(), phases.get_phasename(), phases.get_project_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
 
-    def delete(self, phasen):
+    def delete(self, phases_id):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM phasen WHERE phasen_id='{}'".format(phasen.get_phasen_id())
+        command = "DELETE FROM phases WHERE phases_id='{}'".format(phases_id)
         cursor.execute(command)
         self._cnx.commit()
         cursor.close()
@@ -106,5 +106,6 @@ class PhaseMapper(Mapper):
 
 if __name__ == "__main__":
     with PhaseMapper() as mapper:
-        result = mapper.delete(2)
-        print(result)
+        result = mapper.get_phases_by_project_id(1)
+        for f in result:
+            print(f)

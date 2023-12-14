@@ -29,10 +29,10 @@ class ProjectrackAdministration(object):
     Neuen User anlegen
     """
 
-    def create_user(self, nachname, vorname, nickname, google_id):
+    def create_user(self, surname, name, nickname, google_id):
         user = User()
-        user.set_nachname(nachname)
-        user.set_vorname(vorname)
+        user.set_surname(surname)
+        user.set_name(name)
         user.set_nickname(nickname)
         user.set_google_id(google_id)
 
@@ -89,20 +89,24 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
 
+    """Project"""
+    """Project by user id"""
+
+
     def get_projects_by_user_id(self, user_id):
         projects = []
         with ProjectMapper() as mapper:
             result = mapper.get_projects_by_user_id(user_id)
             for project in result:
                 with UserMapper() as mapper:
-                    mitglieder = mapper.get_members_by_project_id(project.get_id())
+                    members = mapper.get_members_by_project_id(project.get_id())
                     project_members = []
-                    for mitglied in mitglieder:
+                    for member in members:
                         #project_members.append({
-                            #"user_id": mitglied.get_id(),
-                            #"nickname": mitglied.get_nickname(),
+                            #"user_id": member.get_id(),
+                            #"nickname": member.get_nickname(),
                         #})
-                        project_members.append(mitglied.get_nickname())
+                        project_members.append(member.get_nickname())
 
                 projects.append({
                     "project_id": project.get_id(),
@@ -115,9 +119,14 @@ class ProjectrackAdministration(object):
                 })
         return projects
 
+    """Create Projects"""
     def create_project(self, project):
         with ProjectMapper() as mapper:
             return mapper.insert(project)
+
+    def project_by_id(self, id):
+        with ProjectMapper() as mapper:
+            return mapper.find_by_key(id)
 
     """Arbeitsstatistik"""
 
@@ -129,7 +138,7 @@ class ProjectrackAdministration(object):
             users_dict = mapper.get_members_by_project_id(number)  # Erhalte das Dictionary mit UserId und Nickname
 
         with PhaseMapper() as mapper:
-            phase_ids = [phase.get_id() for phase in mapper.get_phasen_by_project_id(number)]  # Erhalte die Phasenids
+            phase_ids = [phase.get_id() for phase in mapper.get_phases_by_project_id(number)]  # Erhalte die Phasenids
 
         with TaskMapper() as mapper:
             for user_id, user_nickname in users_dict.items():
@@ -137,11 +146,41 @@ class ProjectrackAdministration(object):
                 for phase_id in phase_ids:
                     tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
                     task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
-                    user_phase_task_count[user_nickname][
-                        phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+                    user_phase_task_count[user_nickname][phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+
+            print(user_phase_task_count)
 
         return user_phase_task_count
 
+    """Tasks"""
+
+    """Tasks by phasenid"""
+
+    def get_task_by_phase_id(self, number):
+        with TaskMapper() as mapper:
+            return mapper.find_by_phase_id(number)
+
+    """Phasen"""
+
+    """Phasen by projectid"""
+
+    def get_phase_by_project_id(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.get_phases_by_project_id(number)
+
+    """Phasen hinzufügen zu projekt"""
+    def create_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.insert(number)
+
+    """Phasen aus projekt löschen"""
+    def delete_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.delete(number)
+
+    def put_phase(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.update(number)
 
     """Tasks"""
 
@@ -179,5 +218,6 @@ class ProjectrackAdministration(object):
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    pa = adm.get_projects_by_user_id(1)
+    pa = adm.project_by_id(1)
+    print(pa)
 

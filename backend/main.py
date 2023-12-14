@@ -1,4 +1,3 @@
-import phases
 from flask import Flask
 from flask import request as http_request
 from flask_cors import CORS
@@ -24,20 +23,19 @@ api = api.namespace('projectrack')
 """Business Object"""
 
 bo = api.model('BusinessObject', {
-    'id': fields.Integer(attribute='_id', description='primärschlüssel BO')
+    'id': fields.Integer(attribute='_id', description='primarykey BO')
 })
 
 """Api models für
  die restlichen bo klassen, sie erben alle von bo"""
 
 user = api.inherit('User', bo, {
-    'nachname': fields.String(attribute='_nachname', description='nachname des users'),
-    'vorname': fields.String(attribute='_vorname', description='vorname des users'),
+    'surname': fields.String(attribute='_surname', description='surname des users'),
+    'name': fields.String(attribute='_name', description='name des users'),
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
-project = api.inherit('Project', bo, {
-        'project_id': fields.String(attribute='_project_id', description='Project_id des Projects'),
+projectcard = api.inherit('Project', bo, {
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
         'project_description': fields.String(attribute='_project_description',
@@ -46,9 +44,25 @@ project = api.inherit('Project', bo, {
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
     })
 
+project = api.inherit('Project', bo, {
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'project_description': fields.String(attribute='_project_description', description='project_description des Projects'),
+        'founder': fields.String(attribute='_founder', description='project_founder des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+    })
+
+task = api.inherit('Task', bo, {
+        'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
+        'description': fields.String(attribute='_description', description='description der Task'),
+        'duedate': fields.String(attribute='_duedate',
+                                             description='Due Date für die Task'),
+        'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
+        'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
+})
+
 phase = api.inherit('phase', bo, {
-        'phasen_id': fields.String(attribute='_phasen_id', description='Phasen_id des Projects'),
-        'phasenname': fields.String(attribute='_phasenname', description='Phasenname des Projects'),
+        'phasename': fields.String(attribute='_phasename', description='Phasename des Projects'),
         'indx': fields.String(attribute='_indx', description='index der Phase'),
         'project_id': fields.String(attribute='_project_id',
                                              description='Project_id der Phase'),
@@ -80,8 +94,8 @@ class UserListOperations(Resource):
 
         if proposal is not None:
             u = adm.create_user(
-                proposal.get_nachname(),
-                proposal.get_vorname(),
+                proposal.get_surname(),
+                proposal.get_name(),
                 proposal.get_nickname(),
                 proposal.get_google_id()
             )
@@ -122,7 +136,7 @@ class UserOperations(Resource):
 
 @api.route('/users/nicknames')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-class UserNicknamenOperations(Resource):
+class UserNicknameOperations(Resource):
     @secured
     def get(self):
         adm = ProjectrackAdministration()
@@ -143,8 +157,8 @@ class UserListOperations(Resource):
 @api.route('/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectOperations(Resource):
-    @api.marshal_with(project)
-    @api.expect(project)
+    @api.marshal_with(projectcard)
+    @api.expect(projectcard)
     @secured
     def post(self):
         adm = ProjectrackAdministration()
@@ -158,6 +172,19 @@ class ProjectOperations(Resource):
             return p, 200
         else:
             return "", 500
+
+@api.route('/project/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param("id","project id")
+class ProjectOperation(Resource):
+
+    @api.marshal_list_with(project)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        proposal = adm.project_by_id(id)
+
+        return {proposal}
+
 
 
 @api.route('/user/<int:id>/projects')
@@ -200,6 +227,16 @@ class ProjectMemberListOperations(Resource):
         else:
             return "", 500
 
+
+@api.route('/phase/task/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'id')
+class UserListOperations(Resource):
+    @api.marshal_list_with(task)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        tasks = adm.get_task_by_phase_id(id)
+        return tasks
 
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")

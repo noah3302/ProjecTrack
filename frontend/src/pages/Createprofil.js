@@ -38,8 +38,8 @@ export default function Createprofil() {
         try {
             const existingUser = await apipost(`users`, {
                 id: 0,
-                nachname: nachname,
-                vorname: vorname,
+                surname: nachname,
+                name: vorname,
                 nickname: nickname,
                 google_id: user?.userid,
             });
@@ -60,6 +60,8 @@ export default function Createprofil() {
     const handlenachnameChange = (event) => {
         setNachname(event.target.value);
     };
+
+    
 
     const handlenicknameChange = (event) => {
         const regex = /^[a-zA-Z0-9]{4,12}$/;

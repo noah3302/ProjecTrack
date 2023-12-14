@@ -51,7 +51,7 @@ const Projectcard = () => {
   //Navigieren zur ausgewählten Projektseite
   const navigateToProject = (selectedProject) => {
     if (selectedProject) {
-      navigate(`/projekt/${projectsNames[selectedProject]}`);
+      navigate(`/project/${projectsNames[selectedProject]}`);
     }
   };
 
@@ -89,7 +89,7 @@ const Projectcard = () => {
                   {project.project_description}
                 </Typography>
                 <Typography sx={{ mt: 2 }} color="text.secondary">
-                  Mitglieder:
+                  members:
                 </Typography>
                 <Typography variant="body2">
                   {project.members.join(', ')}

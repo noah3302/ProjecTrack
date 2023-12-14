@@ -12,11 +12,11 @@ class UserMapper(Mapper):
         cursor.execute("SELECT * FROM user")
         tuples = cursor.fetchall()
 
-        for (user_id, nachname,vorname, nickname, google_id) in tuples:
+        for (user_id, surname,name, nickname, google_id) in tuples:
             user = User()
             user.set_id(user_id)
-            user.set_nachname(nachname)
-            user.set_vorname(vorname)
+            user.set_surname(surname)
+            user.set_name(name)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
             result.append(user)
@@ -43,8 +43,8 @@ class UserMapper(Mapper):
     def get_members_by_project_id(self, project_id):
         result = []
         cursor = self._cnx.cursor()
-        command = ("SELECT user.user_id, user.nickname FROM user JOIN mitglieder ON user.user_id = mitglieder.user_id "
-                   "WHERE mitglieder.project_id = '{}';").format(project_id)
+        command = ("SELECT user.user_id, user.nickname FROM user JOIN members ON user.user_id = members.user_id "
+                   "WHERE members.project_id = '{}';").format(project_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
@@ -62,16 +62,16 @@ class UserMapper(Mapper):
     def find_by_key(self, key):
         result = None
         cursor = self._cnx.cursor()
-        command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE user_id='{}'".format(key)
+        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE user_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (user_id, nachname,vorname, nickname, google_id) = tuples[0]
+            (user_id, surname,name, nickname, google_id) = tuples[0]
             user = User()
             user.set_id(user_id)
-            user.set_nachname(nachname)
-            user.set_vorname(vorname)
+            user.set_surname(surname)
+            user.set_name(name)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
             result = user
@@ -86,16 +86,16 @@ class UserMapper(Mapper):
     def find_by_google_id(self, google_id):
         result = None
         cursor = self._cnx.cursor()
-        command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
+        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (user_id, nachname, vorname, nickname, google_id) = tuples[0]
+            (user_id, surname, name, nickname, google_id) = tuples[0]
             user = User()
             user.set_id(user_id)
-            user.set_nachname(nachname)
-            user.set_vorname(vorname)
+            user.set_surname(surname)
+            user.set_name(name)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
             result = user
@@ -112,16 +112,16 @@ class UserMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
+        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (user_id, nachname,vorname, nickname, google_id) = tuples[0]
+            (user_id, surname,name, nickname, google_id) = tuples[0]
             user = User()
             user.set_id(user_id)
-            user.set_nachname(nachname)
-            user.set_vorname(vorname)
+            user.set_surname(surname)
+            user.set_name(name)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
             result = True
@@ -137,16 +137,16 @@ class UserMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = "SELECT user_id, nachname, vorname, nickname, google_id FROM user WHERE nickname='{}'".format(nickname)
+        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE nickname='{}'".format(nickname)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (user_id, nachname,vorname, nickname, google_id) = tuples[0]
+            (user_id, surname,name, nickname, google_id) = tuples[0]
             user = User()
             user.set_id(user_id)
-            user.set_nachname(nachname)
-            user.set_vorname(vorname)
+            user.set_surname(surname)
+            user.set_name(name)
             user.set_nickname(nickname)
             user.set_google_id(google_id)
             result = user
@@ -178,8 +178,8 @@ class UserMapper(Mapper):
             cursor.execute("SELECT MAX(user_id) AS maxuser_id FROM user")
             maxuser_id = cursor.fetchone()[0]
             user.set_id(maxuser_id + 1)
-        command = "INSERT INTO user (user_id, nachname, vorname, nickname, google_id) VALUES (%s, %s, %s, %s, %s)"
-        data = (user.get_id(), user.get_nachname(), user.get_vorname(), user.get_nickname(), user.get_google_id())
+        command = "INSERT INTO user (user_id, surname, name, nickname, google_id) VALUES (%s, %s, %s, %s, %s)"
+        data = (user.get_id(), user.get_surname(), user.get_name(), user.get_nickname(), user.get_google_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -189,8 +189,8 @@ class UserMapper(Mapper):
     def update(self, user):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE user SET nachname=%s, vorname=%s, nickname=%s, google_id=%s WHERE user_id=%s"
-        data = (user.get_nachname(), user.get_vorname(), user.get_nickname(), user.get_google_id(), user.get_id())
+        command = "UPDATE user SET surname=%s, name=%s, nickname=%s, google_id=%s WHERE user_id=%s"
+        data = (user.get_surname(), user.get_name(), user.get_nickname(), user.get_google_id(), user.get_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
@@ -205,15 +205,15 @@ class UserMapper(Mapper):
 
 if __name__ == "__main__":
     with UserMapper() as mapper:
-        user = User()
-        user.set_id(7)
-        user.set_nachname("Bruan")
-        user.set_vorname("noah")
-        user.set_nickname("Noah3003")
-        user.set_google_id("googleid123")
-        result = mapper.insert(user)
-        #result = mapper.find_all()
-        #for f in result:
-            #print(f)
+        #user = User()
+        #user.set_id(7)
+        #user.set_surname("Bruan")
+        #user.set_name("noah")
+        #user.set_nickname("Noah3003")
+        #user.set_google_id("googleid123")
+        #result = mapper.insert(user)
+        result = mapper.find_all()
+        for f in result:
+            print(f)
 
         #print(result)
