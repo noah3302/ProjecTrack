@@ -71,8 +71,7 @@ INSERT INTO `members` VALUES
 ('7','1'),
 ('7','2'),
 ('6','2');
-
-/*!40000 ALTER TABLE `mitglieder` ENABLE KEYS */;
+/*!40000 ALTER TABLE `member` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

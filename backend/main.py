@@ -200,15 +200,6 @@ class ProjectMemberListOperations(Resource):
         else:
             return "", 500
 
-@api.route('/phase/task/<int:id>')
-@api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'id')
-class UserListOperations(Resource):
-    @api.marshal_list_with(task)
-    def get(self, id):
-        adm = ProjectrackAdministration()
-        tasks = adm.get_task_by_phase_id(id)
-        return tasks
 
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
