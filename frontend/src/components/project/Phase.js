@@ -4,6 +4,7 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useParams } from 'react-router-dom';
 import { Box, TextField, Card, Typography, IconButton, CardActions, Button } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Task from "./Tasks";
@@ -18,10 +19,10 @@ const Phase = () => {
     const [description, setDescription] = useState(null);
     const [duedate, setDueDate] = useState(null);
     const [phasenindex, setphasenindex] = useState(null);
+    let { id } = useParams();
 
-    const projectid = 1;
     const phasenload = async() => {
-        const response = await apiget(`phase/${projectid}`);
+        const response = await apiget(`phase/${id}`);
         setProject(response);
         console.log(project);
     };
@@ -159,7 +160,7 @@ const Phase = () => {
             try {
                 const updatedData = [...project];
                 updatedData[index].Phasenname = newName;
-                await apiput(`phase/${projectid}`, updatedData);
+                await apiput(`phase/${id}`, updatedData);
                 setProject(updatedData);
             } catch (error) {
                 console.log(error);

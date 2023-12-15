@@ -141,17 +141,19 @@ class TaskMapper(Mapper):
     def update(self, task):
         cursor = self._cnx.cursor()
 
-        command = ("UPDATE task SET task_id=%s, tasktitle=%s, description=%s, duedate=%s, user_id=%s, phases_id=%s "
-                   "WHERE task_id=%s")
-        data = (task.get_id(), task.get_tasktitle(), task.get_duedate(), task.get_user_id(), task.get_phases_id())
+        command = "UPDATE task SET tasktitle=%s, description=%s, duedate=%s, user_id=%s, phases_id=%s WHERE task_id=%s"
+        data = (task.get_tasktitle(), task.get_description(), task.get_duedate(), task.get_user_id(),
+                task.get_phases_id(), task.get_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
+        return task
+
 
     def delete(self, task):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM task WHERE task_id='{}'".format(task.get_id())
+        command = "DELETE FROM task WHERE task_id='{}'".format(task)
         cursor.execute(command)
         self._cnx.commit()
 

@@ -3,6 +3,8 @@ from server.bo.Task import Task
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
 from server.bo.Comment import Comment
+from server.bo.Task import Task
+
 
 
 
@@ -197,6 +199,28 @@ class ProjectrackAdministration(object):
     def put_phase(self, number):
         with PhaseMapper() as mapper:
             return mapper.update(number)
+
+
+    """Task"""
+    """Task updaten"""
+
+    def update_task(self, id, tasktitle, description, duedate ,user_id, phases_id):
+        task = Task()
+        task.set_id(id),
+        task.set_tasktitle(tasktitle),
+        task.set_description(description),
+        task.set_duedate(duedate),
+        task.set_user_id(user_id),
+        task.set_phases_id(phases_id)
+        with TaskMapper() as mapper:
+            return mapper.update(task)
+
+    """Task löschen"""
+
+    def delete_task(self, number):
+        with TaskMapper() as mapper:
+            return mapper.delete(number)
+
 
 
     """Kommentare"""

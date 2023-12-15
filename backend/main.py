@@ -9,6 +9,7 @@ from server.bo.User import User
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
 from server.bo.Comment import Comment
+from server.bo.Task import Task
 from server.admin import ProjectrackAdministration
 
 
@@ -39,8 +40,7 @@ user = api.inherit('User', bo, {
 projectcard = api.inherit('Project', bo, {
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
-        'project_description': fields.String(attribute='_project_description',
-                                             description='project_description des Projects'),
+        'project_description': fields.String(attribute='_project_description',description='project_description des Projects'),
         'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects')
     })
@@ -56,8 +56,7 @@ project = api.inherit('Project', bo, {
 task = api.inherit('Task', bo, {
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
-        'duedate': fields.String(attribute='_duedate',
-                                             description='Due Date für die Task'),
+        'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
         'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
 })
@@ -232,17 +231,49 @@ def post(self):
 @api.route('/phase/task/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'id')
-class UserListOperations(Resource):
+class PhaseListOperations(Resource):
     @api.marshal_list_with(task)
     def get(self, id):
         adm = ProjectrackAdministration()
         tasks = adm.get_task_by_phase_id(id)
         return tasks
 
+@api.route('/task/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class TaskListOperations(Resource):
+
+    @api.marshal_list_with(task, code="201")
+    @api.expect(task)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Task.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.update_task(
+                id,
+                proposal.get_tasktitle(),
+                proposal.get_description(),
+                proposal.get_duedate(),
+                proposal.get_user_id(),
+                proposal.get_phases_id()
+            )
+            return u, 200
+        else:
+            return "", 500
+
+@api.route('/tasks/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'task_id')
+class TaskListOperations(Resource):
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        tasks = adm.delete_task(id)
+        return tasks, 200
+
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'phases_id')
-class UserListOperations(Resource):
+class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     def get(self, id):
         adm = ProjectrackAdministration()
@@ -253,11 +284,10 @@ class UserListOperations(Resource):
     @api.expect(phase)
     def post(self, id):
         adm = ProjectrackAdministration()
-        proposal = User.from_dict(api.payload)
+        proposal = Phase.from_dict(api.payload)
 
         if proposal is not None:
             u = adm.create_phase(
-                proposal.get_id(),
                 proposal.get_phasename(),
                 proposal.get_indx(),
                 proposal.get_project_id(id)
@@ -270,11 +300,11 @@ class UserListOperations(Resource):
     @api.expect(phase)
     def put(self, id):
         adm = ProjectrackAdministration()
-        proposal = User.from_dict(api.payload)
+        proposal = Phase.from_dict(api.payload)
 
         if proposal is not None:
             u = adm.put_phase(
-                proposal.get_id(),
+                id(),
                 proposal.get_phasename(),
                 proposal.get_indx(),
                 proposal.get_project_id(id)

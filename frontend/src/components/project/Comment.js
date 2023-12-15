@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { UserAuth } from '../../Context/Authcontext';
 import { apiget, apipost, apidelete, apiput } from "../../API/Api";
-
+ 
 const Comment = ({ taskid }) => {
     const [comment, setComment] = useState([]);
     const [nicknames, setNicknames] = useState(null);
@@ -14,47 +14,104 @@ const Comment = ({ taskid }) => {
     const [editIndex, setEditIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const { user } = UserAuth();
-
+ 
     const commentload = async () => {
-        const response = await apiget(`task/comment/${taskid}`);
-        if (response && response.length > 0 && response[0].user_id) {
-            const userid = response[0].user_id;
-            const name = await apiget(`nickname/${userid}`);
-            setNicknames(name);
+        try {
+            const response = await apiget(`task/comment/${taskid}`);
+            if (response && response.length > 0 && response[0].user_id) {
+                const userid = response[0].user_id;
+                const name = await apiget(`nickname/${userid}`);
+                setNicknames(name);
+            }
+       
+            const sortedResponse = response.slice().sort((a, b) => new Date(a.creationdate) - new Date(b.creationdate));
+            setComment(sortedResponse);
+        } catch (error) {
+            console.error("Fehler beim Laden der Kommentare:", error);
         }
-    
-        const sortedResponse = response.sort((a, b) => new Date(a.creationdate) - new Date(b.creationdate));
-        setComment(sortedResponse);
     };
-    
-
+ 
     useEffect(() => {
         commentload();
     }, []);
-
+ 
     const handleCommentSubmit = async () => {
-        const newcom = await apipost('comment', {
-            id: 0,
-            comment: newComment,
-            creationdate: new Date().toISOString(),
-            user_id: user.id,
-            task_id: taskid,
-        });
-    
-        setComment([...comment, newcom]); 
-        setNewComment(""); 
+        try {
+            const newcom = await apipost('comment', {
+                id: 0,
+                comment: newComment,
+                creationdate: new Date().toISOString(),
+                user_id: user.id,
+                task_id: taskid,
+            });
+       
+            setComment([...comment, newcom]);
+            setNewComment("");
+        } catch (error) {
+            console.error("Fehler beim Hinzufügen des Kommentars:", error);
+        }
     };
-    
-    
-
+ 
     const isCurrentUserComment = (Comment) => {
         return Comment.user_id === user.id.toString();
     };
-
-    const getAlignment = (Comment) => {
-        return isCurrentUserComment(Comment) ? "flex-end" : "flex-start";
+ 
+    const handleEdit = (index) => {
+        setEditIndex(index);
+        setEditedComment(comment[index].comment);
     };
-
+ 
+    const handleUpdate = async () => {
+        try {
+            const updatedComments = [...comment];
+            updatedComments[editIndex].comment = editedComment;
+            await apiput('comment' , updatedComments[editIndex].id, {
+                id: updatedComments[editIndex].id,
+                comment: editedComment,
+                creationdate: new Date().toISOString(),
+                user_id: user.id,
+                task_id: taskid,
+            });
+            setComment(updatedComments);
+            setEditIndex(null);
+        } catch (error) {
+            console.error("Fehler beim Aktualisieren des Kommentars:", error);
+        }
+    };
+ 
+    const handleDelete = async (index, Comment) => {
+        try {
+            await apidelete(`comment`, Comment.id);
+            const updatedComments = comment.filter((_, i) => i !== index);
+            setComment(updatedComments);
+        } catch (error) {
+            console.error("Fehler beim Löschen des Kommentars:", error);
+        }
+    };
+ 
+    const kommentarfeld = {
+        backgroundColor: "white",
+        padding: "5px",
+        marginBottom: "5px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    };
+ 
+    const chipStyle = {
+        marginRight: "8px",
+        marginBottom: "5px",
+        fontSize: "10px",
+    };
+ 
+    const creationDateStyle = {
+        fontSize: "10px",
+        color: "#777",
+    };
+ 
+    const editDeleteIconStyle = {
+        fontSize: "10px",
+    };
+ 
     const kommentarContainer = (Comment) => {
         if (comment.length > 3) {
             return {
@@ -66,7 +123,7 @@ const Comment = ({ taskid }) => {
                 borderRadius: "8px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 overflowX: "hidden",
-                backgroundColor: "white", 
+                backgroundColor: "white",
             };
         } else {
             return {
@@ -75,62 +132,11 @@ const Comment = ({ taskid }) => {
                 marginBottom: "5px",
                 borderRadius: "8px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "white", 
+                backgroundColor: "white",
             };
         }
     };
-        
-
-    
-
-    const handleEdit = (index) => {
-        setEditIndex(index);
-        setEditedComment(comment[index].comment);
-    };
-
-    const handleUpdate = async () => {
-        const updatedComments = [...comment];
-        updatedComments[editIndex].comment = editedComment;
-        const newcom = await apiput('comment' , updatedComments[editIndex].id, {
-            id: updatedComments[editIndex].id,
-            comment: editedComment,
-            creationdate: new Date().toISOString(),
-            user_id: user.id,
-            task_id: taskid,
-        });
-        setComment(updatedComments);
-        setEditIndex(null);
-    };
-
-    const handleDelete = async (index, Comment) => {
-        await apidelete(`coment`, Comment.id);
-        const updatedComments = comment.filter((_, i) => i !== index);
-        setComment(updatedComments);
-    };
-
-    const kommentarfeld = {
-        backgroundColor: "white",
-        padding: "5px",
-        marginBottom: "5px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    };
-
-    const chipStyle = {
-        marginRight: "8px",
-        marginBottom: "5px",
-        fontSize: "10px",
-    };
-
-    const creationDateStyle = {
-        fontSize: "10px",
-        color: "#777",
-    };
-
-    const editDeleteIconStyle = {
-        fontSize: "10px",
-    };
-
+ 
     return (
         <>
             <Container style={kommentarContainer(Comment)}>
@@ -202,5 +208,5 @@ const Comment = ({ taskid }) => {
         </>
     );
 };
-
+ 
 export default Comment;
