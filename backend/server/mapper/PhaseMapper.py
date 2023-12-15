@@ -58,6 +58,7 @@ class PhaseMapper(Mapper):
             phases.set_id(phases_id)
             phases.set_phasename(phasename)
             phases.set_indx(indx)
+            phases.set_project_id(project_id)
             result.append(phases)
 
         self._cnx.commit()
@@ -71,13 +72,13 @@ class PhaseMapper(Mapper):
         cursor.execute("SELECT COUNT(*) FROM phases")
         count = cursor.fetchone()[0]
         if count == 0:
-            phases.set_phases_id(1)
+            phases.set_id(1)
         else:
             cursor.execute("SELECT MAX(phases_id) AS maxid FROM phases")
             maxid = cursor.fetchone()[0]
-            phases.set_phases_id(maxid + 1)
-        command = "INSERT INTO phases (phases_id, phasename, project_id) VALUES (%s, %s, %s)"
-        data = (phases.get_phases_id(), phases.get_phasename(), phases.get_project_id())
+            phases.set_id(maxid + 1)
+        command = "INSERT INTO phases (phases_id, phasename, indx, project_id) VALUES (%s, %s, %s, %s)"
+        data = (phases.get_id(), phases.get_phasename(), phases.get_indx(), phases.get_project_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -87,8 +88,8 @@ class PhaseMapper(Mapper):
     def update(self, phases):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE phases SET phases_id=%s, phasename=%s, project_id=%s WHERE phases_id=%s"
-        data = (phases.get_phases_id(), phases.get_phasename(), phases.get_project_id())
+        command = "UPDATE phases SET phasename=%s,indx=%s, project_id=%s WHERE phases_id=%s"
+        data = (phases.get_phasename(), phases.get_indx(), phases.get_project_id(), phases.get_id())
 
         cursor.execute(command, data)
         self._cnx.commit()

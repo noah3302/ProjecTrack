@@ -187,18 +187,28 @@ class ProjectrackAdministration(object):
             return mapper.get_phases_by_project_id(number)
 
     """Phasen hinzufügen zu projekt"""
-    def create_phase(self, number):
+    def create_phase(self, phasename, indx, project_id):
+        phase = Phase()
+        phase.set_phasename(phasename),
+        phase.set_indx(indx),
+        phase.set_project_id(project_id)
+
         with PhaseMapper() as mapper:
-            return mapper.insert(number)
+            return mapper.insert(phase)
 
     """Phasen aus projekt löschen"""
     def delete_phase(self, number):
         with PhaseMapper() as mapper:
             return mapper.delete(number)
 
-    def put_phase(self, number):
+    def update_phase(self, id, phasename, indx, project_id):
+        phase = Phase()
+        phase.set_id(id),
+        phase.set_phasename(phasename),
+        phase.set_indx(indx),
+        phase.set_project_id(project_id),
         with PhaseMapper() as mapper:
-            return mapper.update(number)
+            return mapper.update(phase)
 
 
     """Task"""
@@ -259,7 +269,8 @@ class ProjectrackAdministration(object):
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    pa = adm.get_comment_by_task_id(1)
-    for f in pa:
-        print(f)
+    pa = adm.create_phase("phasename", 6, 1)
+    #for f in pa:
+        #print(f)
+    print(pa)
 

@@ -21,13 +21,14 @@ const Phase = () => {
     const [phasenindex, setphasenindex] = useState(null);
     let { id } = useParams();
 
-    const phasenload = async() => {
+    const phasenload = async () => {
         const response = await apiget(`phase/${id}`);
-        setProject(response);
-        console.log(project);
+        const sortedResponse = response.sort((a, b) => a.indx - b.indx);
+        setProject(sortedResponse);
     };
+    
 
-    useEffect( () => {
+    useEffect(() => {
         phasenload()
     }, []);
 
@@ -102,72 +103,87 @@ const Phase = () => {
     };
 
     //Neue Phase hinzufügen
-    const addNewPhase = () => {
+    const addNewPhase = async () => {
         if (newPhaseName.trim() !== "") {
             const newPhase = {
-                phases_id: "",
+                id: 0,
                 phasename: newPhaseName.trim(),
                 indx: String(project.length + 1),
-                project_id: "",
+                project_id: project.project_id,
             };
-
-            setProject((prevProject) => [...prevProject, newPhase]);
+            const response = await apipost('phase', newPhase);
+            console.log(response);
+            setProject((prevProject) => [...prevProject, response]);
             setNewPhaseName("");
         }
-    };
+    };    
 
     //Verschiebung nach links
     const moveLeftAndLowerIndex = (index) => {
-        if (index > 0) {
-            setProject((prevproject) => {
-                const updatedproject = [...prevproject];
-                [updatedproject[index], updatedproject[index - 1]] = [
-                    updatedproject[index - 1],
-                    updatedproject[index],
-                ];
+        try {
+            if (index > 0) {
+                setProject((prevproject) => {
+                    const updatedproject = [...prevproject];
+                    [updatedproject[index], updatedproject[index - 1]] = [updatedproject[index - 1], updatedproject[index]];
 
-                updatedproject.forEach((phase, i) => {
-                    phase.indx = i + 1;
+                    updatedproject.forEach((phase, i) => {
+                        phase.indx = i + 1;
+                    });
+
+                    updatePhases(updatedproject[index], updatedproject[index - 1]);
+
+                    return updatedproject;
                 });
-
-                return updatedproject;
-            });
+            }
+        } catch (error) {
+            console.log("Fehler:", error)
         }
+    };
+
+    const updatePhases = async (phase1, phase2) => {
+        const phaseId1 = phase1.id;
+        const phaseId2 = phase2.id;
+
+        const newPhase1 = { ...phase1 };
+        await apiput('phases', phaseId1, newPhase1);
+
+        const newPhase2 = { ...phase2 };
+        await apiput('phases', phaseId2, newPhase2);
     };
 
     //Verschiebung rechts
-    const handleMoveRight = (index) => {
+    const handleMoveRight = async (index) => {
         if (index < project.length - 1) {
-            setProject((prevproject) => {
-                const updatedproject = [...prevproject];
-                [updatedproject[index], updatedproject[index + 1]] = [
-                    updatedproject[index + 1],
-                    updatedproject[index],
-                ];
+            const updatedProject = [...project];
+            [updatedProject[index], updatedProject[index + 1]] = [
+                updatedProject[index + 1],
+                updatedProject[index],
+            ];
 
-                updatedproject.forEach((phase, i) => {
-                    phase.indx = i + 1;
-                });
-
-                return updatedproject;
+            updatedProject.forEach((phase, i) => {
+                phase.indx = i + 1;
             });
+
+            await updatePhases(updatedProject[index], updatedProject[index + 1]);
+
+            setProject(updatedProject);
         }
-    };
+    }; 
 
     const changePhaseName = async (index, newName) => {
         console.log(project);
         if (newName !== null && newName !== "") {
             try {
                 const updatedData = [...project];
-                updatedData[index].Phasenname = newName;
-                await apiput(`phase/${id}`, updatedData);
+                const newphase = project[index];
+                updatedData[index].phasename = newName;
+                await apiput('phases', id, newphase);
                 setProject(updatedData);
             } catch (error) {
                 console.log(error);
             }
         }
     };
-
 
     // Stil für die Phase-Karten
     const phaseCardStyle = {
