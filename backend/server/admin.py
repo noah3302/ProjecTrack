@@ -265,7 +265,19 @@ class ProjectrackAdministration(object):
         with CommentMapper() as mapper:
             return mapper.update(coment)
 
+    """Project"""
 
+    """Project updaten"""
+    def update_project(self, id, project_title, project_description, founder, start_date, end_date):
+        project = Project()
+        project.set_id(id),
+        project.set_project_title(project_title),
+        project.set_project_description(project_description),
+        project.set_founder(founder),
+        project.set_start_date(start_date),
+        project.set_end_date(end_date)
+        with ProjectMapper() as mapper:
+            return mapper.update(project)
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()

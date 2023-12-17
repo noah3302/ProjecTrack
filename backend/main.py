@@ -201,6 +201,28 @@ class ProjectOperation(Resource):
         return proposal
 
 
+@api.route('/project/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class ProjectListOperations(Resource):
+
+    @api.marshal_list_with(project, code="201")
+    @api.expect(project)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Project.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.update_project(
+                id,
+                proposal.get_project_title(),
+                proposal.get_project_description(),
+                proposal.get_founder(),
+                proposal.get_start_date(),
+                proposal.get_end_date(),
+            )
+            return u, 200
+        else:
+            return "", 500
 
 @api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")

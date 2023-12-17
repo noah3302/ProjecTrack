@@ -115,12 +115,14 @@ class ProjectMapper(Mapper):
     def update(self, project):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE project SET project_id=%s, title=%s, start_date=%s, end_date=%s, founder=%s, description=%s WHERE project_id=%s"
-        data = (project.get_project_id(),project.get_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_description())
+        command = "UPDATE project SET title=%s, description=%s, founder=%s, startdate=%s, enddate=%s WHERE project_id=%s"
+        data = (project.get_project_title(),project.get_project_description(),project.get_founder(), project.get_start_date(), project.get_end_date(), project.get_id())
 
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
+
+        return project
 
     def delete(self, project):
         cursor = self._cnx.cursor()
