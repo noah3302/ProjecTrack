@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
   `project_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(110) NOT NULL DEFAULT '',
-  `discription` varchar(110) NOT NULL DEFAULT '',
+  `description` varchar(110) NOT NULL DEFAULT '',
   `founder` varchar(110) NOT NULL DEFAULT '',
   `startdate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',

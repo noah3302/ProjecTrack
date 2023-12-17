@@ -43,29 +43,53 @@ const Createproject = () => {
     setName(event.target.value);
   };
 
+  function localISOTime(d) {
+    var tzoffset = d.getTimezoneOffset() * 60000; // offset in milliseconds
+    d.setTime(d.getTime() - tzoffset);
+    return d.toISOString().slice(0, -1);
+  }
+
   const navigation = async () => {
-    const data = customPhaseValues.map((phase, idx) => ({
-      id: 0,
+    const newProject = await apipost('project', {
+      project_id: 0,
+      project_title: name,
+      project_description: beschreibung,
+      founder: user.id,
+      start_date: startDate,
+      end_date: endDate
+    })
+
+
+    const apiCalls = []
+
+    const phaseData = customPhaseValues.map((phase, idx) => ({
+      phases_id: 0,
       phasename: phase,
-      indx: idx+1,
-      project_id: 1
+      index: idx + 1,
+      project_id: newProject.id
+    }))
+    apiCalls.push(apipost(`project/${newProject.id}/phases`, phaseData))
+
+    // ausgewählte User zum Projekt hinzufügen
+    selectedMembers.map((member) => {
+      apiCalls.push(apipost(`project/${newProject.id}/user`, {
+        ...member
+      }))
+    })
+
+    // sich selber auch als Member zum Projekt hinzufügen
+    apiCalls.push(apipost(`project/${newProject.id}/user`, {
+      id: user.id,
+      surname: user.surname,
+      google_id: user.userid,
+      name: user.name,
+      nickname: user.nickname,
     }))
 
-    const test = await apipost('project/1/phase', data)
+    Promise.all([...apiCalls]).then((responses) => {
+      navigate(`/project/${newProject.id}`);
+    })
 
-    console.log(test)
-    // const createdProject = await apipost('projects', {
-    //   project_id: 0,
-    //   project_title: name,
-    //   project_description: beschreibung,
-    //   founder: user.id,
-    //   start_date: startDate,
-    //   end_date: endDate
-    // })
-
-
-
-    // navigate(`/project/${createdProject.id}`);
   };
 
   const handleBeschreibungChange = (event) => {
@@ -155,9 +179,11 @@ const Createproject = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e => {
-            if (e[0]) setStartDate(e[0].$d.toISOString().split('Z')[0]);
-            if (e[1]) setEndDate(e[1].$d.toISOString().split('Z')[0]);
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={selectedDates => {
+            // start date
+            if (selectedDates[0]) setStartDate(localISOTime(selectedDates[0].$d));
+            // end date
+            if (selectedDates[1]) setEndDate(localISOTime(selectedDates[1].$d));
           }} />
         </DemoContainer>
       </LocalizationProvider>

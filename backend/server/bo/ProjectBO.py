@@ -10,9 +10,6 @@ class Project(BusinessObject):
         self._start_date = ""
         self._end_date = ""
 
-    def get_id(self):
-        return self._id
-
     def get_project_title(self):
         return self._project_title
 

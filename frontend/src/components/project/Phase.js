@@ -8,7 +8,7 @@ import { Box, TextField, Card, Typography, IconButton, CardActions, Button } fro
 import Modal from "@mui/material/Modal";
 import Task from "./Tasks";
 
-const Phase = () => {
+const Phase = (params) => {
     const [project, setProject] = useState([]);
     const [newPhaseName, setNewPhaseName] = useState("");
     const [open2, setOpen2] = useState(false);
@@ -19,14 +19,15 @@ const Phase = () => {
     const [duedate, setDueDate] = useState(null);
     const [phasenindex, setphasenindex] = useState(null);
 
-    const projectid = 1;
-    const phasenload = async() => {
-        const response = await apiget(`phase/${projectid}`);
+
+    const { projectId } = params
+    const phasenload = async () => {
+        const response = await apiget(`phase/${projectId}`);
         setProject(response);
         console.log(project);
     };
 
-    useEffect( () => {
+    useEffect(() => {
         phasenload()
     }, []);
 
@@ -159,7 +160,7 @@ const Phase = () => {
             try {
                 const updatedData = [...project];
                 updatedData[index].Phasenname = newName;
-                await apiput(`phase/${projectid}`, updatedData);
+                await apiput(`phase/${projectId}`, updatedData);
                 setProject(updatedData);
             } catch (error) {
                 console.log(error);

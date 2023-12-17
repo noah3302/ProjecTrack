@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { apiget } from "../API/Api";
 
-const Arbeitsstatistik = () => {
+const Arbeitsstatistik = (params) => {
   const [data, setData] = useState([]);
   const [nicknames, setNicknames] = useState([]);
+  const { projectId } = params
 
   useEffect(() => {
-    const id = 1;
     const fetchArbeitssta = async () => {
       try {
-        const response = await apiget(`arbeitsstatistik/${id}`);
+        const response = await apiget(`arbeitsstatistik/${projectId}`);
         console.log(response);
 
         const names = Object.keys(response.name);

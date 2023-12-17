@@ -71,13 +71,13 @@ class PhaseMapper(Mapper):
         cursor.execute("SELECT COUNT(*) FROM phases")
         count = cursor.fetchone()[0]
         if count == 0:
-            phases.set_phases_id(1)
+            phases.set_id(1)
         else:
             cursor.execute("SELECT MAX(phases_id) AS maxid FROM phases")
             maxid = cursor.fetchone()[0]
-            phases.set_phases_id(maxid + 1)
-        command = "INSERT INTO phases (phases_id, phasename, project_id) VALUES (%s, %s, %s)"
-        data = (phases.get_phases_id(), phases.get_phasename(), phases.get_project_id())
+            phases.set_id(maxid + 1)
+        command = "INSERT INTO phases (phases_id, phasename, indx, project_id) VALUES (%s, %s, %s, %s)"
+        data = (phases.get_id(), phases.get_phasename(), phases.get_indx(), phases.get_project_id())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()

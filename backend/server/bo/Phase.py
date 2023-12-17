@@ -40,7 +40,7 @@ class Phase(BusinessObject):
     def from_dict(dictio=dict()):
         obj = Phase()
         obj.set_id(dictio["phases_id"])
-        obj.set_phasenname(dictio["phasename"])
+        obj.set_phasename(dictio["phasename"])
         obj.set_indx(dictio["index"])
         obj.set_project_id(dictio["project_id"])
 
