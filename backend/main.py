@@ -169,24 +169,22 @@ class UserListOperations(Resource):
         return {"name": arbeitsstatistik}
 
 
-@api.route('/projects')
+@api.route('/project')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectOperations(Resource):
-    @api.marshal_with(projectcard)
-    @api.expect(projectcard)
+    @api.marshal_with(project)
+    @api.expect(project)
     @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Project.from_dict(api.payload)
-
-        print(proposal)
-        print(api.payload)
 
         if proposal is not None:
             p = adm.create_project(proposal)
             return p, 200
         else:
             return "", 500
+
 
 @api.route('/project/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
@@ -232,7 +230,25 @@ class UserProjectOperations(Resource):
         adm = ProjectrackAdministration()
         projects = adm.get_projects_by_user_id(id)
         print (projects)
-        return {"projects":projects}
+        return {"projects": projects}
+
+
+
+@api.route('/project/<int:id>/user')
+@api.response(500, "Falls es zu serverseitigen Fehler kommt")
+class ProjectMemberListOperations(Resource):
+    @api.marshal_with(user)
+    @api.expect(user)
+    @secured
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            member = adm.add_member_to_project(proposal, id)
+            return member, 200
+        else:
+            return "", 500
 
 
 @api.route('/phase/task/<int:id>')
@@ -408,6 +424,28 @@ class CommentListOperations(Resource):
         else:
             return "", 500
 
+@api.route('/project/<int:id>/phases')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phases_id')
+class ProjectPhaseListOperations(Resource):
+    @api.marshal_list_with(phase)
+    @api.expect(phase)
+    def post(self, id):
+        adm = ProjectrackAdministration()
+
+        if len(api.payload) > 0:
+            phases = []
+            for phase_proposal in api.payload:
+                phaseBO = Phase.from_dict(phase_proposal)
+
+                if phaseBO is not None:
+                    # proposal.set_project_id(id)
+                    phase = adm.create_phase(phaseBO)
+                    phases.append(phase)
+
+            return phases, 200
+        else:
+            return "No phases in request", 500
 
 
 if __name__ == '__main__':

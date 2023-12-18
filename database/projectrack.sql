@@ -9,6 +9,7 @@ USE `projectrack`;
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@COLLATION_CONNECTION */;
+
 /*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
@@ -53,26 +54,24 @@ DROP TABLE IF EXISTS `members`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `members` (
-  `boId` int(11) NOT NULL DEFAULT '0',
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) NOT NULL DEFAULT '0', 
   `project_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`boId`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade, 
-  FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
+  FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade,
+  PRIMARY KEY (`user_id`, `project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `members` WRITE;
 /*!40000 ALTER TABLE `members` DISABLE KEYS */;
 INSERT INTO `members` VALUES
-(1,'1','1'),
-(2,'2','1'),
-(3,'3','1'),
-(4,'4','2'),
-(5,'5','2'),
-(6,'7','1'),
-(7,'7','2'),
-(8,'6','2');
-
+('1','1'),
+('2','1'),
+('3','1'),
+('4','2'),
+('5','2'),
+('7','1'),
+('7','2'),
+('6','2');
 /*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,7 +82,7 @@ DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
   `project_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(110) NOT NULL DEFAULT '',
-  `discription` varchar(110) NOT NULL DEFAULT '',
+  `description` varchar(110) NOT NULL DEFAULT '',
   `founder` varchar(110) NOT NULL DEFAULT '',
   `startdate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',

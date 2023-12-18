@@ -3,12 +3,12 @@ import GoogleButton from "react-google-button";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../Context/Authcontext";
 import { Box, Typography } from "@mui/material";
-import { Timeline, TimelineItem, TimelineContent, TimelineSeparator, TimelineDot, TimelineConnector, TimelineOppositeContent } from "@mui/lab";
-import EngineeringIcon from '@mui/icons-material/Engineering';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import AddTaskIcon from '@mui/icons-material/AddTask';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import { apiget } from "../API/Api";
+// import { Timeline, TimelineItem, TimelineContent, TimelineSeparator, TimelineDot, TimelineConnector, TimelineOppositeContent } from "@mui/lab";
+// import EngineeringIcon from '@mui/icons-material/Engineering';
+// import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+// import AddTaskIcon from '@mui/icons-material/AddTask';
+// import AssessmentIcon from '@mui/icons-material/Assessment';
+// import { apiget } from "../API/Api";
 import theme from "../Theme";
 
 
@@ -48,7 +48,7 @@ export default function Signin() {
         <GoogleButton style={{ margin: "2rem auto" }} onClick={handleGoogleSignIn} />
       </Box>
       <Box style={{ align: "center" }}>
-        <Timeline position="alternate" style={{ backgroundColor: "white", width: "50%" }}>
+        {/* <Timeline position="alternate" style={{ backgroundColor: "white", width: "50%" }}>
           <TimelineItem>
             <TimelineSeparator>
               <TimelineConnector />
@@ -109,7 +109,7 @@ export default function Signin() {
               <Typography>Reporting functions allow you to view and analyze the progress of your project at any time</Typography>
             </TimelineContent>
           </TimelineItem>
-        </Timeline>
+        </Timeline> */}
       </Box>
       <Box>
         <Typography>Theme Farben</Typography>

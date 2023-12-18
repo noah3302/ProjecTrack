@@ -104,8 +104,8 @@ class ProjectMapper(Mapper):
             cursor.execute("SELECT MAX(project_id) AS maxid FROM project")
             maxid = cursor.fetchone()[0]
             project.set_id(maxid + 1)
-        command = "INSERT INTO project (project_id, title, start_date, end_date, founder, description) VALUES (%s, %s, %s, %s, %s, %s)"
-        data = (project.get_project_id(),project.get_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_description())
+        command = "INSERT INTO project (project_id, title, startdate, enddate, founder, description) VALUES (%s, %s, %s, %s, %s, %s)"
+        data = (project.get_id(), project.get_project_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_project_description())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()

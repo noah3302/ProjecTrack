@@ -20,6 +20,7 @@ export default function Projekt() {
   const handleCloseSettings = () => setOpenSettings(false);
   //const user userauth holen
   let { id } = useParams();
+  console.log(id)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -206,7 +207,7 @@ export default function Projekt() {
       </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Arbeitsstatistik />
+          <Arbeitsstatistik projectId={id} />
         </Box>
       </Modal>
       <Phase />
