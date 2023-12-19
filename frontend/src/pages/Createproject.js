@@ -50,6 +50,11 @@ const Createproject = () => {
   }
 
   const navigation = async () => {
+    const customPhasesWithoutName = customPhaseValues.filter(value => !value.trim());
+    if (customPhasesWithoutName.length > 0) {
+      console.error("Bitte benenne alle benutzerdefinierten Phasen.");
+    return;
+  }
     const newProject = await apipost('project', {
       project_id: 0,
       project_title: name,
