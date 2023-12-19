@@ -23,8 +23,6 @@ const Projectcard = () => {
   const [projectsNames, setProjectsNames] = useState({});
 
   useEffect(() => {
-    console.log(user)
-    console.log(user.id)
     apiget(`user/${user.id}/projects`).then((result) => {
       // apiget(`user/${7}/projects`).then((result) => {
       setProjects(result.projects)

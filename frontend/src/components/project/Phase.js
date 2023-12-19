@@ -9,7 +9,7 @@ import { Box, TextField, Card, Typography, IconButton, CardActions, Button } fro
 import Modal from "@mui/material/Modal";
 import Task from "./Tasks";
 
-const Phase = (params) => {
+const Phase = () => {
     const [project, setProject] = useState([]);
     const [newPhaseName, setNewPhaseName] = useState("");
     const [open2, setOpen2] = useState(false);

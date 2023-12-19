@@ -3,7 +3,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { apiget } from "../API/Api";
 import { useParams } from 'react-router-dom';
 
-const Arbeitsstatistik = (params) => {
+const Arbeitsstatistik = () => {
   const [data, setData] = useState([]);
   const [nicknames, setNicknames] = useState([]);
   let { id } = useParams();

@@ -158,15 +158,6 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
-    def add_user_to_project(self, user, project_id):
-        cursor = self._cnx.cursor()
-        command = "INSERT INTO members (user_id, project_id) VALUES (%s, %s)"
-        data = (user.get_id(), project_id)
-        cursor.execute(command, data)
-        self._cnx.commit()
-        cursor.close()
-        return user
-
     def insert(self, user):
         cursor = self._cnx.cursor()
         # Überprüfung, ob bereits Einträge vorhanden sind

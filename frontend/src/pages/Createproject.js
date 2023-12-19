@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TextField, Button, Box, Grid, IconButton, Typography, MenuItem } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router-dom';
@@ -7,50 +7,29 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { apiget, apipost } from '../API/Api';
+import { apipost } from '../API/Api';
 import { UserAuth } from "../Context/Authcontext";
 
 const Createproject = () => {
   const [name, setName] = useState('');
   const [beschreibung, setBeschreibung] = useState('');
-  const [existingUsers, setExistingUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedPhase, setSelectedPhase] = useState('');
-  const [customPhaseValues, setCustomPhaseValues] = useState(['todo', 'doing', 'done']);
-  // new Date().toISOString().split('Z')[0])
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [customPhaseValues, setCustomPhaseValues] = useState(['']);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('Z')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('Z')[0]);
   const navigate = useNavigate();
   const { user } = UserAuth();
-
-  async function getExistingUsers() {
-    const allUsers = await apiget('/users')
-    setExistingUsers(allUsers)
-  }
-
-  useEffect(() => {
-    getExistingUsers()
-  }, []);
-
-  function getUserNames(array) {
-    return array.filter((exUser) => {
-      return exUser.id != user.id
-    }).map((exUser) => exUser.nickname);
-  }
 
 
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
 
-  function localISOTime(d) {
-    var tzoffset = d.getTimezoneOffset() * 60000; // offset in milliseconds
-    d.setTime(d.getTime() - tzoffset);
-    return d.toISOString().slice(0, -1);
-  }
-
   const navigation = async () => {
-    const newProject = await apipost('project', {
+    console.log('Projekt erstellt');
+
+    const createdProject = await apipost('projects', {
       project_id: 0,
       project_title: name,
       project_description: beschreibung,
@@ -59,37 +38,7 @@ const Createproject = () => {
       end_date: endDate
     })
 
-
-    const apiCalls = []
-
-    const phaseData = customPhaseValues.map((phase, idx) => ({
-      phases_id: 0,
-      phasename: phase,
-      index: idx + 1,
-      project_id: newProject.id
-    }))
-    apiCalls.push(apipost(`project/${newProject.id}/phases`, phaseData))
-
-    // ausgewählte User zum Projekt hinzufügen
-    selectedMembers.map((member) => {
-      apiCalls.push(apipost(`project/${newProject.id}/user`, {
-        ...member
-      }))
-    })
-
-    // sich selber auch als Member zum Projekt hinzufügen
-    apiCalls.push(apipost(`project/${newProject.id}/user`, {
-      id: user.id,
-      surname: user.surname,
-      google_id: user.userid,
-      name: user.name,
-      nickname: user.nickname,
-    }))
-
-    Promise.all([...apiCalls]).then((responses) => {
-      navigate(`/project/${newProject.id}`);
-    })
-
+    navigate(`/project/${createdProject.id}`);
   };
 
   const handleBeschreibungChange = (event) => {
@@ -97,14 +46,15 @@ const Createproject = () => {
   };
 
   const handleMembersChange = (event, values) => {
-    const selected = existingUsers.filter(selectedUser => {
-      return values.includes(selectedUser.nickname)
-    })
-    setSelectedMembers(selected);
+    setSelectedMembers(values);
   };
 
   const handlePhasenChange = (event) => {
     setSelectedPhase(event.target.value);
+
+    if (event.target.value === 'Custom') {
+      setCustomPhaseValues(['todo', 'doing', 'done']);
+    }
   };
 
   const handleCustomPhaseChange = (index, value) => {
@@ -137,17 +87,48 @@ const Createproject = () => {
   };
 
   const options = ['Standard (todo-doing-done)', 'Custom'];
+  const nicknamen = [
+    'Alex88',
+    'Bob7a8',
+    'Grace12',
+    'Charlie9b',
+    'Eva2c4',
+    'Liam123',
+    'Sophia69',
+    'Samuel99',
+    'Hannah3y',
+    'Ruby234',
+    'David9a7',
+    'Frank15',
+    'Quinn77',
+    'Jack0p2',
+    'Ivy34',
+    'Katie6z',
+    'Olivia12',
+    'Paul1a4',
+    'Mia9b',
+    'Noah8x7'
+  ];
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate
+  const customphasenfilled = () => {
+    if (selectedPhase === 'Standard (todo-inprogress-done)') {
+      const filled = true
+    } else {
+      const filled = !customPhaseValues.every((el, index, arr) => {
+        return el !== ''
+      })
+    }
+  };
 
-  const phaseStyle = {
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase
+
+    const phaseStyle = {
     display: 'flex',
     overflowX: 'auto',
     gap: '10px',
     marginTop: '1rem',
     marginBottom: '1rem',
   };
-
 
   return (
     <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
@@ -168,22 +149,20 @@ const Createproject = () => {
       <Autocomplete
         multiple
         style={input}
-        options={getUserNames(existingUsers)}
+        options={nicknamen}
         renderInput={(params) => (
           <TextField {...params} label="Mitglieder" />
         )}
-        value={selectedMembers.map((selectedUser) => selectedUser.nickname)}
+        value={selectedMembers}
         onChange={handleMembersChange}
         sx={{ width: '500px' }}
       />
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={selectedDates => {
-            // start date
-            if (selectedDates[0]) setStartDate(localISOTime(selectedDates[0].$d));
-            // end date
-            if (selectedDates[1]) setEndDate(localISOTime(selectedDates[1].$d));
+          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={e=>{
+            setStartDate(e[0].$d.toISOString().split('Z')[0])
+            setEndDate(e[0].$d.toISOString().split('Z')[0])
           }} />
         </DemoContainer>
       </LocalizationProvider>

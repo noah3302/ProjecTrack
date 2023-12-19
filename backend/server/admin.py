@@ -279,40 +279,6 @@ class ProjectrackAdministration(object):
         with ProjectMapper() as mapper:
             return mapper.update(project)
 
-    """Tasks"""
-
-    """Tasks by phasenid"""
-
-    def get_task_by_phase_id(self, number):
-        with TaskMapper() as mapper:
-            return mapper.find_by_phase_id(number)
-
-    """Phasen"""
-
-    """Phasen by projectid"""
-
-    def get_phase_by_project_id(self, number):
-        with PhaseMapper() as mapper:
-            return mapper.get_phases_by_project_id(number)
-
-    """Phasen hinzufügen zu projekt"""
-    def create_phase(self, phase):
-        with PhaseMapper() as mapper:
-            return mapper.insert(phase)
-
-    """Phasen aus projekt löschen"""
-    def delete_phase(self, number):
-        with PhaseMapper() as mapper:
-            return mapper.delete(number)
-
-    def put_phase(self, number):
-        with PhaseMapper() as mapper:
-            return mapper.update(number)
-
-    def add_member_to_project(self, member, project_id):
-        with UserMapper() as mapper:
-            return mapper.add_user_to_project(member, project_id)
-
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
     pa = adm.create_phase("phasename", 6, 1)
