@@ -45,7 +45,25 @@ class ProjectrackAdministration(object):
 
         with UserMapper() as mapper:
             return mapper.insert(user)
+        
+    """profil updaten"""
 
+    def update_user(self, user_id, google_id, surname, name, nickname):
+        user = User()
+        user.set_id(user_id)
+        user.set_google_id(google_id)
+        user.set_surname(surname)
+        user.set_name(name)
+        user.set_nickname(nickname)
+        with UserMapper() as mapper:
+            return mapper.update(user)
+
+    """delete user"""
+
+    def delete_user(self, user_id):
+        with UserMapper() as mapper:
+            return mapper.delete(user_id)
+        
     """
     Alle User ausgeben
 
@@ -160,11 +178,14 @@ class ProjectrackAdministration(object):
 
         with TaskMapper() as mapper:
             for user_id, user_nickname in users_dict.items():
-                user_phase_task_count[user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
+                user_phase_task_count[
+                    user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
                 for phase_id in phase_ids:
-                    tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
+                    tasks = mapper.find_by_phase_id_and_user_id(phase_id,
+                                                                user_id)  # Erhalte Tasks für die Phase und Benutzer
                     task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
-                    user_phase_task_count[user_nickname][phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+                    user_phase_task_count[user_nickname][
+                        phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
 
             print(user_phase_task_count)
 
@@ -214,7 +235,7 @@ class ProjectrackAdministration(object):
     """Task"""
     """Task updaten"""
 
-    def update_task(self, id, tasktitle, description, duedate ,user_id, phases_id):
+    def update_task(self, id, tasktitle, description, duedate, user_id, phases_id):
         task = Task()
         task.set_id(id),
         task.set_tasktitle(tasktitle),

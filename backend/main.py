@@ -109,6 +109,28 @@ class UserListOperations(Resource):
         else:
             return "", 500
 
+# UserListOperations class
+@api.route('/users/<string:google_id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class UserListOperations(Resource):
+    @api.marshal_with(user, code=200)
+    @api.expect(user)
+    @secured
+    def put(self, google_id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+        if proposal is not None:
+            u = adm.update_user(
+                proposal.get_id(),
+                proposal.get_google_id(),
+                proposal.get_surname(),
+                proposal.get_name(),
+                proposal.get_nickname(),
+            )
+            return u, 200
+        else:
+            return "", 500
+        
 
 @api.route('/existusers/<id>')
 @api.response(500, 'Falls es zu einem serverseitigen error kommt')
@@ -211,6 +233,20 @@ class UserProjectOperations(Resource):
         projects = adm.get_projects_by_user_id(id)
         print (projects)
         return {"projects":projects}
+    
+@api.route('/users/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'user_id')
+class UserListOperations(Resource):
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        user = adm.delete_user(id)
+        return user, 200
+
+"""Phase & Task"""
+
+
+""""""
 
 
 @api.route('/phase/task/<int:id>')
