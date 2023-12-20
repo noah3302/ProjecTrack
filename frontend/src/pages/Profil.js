@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useNavigate } from "react-router-dom";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
@@ -10,7 +11,7 @@ import { apiget, apiput, apidelete, apipost } from '../API/Api';
 import { UserAuth } from '../Context/Authcontext';
 
 export default function Profil() {
-  const { user, setUser } = UserAuth();
+  const { user, setUser, logOut } = UserAuth();
   const [id, setid] = useState(null);
   const [google_id, setgoogleid] = useState(null);
   const [vorname, setVorname] = useState('');
@@ -19,7 +20,9 @@ export default function Profil() {
   const [helper, setHelper] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingNicknames, setExistingNicknames] = useState([]);
-  const [changeNickname, setChangeNickname] = useState(false)
+  const [changeNickname, setChangeNickname] = useState(false);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     fetchExistingNicknames();
@@ -93,13 +96,16 @@ export default function Profil() {
       const confirmDelete = window.confirm('Möchten Sie Ihr Profil wirklich löschen?');
       if (confirmDelete) {
         await apidelete('users', user.id);
-        //await fetchUserData();
+
         setid("");
         setVorname('');
         setNachname('');
         setNickname('');
 
-        window.location.replace("http://localhost:3000/createprofil");
+        
+        await logOut();        
+  
+        navigate("/");
       } else {
         console.log('Löschen des Profils abgebrochen');
       }
@@ -107,6 +113,7 @@ export default function Profil() {
       console.error('Fehler beim Löschen des Profils:', error);
     }
   };
+  
 
   const handleEditProfile = () => {
     setIsEditMode(true);
