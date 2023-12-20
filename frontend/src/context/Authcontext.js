@@ -39,6 +39,7 @@ export const AuthContextProvider = ({ children }) => {
 
         setUser(currentUser);
         sessionStorage.setItem("user", JSON.stringify(currentUser));
+        localStorage.setItem("user", JSON.stringify(currentUser));
         broadcastAuthState(currentUser);
 
       } catch (error) {
@@ -83,6 +84,8 @@ export const AuthContextProvider = ({ children }) => {
 
   const logOut = async () => {
     try {
+      localStorage.clear();
+      sessionStorage.clear();
       await signOut(auth);
       setUser(null);
     } catch (error) {
