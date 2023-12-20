@@ -26,10 +26,10 @@ export default function Projekt() {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        const founderData = await apiget(`nickname/${project.founder}`);
-        setFounderName(founderData.nickname);
-        const nicknamesData = await apiget("nicknames"); // Replace with your API endpoint
-        setNicknames(nicknamesData); // Assuming nicknamesData is an array of nicknames
+        // const founderData = await apiget(`nickname/${project.founder}`);
+        // setFounderName(founderData.nickname);
+        // const nicknamesData = await apiget("nicknames"); // Replace with your API endpoint
+        // setNicknames(nicknamesData); // Assuming nicknamesData is an array of nicknames
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
@@ -183,7 +183,7 @@ export default function Projekt() {
           >
             Speichern
           </Button>
-          {user?.user.id === project.founder(          
+          {/* {user?.user.id === project.founder(          
           <Button
             variant="contained"
             color="secondary"
@@ -192,7 +192,7 @@ export default function Projekt() {
           >
             Löschen
           </Button>):(<></>)};
-          
+           */}
         </Box>
       </Modal>
       <Box style={headerStyle}>

@@ -49,13 +49,13 @@ const Createproject = () => {
     return d.toISOString().slice(0, -1);
   }
 
-  const navigation = async () => {
+  const createproject = async () => {
     const customPhasesWithoutName = customPhaseValues.filter(value => !value.trim());
     if (customPhasesWithoutName.length > 0) {
       console.error("Bitte benenne alle benutzerdefinierten Phasen.");
       return;
     }
-    const newProject = await apipost('project', {
+    const newProject = await apipost('createproject', {
       id: 0,
       project_title: name,
       project_description: beschreibung,
@@ -63,14 +63,16 @@ const Createproject = () => {
       start_date: startDate,
       end_date: endDate
     })
+    navigation(newProject)
+  }
 
-
+  const navigation = async (newProject) => {
     const apiCalls = []
 
     const phaseData = customPhaseValues.map((phase, idx) => ({
-      phases_id: 0,
+      id: 0,
       phasename: phase,
-      index: idx + 1,
+      indx: idx + 1,
       project_id: newProject.id
     }))
     apiCalls.push(apipost(`project/${newProject.id}/phases`, phaseData))
@@ -237,7 +239,7 @@ const Createproject = () => {
       <Box mt="1rem" sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           sx={{ outline: '1px solid green', color: 'green' }}
-          onClick={navigation}
+          onClick={createproject}
           endIcon={<SendIcon />}
           disabled={isButtonDisabled}
         >

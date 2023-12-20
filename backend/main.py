@@ -133,7 +133,6 @@ class UserOperations(Resource):
     def get(self, uid):
         adm = ProjectrackAdministration()
         user = adm.get_user_by_google_id(uid)
-        print(user)
         if user:
             return user, 200
         else:
@@ -179,9 +178,6 @@ class ProjectOperations(Resource):
         adm = ProjectrackAdministration()
         proposal = Project.from_dict(api.payload)
 
-        print(proposal)
-        print(api.payload)
-
         if proposal is not None:
             p = adm.create_project(proposal)
             return p, 200
@@ -199,6 +195,45 @@ class ProjectOperation(Resource):
         proposal = adm.project_by_id(id)
 
         return proposal
+
+@api.route('/project/<int:id>/user')
+@api.response(500, "Falls es zu serverseitigen Fehler kommt")
+class ProjectMemberListOperations(Resource):
+    @api.marshal_with(user)
+    @api.expect(user)
+    @secured
+    def post(self, id):
+        adm = ProjectrackAdministration()
+        proposal = User.from_dict(api.payload)
+
+        if proposal is not None:
+            member = adm.add_member_to_project(proposal, id)
+            return member, 200
+        else:
+            return "", 500
+
+@api.route('/project/<int:id>/phases')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phases_id')
+class ProjectPhaseListOperations(Resource):
+    @api.marshal_list_with(phase)
+    @api.expect(phase)
+    def post(self, id):
+        adm = ProjectrackAdministration()
+
+        if len(api.payload) > 0:
+            phases = []
+            for phase_proposal in api.payload:
+                phaseBO = Phase.from_dict(phase_proposal)
+
+                if phaseBO is not None:
+                    # proposal.set_project_id(id)
+                    phase = adm.create_phasen(phaseBO)
+                    phases.append(phase)
+
+            return phases, 200
+        else:
+            return "No phases in request", 500
 
 
 @api.route('/project/<int:id>')
@@ -231,7 +266,6 @@ class UserProjectOperations(Resource):
     def get(self, id):
         adm = ProjectrackAdministration()
         projects = adm.get_projects_by_user_id(id)
-        print (projects)
         return {"projects":projects}
 
 
@@ -315,7 +349,6 @@ class PhaseListOperations(Resource):
                 proposal.get_indx(),
                 proposal.get_project_id()
             )
-            print(u)
             return u, 200
         else:
             return "", 500
@@ -405,6 +438,22 @@ class CommentListOperations(Resource):
                 proposal.get_task_id()
             )
             return u, 200
+        else:
+            return "", 500
+
+@api.route('/createproject')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class ProjectOperations(Resource):
+    @api.marshal_with(project)
+    @api.expect(project)
+    @secured
+    def post(self):
+        adm = ProjectrackAdministration()
+        proposal = Project.from_dict(api.payload)
+
+        if proposal is not None:
+            p = adm.create_project(proposal)
+            return p, 200
         else:
             return "", 500
 
