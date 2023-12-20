@@ -11,48 +11,58 @@ import { UserAuth } from '../Context/Authcontext';
 
 export default function Profil() {
   const { user, setUser } = UserAuth();
-
-
-
+  const [id, setid] = useState(null);
+  const [google_id, setgoogleid] = useState(null);
   const [vorname, setVorname] = useState('');
   const [nachname, setNachname] = useState('');
   const [nickname, setNickname] = useState('');
   const [helper, setHelper] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingNicknames, setExistingNicknames] = useState([]);
+  const [changeNickname, setChangeNickname] = useState(false)
 
   useEffect(() => {
-    fetchUserData();
     fetchExistingNicknames();
+    fetchUserData();
   }, []);
 
-  const fetchUserData = async () => {
-    try {
-      const userData = await apiget(`users`);
-      if (userData && userData.length > 0) {
-        // Find the user with the specific google_id
-        const userWithGoogleId = userData.find(userArray => userArray.google_id === user.userid);
-  
-        if (userWithGoogleId) {
-          setVorname(userWithGoogleId.surname || '');
-          setNachname(userWithGoogleId.name || '');
-          setNickname(userWithGoogleId.nickname || '');
-          setIsEditMode(true);
-          console.log("userData", userWithGoogleId);
-        } else {
-          console.log("User with the specified google_id not found");
-        }
-      }
-    } catch (error) {
-      console.error('Fehler beim Laden des Profils:', error);
-    }
-  };
 
-  const fetchExistingNicknames = async () => {
+  const [userGoogleData, setUserGoogleData] = useState("")
+  const fetchUserData = async () => {
+    apiget(`google_user/${user.userid}`).then((result) => {
+      setid(result.id);
+      setVorname(result.name || '');
+      setNachname(result.surname || '');
+      setNickname(result.nickname || '');
+      setgoogleid(result.google_id);
+      setIsEditMode(true);
+      setUserGoogleData(result.user)
+    });
+  }
+
+  const fetchExistingNicknames = async (nickname) => {
     try {
-      const nicknamesData = await apiget('users/nicknames');
-      if (nicknamesData) {
-        setExistingNicknames(nicknamesData.nicknames || []);
+      const data = await apiget('users/nicknames');
+
+      if (!data || !Array.isArray(data.nicknames)) {
+        console.error('Ungültige Datenstruktur für Nicknames erhalten.');
+        return;
+      }
+
+      const sanitizedNickname = (nickname || '').trim().toLowerCase();
+
+      const nicknamesData = data.nicknames.filter((nick) => {
+        if (typeof nick === 'string') {
+          const sanitizedNick = nick.trim().toLowerCase();
+          return sanitizedNick !== sanitizedNickname;
+        }
+        return false;
+      });
+
+      if (nicknamesData.length > 0) {
+        setExistingNicknames(nicknamesData);
+      } else {
+        setExistingNicknames([]);
       }
     } catch (error) {
       console.error('Fehler beim Laden der Nicknames:', error);
@@ -61,46 +71,35 @@ export default function Profil() {
 
   const handleSaveProfile = async () => {
     try {
-      if (isEditMode) {
-        // Update existing profile
-        await apiput('users', user.google_id, {
-          vorname: vorname,
-          nachname: nachname,
-          nickname: nickname,
-          // Add other profile data here
-        });
-        console.log('Profil erfolgreich aktualisiert');
-        // Re-fetch user data after updating
-        fetchUserData();
-      } else {
-        // Create new profile
-        const existingUser = await apipost('users', {
-          id: 0,
-          nachname: nachname,
-          vorname: vorname,
-          nickname: nickname,
-          google_id: user?.userid,
-        });
 
-        await setUser({ ...user, ['id']: existingUser.id });
+      const profileData = {
+        id: id,
+        surname: nachname,
+        name: vorname,
+        nickname: nickname,
+        google_id: google_id,
+      };
 
-        console.log('Profil erfolgreich erstellt');
-        // Re-fetch user data after creating
-        fetchUserData();
-      }
+      await apiput('users', user.id, profileData);
+      await setUser({ ...user, ['id']: id, });
     } catch (error) {
       console.error('Fehler beim Speichern des Profils:', error);
     }
   };
 
+
   const handleDeleteProfile = async () => {
     try {
       const confirmDelete = window.confirm('Möchten Sie Ihr Profil wirklich löschen?');
-
       if (confirmDelete) {
-        await apidelete('users', user.google_id);
-        console.log('Profil erfolgreich gelöscht');
-        // Optionally, you can add logic to navigate to another page or perform other actions after deletion
+        await apidelete('users', user.id);
+        //await fetchUserData();
+        setid("");
+        setVorname('');
+        setNachname('');
+        setNickname('');
+
+        window.location.replace("http://localhost:3000/createprofil");
       } else {
         console.log('Löschen des Profils abgebrochen');
       }
@@ -111,6 +110,26 @@ export default function Profil() {
 
   const handleEditProfile = () => {
     setIsEditMode(true);
+  };
+
+  const handleVornameChange = (event) => {
+    setVorname(event.target.value);
+  };
+
+  const handleNachnameChange = (event) => {
+    setNachname(event.target.value);
+  };
+
+  const handleNicknameChange = (event) => {
+    const newNickname = event.target.value;
+    setNickname(newNickname);
+
+    // Überprüfe, ob der Nickname bereits existiert
+    if (existingNicknames.includes(newNickname)) {
+      setHelper('Nickname bereits vergeben');
+    } else {
+      setHelper('');
+    }
   };
 
   return (
@@ -125,25 +144,28 @@ export default function Profil() {
               required
               style={input}
               label="Vorname"
-              id="textinput"
+              id="vorname"
               value={vorname}
+              onChange={handleVornameChange}
               disabled={!isEditMode}
             />
             <TextField
               required
               style={input}
               label="Nachname"
-              id="textinput"
+              id="nachname"
               value={nachname}
+              onChange={handleNachnameChange}
               disabled={!isEditMode}
             />
             <TextField
               required
               style={input}
               label="Nickname"
-              id="textinput"
+              id="nickname"
               helperText={helper}
               value={nickname}
+              onChange={handleNicknameChange}
               disabled={!isEditMode}
             />
           </Box>
@@ -153,14 +175,14 @@ export default function Profil() {
                 sx={{ outline: '1px solid blue', color: 'blue', marginRight: '1rem' }}
                 onClick={handleEditProfile}
               >
-                Profil speichern
+                Profil bearbeiten
               </Button>
             )}
             <Button
               sx={{ outline: '1px solid green', color: 'green', marginRight: '1rem' }}
               onClick={handleSaveProfile}
               endIcon={<SendIcon />}
-              disabled={!isEditMode || !vorname || !nachname || !nickname}
+              disabled={!isEditMode || !vorname || !nachname || !nickname || !!helper}
             >
               Profil {isEditMode ? 'aktualisieren' : 'erstellen'}
             </Button>

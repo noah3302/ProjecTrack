@@ -81,17 +81,17 @@ export function apipost(endpoint, data) {
 // PUT
 // id parameter points to the exact location of the ressource
 export function apiput(endpoint, id, data) {
-  return fetch(`${baseURL}${endpoint}/${id}`, {
+  const url = `${baseURL}${endpoint}/${id}`;
+  console.log("Request URL:", url);
+
+  return fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    // the parameter "data" must be an Object (key-value-pairs) for this
-    // function to work
     body: JSON.stringify(data),
   });
 }
-
 // TODO: functionality of the patch request (if required)
 // PATCH
 export function apipatch(endpoint, data) {
