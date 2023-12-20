@@ -81,7 +81,7 @@ const Comment = ({ taskid }) => {
  
     const handleDelete = async (index, Comment) => {
         try {
-            await apidelete(`comment`, Comment.id);
+            await apidelete(`coment`, Comment.id);
             const updatedComments = comment.filter((_, i) => i !== index);
             setComment(updatedComments);
         } catch (error) {

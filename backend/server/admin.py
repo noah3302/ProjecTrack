@@ -170,25 +170,26 @@ class ProjectrackAdministration(object):
         user_phase_task_count = {}
         users_dict = {}  # Annahme: Dictionary mit UserId und Nickname
 
+        # Erhalte das Dictionary mit UserId und Nickname
         with ProjectMapper() as mapper:
-            users_dict = mapper.get_members_by_project_id(number)  # Erhalte das Dictionary mit UserId und Nickname
+            users_dict = mapper.get_members_by_project_id(number)
 
+        # Erhalte die Phasenids und Phasennamen
         with PhaseMapper() as mapper:
-            phase_ids = [phase.get_id() for phase in mapper.get_phases_by_project_id(number)]  # Erhalte die Phasenids
+            phases = {phase.get_id(): phase.get_phasename() for phase in mapper.get_phases_by_project_id(number)}
 
         with TaskMapper() as mapper:
             for user_id, user_nickname in users_dict.items():
                 user_phase_task_count[
                     user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
-                for phase_id in phase_ids:
+                for phase_id, phase_name in phases.items():
                     tasks = mapper.find_by_phase_id_and_user_id(phase_id,
                                                                 user_id)  # Erhalte Tasks für die Phase und Benutzer
                     task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
                     user_phase_task_count[user_nickname][
-                        phase_id] = task_count  # Speichere die Task-Anzahl für die Phasen-ID
+                        phase_name] = task_count  # Speichere die Task-Anzahl für den Phasennamen
 
-            print(user_phase_task_count)
-
+        print(user_phase_task_count)
         return user_phase_task_count
 
     """Tasks"""
@@ -206,6 +207,11 @@ class ProjectrackAdministration(object):
     def get_phase_by_project_id(self, number):
         with PhaseMapper() as mapper:
             return mapper.get_phases_by_project_id(number)
+
+    """Phasen hinzufügen zu projekt"""
+    def create_phasen(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.insert(number)
 
     """Phasen hinzufügen zu projekt"""
     def create_phase(self, phasename, indx, project_id):
@@ -286,7 +292,23 @@ class ProjectrackAdministration(object):
         with CommentMapper() as mapper:
             return mapper.update(coment)
 
+    """Project"""
 
+    """Project updaten"""
+    def update_project(self, id, project_title, project_description, founder, start_date, end_date):
+        project = Project()
+        project.set_id(id),
+        project.set_project_title(project_title),
+        project.set_project_description(project_description),
+        project.set_founder(founder),
+        project.set_start_date(start_date),
+        project.set_end_date(end_date)
+        with ProjectMapper() as mapper:
+            return mapper.update(project)
+
+    def add_member_to_project(self, member, project_id):
+        with UserMapper() as mapper:
+            return mapper.add_user_to_project(member, project_id)
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()

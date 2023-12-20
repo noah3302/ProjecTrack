@@ -34,6 +34,7 @@ const Phase = () => {
 
     const handleDeleteButtonClick = (phaseId) => {
         console.log("Delete button clicked with ID:", phaseId);
+        console.log(project.project_id);
         handleDeletePhase(phaseId);
     };
 
@@ -109,7 +110,7 @@ const Phase = () => {
                 id: 0,
                 phasename: newPhaseName.trim(),
                 indx: String(project.length + 1),
-                project_id: project.project_id,
+                project_id: id,
             };
             const response = await apipost('phase', newPhase);
             console.log(response);

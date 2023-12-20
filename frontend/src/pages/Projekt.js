@@ -4,8 +4,9 @@ import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-import { apiget } from "../API/Api";
+import { apiget, apiput} from "../API/Api";
 import DatePicker from "@mui/lab/DatePicker";
+
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function Projekt() {
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
+  //const user userauth holen
   let { id } = useParams();
 
   useEffect(() => {
@@ -24,10 +26,10 @@ export default function Projekt() {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        const founderData = await apiget(`nickname/${project.founder}`);
-        setFounderName(founderData.nickname);
-        const nicknamesData = await apiget("nicknames"); // Replace with your API endpoint
-        setNicknames(nicknamesData); // Assuming nicknamesData is an array of nicknames
+        // const founderData = await apiget(`nickname/${project.founder}`);
+        // setFounderName(founderData.nickname);
+        // const nicknamesData = await apiget("nicknames"); // Replace with your API endpoint
+        // setNicknames(nicknamesData); // Assuming nicknamesData is an array of nicknames
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
@@ -73,6 +75,27 @@ export default function Projekt() {
     marginBottom: "5px",
   };
 
+  //Aktualisieren der Daten in die Datenbank
+  const handleSave = async () => {
+    console.log(project)
+    try {
+        const update = {
+          id: id,
+          project_title: project.project_title,
+          project_description: project.project_description,
+          founder: project.founder,
+          start_date: project.start_date,
+          end_date: project.end_date,
+      };
+
+        const updatedProject = await apiput('project', id, update);
+        handleCloseSettings();
+        setProject(update);
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren des Projekts:", error);
+    }
+};
+
   return (
     <>
       <Modal open={openSettings} onClose={handleCloseSettings}>
@@ -91,7 +114,7 @@ export default function Projekt() {
               label="Beschreibung"
               variant="outlined"
               value={project.project_description}
-              onChange={(e) => setProject({ ...project, description: e.target.value })}
+              onChange={(e) => setProject({ ...project, project_description: e.target.value })}
               fullWidth
               multiline
               rows={4}
@@ -104,7 +127,12 @@ export default function Projekt() {
               fullWidth
               margin="normal"
               InputProps={{
-                readOnly: true,
+                readOnly: true,         //kann man nicht bearbeiten
+                style: {
+                  pointerEvents: 'none',      //Cursor entfernen
+                  color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
+                  backgroundColor: '#f0f0f0', //Hintergrundfarbe
+                },
               }}
             />
             <TextField
@@ -130,8 +158,8 @@ export default function Projekt() {
             />
             <Autocomplete
               width="100%"
-              options={nicknames} 
-              getOptionLabel={(option) => option.nickname}
+              options={nicknames || []} //falls nicknames undefined, wird leere Liste als Standard gesetzt
+              getOptionLabel={(option) => option ? option.nickname || '' : ''}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -143,7 +171,7 @@ export default function Projekt() {
               )}
               value={founderName}
               onChange={(event, newValue) => {
-                setFounderName(newValue ? newValue.nickname : ""); 
+                setFounderName(newValue ? newValue.nickname || '' : '');
               }}
             />
           </Box>
@@ -151,10 +179,20 @@ export default function Projekt() {
             variant="contained"
             color="secondary"
             style={{ color: "black" }}
-            onClick={() => { handleCloseSettings(); }}
+            onClick={() => { handleSave() }}
           >
             Speichern
           </Button>
+          {/* {user?.user.id === project.founder(          
+          <Button
+            variant="contained"
+            color="secondary"
+            style={{ color: "black" }}
+            //onClick={() => { handleDelete() }}
+          >
+            Löschen
+          </Button>):(<></>)};
+           */}
         </Box>
       </Modal>
       <Box style={headerStyle}>

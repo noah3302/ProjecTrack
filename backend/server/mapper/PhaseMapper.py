@@ -65,8 +65,6 @@ class PhaseMapper(Mapper):
         cursor.close()
         return result
 
-
-
     def insert(self, phases):
         cursor = self._cnx.cursor()
         cursor.execute("SELECT COUNT(*) FROM phases")
