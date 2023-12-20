@@ -10,8 +10,6 @@ class Project(BusinessObject):
         self._start_date = ""
         self._end_date = ""
 
-    def get_id(self):
-        return self._id
 
     def get_project_title(self):
         return self._project_title
@@ -46,7 +44,7 @@ class Project(BusinessObject):
 
 
     def __str__(self):
-        return "project_id: {}\nproject_title: {}\nproject_description: {}\nfounder: {}\nstart_date: {}\nend_date: {}\n".format(self.get_id(),
+        return "id: {}\nproject_title: {}\nproject_description: {}\nfounder: {}\nstart_date: {}\nend_date: {}\n".format(self.get_id(),
                                                                                     self._project_title,self._project_description,
                                                                                     self._founder, self._start_date, self._end_date,)
 
@@ -55,7 +53,7 @@ class Project(BusinessObject):
         if dictio is None:
             dictio = dict()
         obj = Project()
-        obj.set_id(dictio["project_id"])
+        obj.set_id(dictio["id"])
         obj.set_project_description(dictio["project_description"])
         obj.set_project_title(dictio["project_title"])
         obj.set_founder(dictio["founder"])

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { apiget } from "../API/Api";
+import { useParams } from 'react-router-dom';
 
 const Arbeitsstatistik = () => {
   const [data, setData] = useState([]);
   const [nicknames, setNicknames] = useState([]);
+  let { id } = useParams();
 
   useEffect(() => {
-    const id = 1;
     const fetchArbeitssta = async () => {
       try {
         const response = await apiget(`arbeitsstatistik/${id}`);

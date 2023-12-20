@@ -8,6 +8,8 @@ from SecurityDecorator import secured
 from server.bo.User import User
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
+from server.bo.Comment import Comment
+from server.bo.Task import Task
 from server.admin import ProjectrackAdministration
 
 
@@ -35,30 +37,42 @@ user = api.inherit('User', bo, {
     'nickname': fields.String(attribute='_nickname', description='nickname des users'),
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
-project = api.inherit('Project', bo, {
+projectcard = api.inherit('Project', bo, {
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'nickname': fields.String(attribute='_nickname', description='nickname des users'),
-        'project_description': fields.String(attribute='_project_description',
-                                             description='project_description des Projects'),
+        'project_description': fields.String(attribute='_project_description',description='project_description des Projects'),
         'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
-        'end_date': fields.String(attribute='_end_date', description='end_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects')
+    })
+
+project = api.inherit('Project', bo, {
+        'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
+        'project_description': fields.String(attribute='_project_description', description='project_description des Projects'),
+        'founder': fields.String(attribute='_founder', description='project_founder des Projects'),
+        'start_date': fields.String(attribute='_start_date', description='start_date des Projects'),
+        'end_date': fields.String(attribute='_end_date', description='end_date des Projects')
     })
 
 task = api.inherit('Task', bo, {
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
-        'duedate': fields.String(attribute='_duedate',
-                                             description='Due Date für die Task'),
+        'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
         'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
 })
 
-phase = api.inherit('phase', bo, {
+phase = api.inherit('Phase', bo, {
         'phasename': fields.String(attribute='_phasename', description='Phasename des Projects'),
         'indx': fields.String(attribute='_indx', description='index der Phase'),
-        'project_id': fields.String(attribute='_project_id',
-                                             description='Project_id der Phase'),
+        'project_id': fields.String(attribute='_project_id', description='Project_id der Phase')
     })
+
+comment = api.inherit('Comment', bo, {
+        'comment': fields.String(attribute='_comment', description='Kommentar string'),
+        'creationdate': fields.String(attribute='_creationdate', description='Datum der Erstellung des Kommentars'),
+        'user_id': fields.String(attribute='_user_id', description='Userid des Kommentars'),
+        'task_id': fields.String(attribute='_task_id', description='Taskid des Kommentars')
+})
 
 """User"""
 
@@ -135,6 +149,15 @@ class UserNicknameOperations(Resource):
         nicknames = adm.get_all_nicknames()
         return {"nicknames": nicknames}
 
+@api.route('/nickname/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'User id')
+class UserNicknameOperations(Resource):
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        nickname = adm.get_nickname(id)
+        return {"nickname": nickname}
+
 
 @api.route('/arbeitsstatistik/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
@@ -149,8 +172,8 @@ class UserListOperations(Resource):
 @api.route('/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectOperations(Resource):
-    @api.marshal_with(project)
-    @api.expect(project)
+    @api.marshal_with(projectcard)
+    @api.expect(projectcard)
     @secured
     def post(self):
         adm = ProjectrackAdministration()
@@ -165,6 +188,19 @@ class ProjectOperations(Resource):
         else:
             return "", 500
 
+@api.route('/project/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param("id","project id")
+class ProjectOperation(Resource):
+
+    @api.marshal_list_with(project)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        proposal = adm.project_by_id(id)
+
+        return proposal
+
+
 
 @api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
@@ -177,34 +213,95 @@ class UserProjectOperations(Resource):
         return {"projects":projects}
 
 
-@api.route('/Phase')
-@api.response(500, "Falls es zu serverseitigen Fehler kommt")
-class PhaseListOperations(Resource):
-    @api.marshal_list_with(phase)
-    def get(self):
-        return phase
-@api.marshal_with(phase, code=201)
-@api.expect(phase)
-@secured
-def post(self):
-    data = api.payload
-    print(data)
-
-
 @api.route('/phase/task/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'id')
-class UserListOperations(Resource):
+class PhaseListOperations(Resource):
     @api.marshal_list_with(task)
     def get(self, id):
         adm = ProjectrackAdministration()
         tasks = adm.get_task_by_phase_id(id)
         return tasks
 
+@api.route('/task/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class TaskListOperations(Resource):
+
+    @api.marshal_list_with(task, code="201")
+    @api.expect(task)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Task.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.update_task(
+                id,
+                proposal.get_tasktitle(),
+                proposal.get_description(),
+                proposal.get_duedate(),
+                proposal.get_user_id(),
+                proposal.get_phases_id()
+            )
+            return u, 200
+        else:
+            return "", 500
+
+@api.route('/tasks/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'task_id')
+class TaskListOperations(Resource):
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        tasks = adm.delete_task(id)
+        return tasks, 200
+
+@api.route('/phases/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class PhasesListOperations(Resource):
+
+    @api.marshal_list_with(phase, code="201")
+    @api.expect(phase)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Phase.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.update_phase(
+                id,
+                proposal.get_phasename(),
+                proposal.get_indx(),
+                proposal.get_project_id(),
+            )
+            return u, 200
+        else:
+            return "", 500
+
+    """Kommentare hinzufügen"""
+@api.route('/phase')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class PhaseListOperations(Resource):
+
+    @api.marshal_list_with(phase, code="201")
+    @api.expect(phase)
+    def post(self):
+        adm = ProjectrackAdministration()
+        proposal = Phase.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.create_phase(
+                proposal.get_phasename(),
+                proposal.get_indx(),
+                proposal.get_project_id()
+            )
+            print(u)
+            return u, 200
+        else:
+            return "", 500
+
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'phases_id')
-class UserListOperations(Resource):
+class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     def get(self, id):
         adm = ProjectrackAdministration()
@@ -212,44 +309,83 @@ class UserListOperations(Resource):
         return phases
 
     @api.marshal_with(phase, code=200)
-    @api.expect(phase)
-    def post(self, id):
-        adm = ProjectrackAdministration()
-        proposal = User.from_dict(api.payload)
-
-        if proposal is not None:
-            u = adm.create_phase(
-                proposal.get_id(),
-                proposal.get_phasename(),
-                proposal.get_indx(),
-                proposal.get_project_id(id)
-            )
-            return u, 200
-        else:
-            return "", 500
-
-    @api.marshal_with(phase, code=200)
-    @api.expect(phase)
-    def put(self, id):
-        adm = ProjectrackAdministration()
-        proposal = User.from_dict(api.payload)
-
-        if proposal is not None:
-            u = adm.put_phase(
-                proposal.get_id(),
-                proposal.get_phasename(),
-                proposal.get_indx(),
-                proposal.get_project_id(id)
-            )
-            return u, 200
-        else:
-            return "", 500
-
-    @api.marshal_with(phase, code=200)
     def delete(self, id):
         adm = ProjectrackAdministration()
         phases = adm.delete_phase(id)
         return phases, 200
+
+
+"""Kommentare"""
+
+"""Kommentare über die Taskid ziehen"""
+
+@api.route('/task/comment/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'task_id')
+class CommentListOperations(Resource):
+    @api.marshal_list_with(comment)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        comments = adm.get_comment_by_task_id(id)
+        return comments
+
+
+    """Kommentare hinzufügen"""
+@api.route('/comment')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class CommentListOperations(Resource):
+
+    @api.marshal_list_with(comment, code="201")
+    @api.expect(comment)
+    def post(self):
+        adm = ProjectrackAdministration()
+        proposal = Comment.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.create_comment(
+                proposal.get_comment(),
+                proposal.get_creationdate(),
+                proposal.get_user_id(),
+                proposal.get_task_id()
+            )
+            return u, 200
+        else:
+            return "", 500
+
+
+"""Kommentare über die Taskid ziehen"""
+@api.route('/coment/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'comment_id')
+class CommentListOperations(Resource):
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        comments = adm.delete_comment(id)
+        return comments, 200
+
+@api.route('/comment/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'comment_id')
+class CommentListOperations(Resource):
+
+    @api.marshal_list_with(comment, code=201)
+    @api.expect(comment)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Comment.from_dict(api.payload)
+
+        if proposal is not None:
+            u = adm.update_comment(
+                id,
+                proposal.get_comment(),
+                proposal.get_creationdate(),
+                proposal.get_user_id(),
+                proposal.get_task_id()
+            )
+            return u, 200
+        else:
+            return "", 500
+
 
 
 if __name__ == '__main__':

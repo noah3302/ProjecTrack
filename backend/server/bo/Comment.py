@@ -3,17 +3,14 @@ from backend.server.bo.BuisnessObject import BusinessObject
 class Comment(BusinessObject):
     def __init__(self):
         super().__init__()
-        self._comment_id = 0
         self._comment = ""
         self._creationdate = ""
         self._user_id = 0
         self._task_id = 0
 
-    def get_comment_id(self):
-        return self._comment_id
 
-    def set_comment_id(self, comment_id):
-        self._comment_id = comment_id
+    def get_id(self):
+        return self._id
 
     def get_comment(self):
         return self._comment
@@ -40,13 +37,13 @@ class Comment(BusinessObject):
         self._task_id = task_id
 
     def __str__(self):
-        return "comment_id: {}\ncomment: {}\ncreationdate: {}\nuser_id: {}\ntask_id: {}\n".format(
-            self._comment_id, self._comment, self._creationdate, self._user_id, self._task_id)
+        return "id: {}\ncomment: {}\ncreationdate: {}\nuser_id: {}\ntask_id: {}\n".format(
+            self.get_id(), self._comment, self._creationdate, self._user_id, self._task_id)
 
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Comment()
-        obj.set_comment_id(dictio["comment_id"])
+        obj.set_id(dictio["id"])
         obj.set_comment(dictio["comment"])
         obj.set_creationdate(dictio["creationdate"])
         obj.set_user_id(dictio["user_id"])

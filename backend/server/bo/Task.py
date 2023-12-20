@@ -42,7 +42,7 @@ class Task(BusinessObject):
         self._phases_id = phases_id
 
     def __str__(self):
-        return "task_id: {}\ntasktitle: {}\ndescription: {}\nduedate: {}\nuser_id: {}\nphases_id {}\n".format(
+        return "id: {}\ntasktitle: {}\ndescription: {}\nduedate: {}\nuser_id: {}\nphases_id {}\n".format(
                                                                                 self.get_id(), self._tasktitle,
                                                                                     self._description, self._duedate,
                                                                                     self._user_id, self._phases_id,)
@@ -50,11 +50,11 @@ class Task(BusinessObject):
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Task()
-        obj.set_id(dictio["task_id"])
+        obj.set_id(dictio["id"])
         obj.set_tasktitle(dictio["tasktitle"])
         obj.set_description(dictio["description"])
         obj.set_duedate(dictio["duedate"])
         obj.set_user_id(dictio["user_id"])
-        obj.set_phasen_id(dictio["phases_id"])
+        obj.set_phases_id(dictio["phases_id"])
 
         return obj

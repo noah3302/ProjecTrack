@@ -2,6 +2,10 @@ from server.bo.User import User
 from server.bo.Task import Task
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
+from server.bo.Comment import Comment
+from server.bo.Task import Task
+
+
 
 
 
@@ -14,6 +18,9 @@ from server.mapper.UserMapper import UserMapper
 from server.mapper.TaskMapper import TaskMapper
 from server.mapper.ProjectMapper import ProjectMapper
 from server.mapper.PhaseMapper import PhaseMapper
+from server.mapper.CommentMapper import CommentMapper
+from datetime import datetime
+
 
 
 class ProjectrackAdministration(object):
@@ -61,6 +68,17 @@ class ProjectrackAdministration(object):
                 nicknames.append(user.get_nickname())
             return nicknames
 
+    """
+    Nickname für user id
+
+    """
+
+    def get_nickname(self, number):
+        with UserMapper() as mapper:
+            users = mapper.find_by_key(number)
+            nickname = users.get_nickname()
+            return nickname
+
 
     """
     user mit bestimmter id ausgeben
@@ -89,6 +107,10 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
 
+    """Project"""
+    """Project by user id"""
+
+
     def get_projects_by_user_id(self, user_id):
         projects = []
         with ProjectMapper() as mapper:
@@ -115,9 +137,14 @@ class ProjectrackAdministration(object):
                 })
         return projects
 
+    """Create Projects"""
     def create_project(self, project):
         with ProjectMapper() as mapper:
             return mapper.insert(project)
+
+    def project_by_id(self, id):
+        with ProjectMapper() as mapper:
+            return mapper.find_by_key(id)
 
     """Arbeitsstatistik"""
 
@@ -160,20 +187,90 @@ class ProjectrackAdministration(object):
             return mapper.get_phases_by_project_id(number)
 
     """Phasen hinzufügen zu projekt"""
-    def create_phase(self, number):
+    def create_phase(self, phasename, indx, project_id):
+        phase = Phase()
+        phase.set_phasename(phasename),
+        phase.set_indx(indx),
+        phase.set_project_id(project_id)
+
         with PhaseMapper() as mapper:
-            return mapper.insert(number)
+            return mapper.insert(phase)
 
     """Phasen aus projekt löschen"""
     def delete_phase(self, number):
         with PhaseMapper() as mapper:
             return mapper.delete(number)
 
-    def put_phase(self, number):
+    def update_phase(self, id, phasename, indx, project_id):
+        phase = Phase()
+        phase.set_id(id),
+        phase.set_phasename(phasename),
+        phase.set_indx(indx),
+        phase.set_project_id(project_id),
         with PhaseMapper() as mapper:
-            return mapper.update(number)
+            return mapper.update(phase)
+
+
+    """Task"""
+    """Task updaten"""
+
+    def update_task(self, id, tasktitle, description, duedate ,user_id, phases_id):
+        task = Task()
+        task.set_id(id),
+        task.set_tasktitle(tasktitle),
+        task.set_description(description),
+        task.set_duedate(duedate),
+        task.set_user_id(user_id),
+        task.set_phases_id(phases_id)
+        with TaskMapper() as mapper:
+            return mapper.update(task)
+
+    """Task löschen"""
+
+    def delete_task(self, number):
+        with TaskMapper() as mapper:
+            return mapper.delete(number)
+
+
+
+    """Kommentare"""
+
+    """Kommentare über Task id bekommen"""
+
+    def get_comment_by_task_id(self, number):
+        with CommentMapper() as mapper:
+            return mapper.find_by_task_id(number)
+
+    def create_comment(self, comment, creationdate, user_id, task_id):
+        coment = Comment()
+        coment.set_comment(comment),
+        coment.set_creationdate(datetime.now().replace(microsecond=0)),
+        coment.set_user_id(user_id),
+        coment.set_task_id(task_id)
+
+        with CommentMapper() as mapper:
+            return mapper.insert(coment)
+
+    def delete_comment(self, number):
+        with CommentMapper() as mapper:
+            return mapper.delete(number)
+
+    def update_comment(self, id, comment, creationdate, user_id, task_id):
+        coment = Comment()
+        coment.set_id(id),
+        coment.set_comment(comment),
+        coment.set_creationdate(datetime.now().replace(microsecond=0)),
+        coment.set_user_id(user_id),
+        coment.set_task_id(task_id)
+        with CommentMapper() as mapper:
+            return mapper.update(coment)
+
+
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()
-    pa = adm.get_projects_by_user_id(1)
+    pa = adm.create_phase("phasename", 6, 1)
+    #for f in pa:
+        #print(f)
+    print(pa)
 

@@ -38,7 +38,7 @@ export const AuthContextProvider = ({ children }) => {
         };
 
         setUser(currentUser);
-        localStorage.setItem("user", JSON.stringify(currentUser));
+        sessionStorage.setItem("user", JSON.stringify(currentUser));
         broadcastAuthState(currentUser);
 
       } catch (error) {

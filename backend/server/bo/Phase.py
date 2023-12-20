@@ -4,7 +4,6 @@ from backend.server.bo.BuisnessObject import BusinessObject
 class Phase(BusinessObject):
     def __init__(self):
         super().__init__()
-        self._id=""
         self._phasename = ""
         self._indx = ""
         self._project_id = ""
@@ -33,15 +32,15 @@ class Phase(BusinessObject):
 
 
     def __str__(self):
-        return "phases_id: {}\nphasename: {}\nindx {}\nproject_id {}\n".format(self.get_id(),
-                                                 self._phasename, self._indx, self._project_id)
+        return "id: {}\nphasename: {}\nindx: {}\nproject_id: {}\n".format(self.get_id(),
+                                                 self._phasename, self._indx, self._project_id,)
 
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Phase()
-        obj.set_id(dictio["phases_id"])
-        obj.set_phasenname(dictio["phasename"])
-        obj.set_indx(dictio["index"])
+        obj.set_id(dictio["id"])
+        obj.set_phasename(dictio["phasename"])
+        obj.set_indx(dictio["indx"])
         obj.set_project_id(dictio["project_id"])
 
         return obj

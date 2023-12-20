@@ -13,14 +13,14 @@ class ProjectMapper(Mapper):
         cursor.execute("SELECT * FROM project")
         tuples = cursor.fetchall()
 
-        for (project_id, project_title, start_date, end_date, founder, project_description) in tuples:
+        for (project_id, title, start_date, end_date, founder, description) in tuples:
             project = Project()
             project.set_id(project_id)
-            project.set_project_title(project_title)
+            project.set_project_title(title)
             project.set_start_date(start_date)
             project.set_end_date(end_date)
             project.set_founder(founder)
-            project.set_project_description(project_description)
+            project.set_project_description(description)
             result.append(project)
 
         self._cnx.commit()
@@ -50,15 +50,16 @@ class ProjectMapper(Mapper):
         cursor.execute(command)
         tuples = cursor.fetchall()
 
-        for (id, title, discription, founder, startdate, enddate) in tuples:
+        for (id, title, description, founder, startdate, enddate) in tuples:
             project = Project()
             project.set_id(id)
             project.set_project_title(title)
-            project.set_project_description(discription)
+            project.set_project_description(description)
             project.set_founder(founder)
             project.set_start_date(startdate.isoformat())
             project.set_end_date(enddate.isoformat())
             result.append(project)
+
 
         self._cnx.commit()
         cursor.close()
@@ -71,17 +72,19 @@ class ProjectMapper(Mapper):
         command = "SELECT * FROM project WHERE project_id='{}'".format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
+        print(tuples)
 
         try:
-            (project_id, project_title, start_date, end_date, founder, project_description) = tuples[0]
+            (project_id, title, description, founder, start_date, end_date ) = tuples[0]
             project = Project()
             project.set_id(project_id)
-            project.set_project_title(project_title)
+            project.set_project_title(title)
+            project.set_project_description(description)
+            project.set_founder(founder)
             project.set_start_date(start_date)
             project.set_end_date(end_date)
-            project.set_founder(founder)
-            project.set_project_description(project_description)
             result = project
+            print(result)
 
         except IndexError:
             result = None
@@ -101,8 +104,8 @@ class ProjectMapper(Mapper):
             cursor.execute("SELECT MAX(project_id) AS maxid FROM project")
             maxid = cursor.fetchone()[0]
             project.set_id(maxid + 1)
-        command = "INSERT INTO project (project_id, project_title, start_date, end_date, founder, project_description) VALUES (%s, %s, %s, %s, %s, %s)"
-        data = (project.get_project_id(),project.get_project_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_project_description())
+        command = "INSERT INTO project (project_id, title, start_date, end_date, founder, description) VALUES (%s, %s, %s, %s, %s, %s)"
+        data = (project.get_project_id(),project.get_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_description())
         cursor.execute(command, data)
         self._cnx.commit()
         cursor.close()
@@ -112,8 +115,8 @@ class ProjectMapper(Mapper):
     def update(self, project):
         cursor = self._cnx.cursor()
 
-        command = "UPDATE project SET project_id=%s, project_title=%s, start_date=%s, end_date=%s, founder=%s, project_description=%s WHERE project_id=%s"
-        data = (project.get_project_id(),project.get_project_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_project_description())
+        command = "UPDATE project SET project_id=%s, title=%s, start_date=%s, end_date=%s, founder=%s, description=%s WHERE project_id=%s"
+        data = (project.get_project_id(),project.get_title(), project.get_start_date(), project.get_end_date(), project.get_founder(), project.get_description())
 
         cursor.execute(command, data)
         self._cnx.commit()
@@ -128,7 +131,8 @@ class ProjectMapper(Mapper):
 
 if __name__ == "__main__":
     with ProjectMapper() as mapper:
-        result = mapper.get_projects_by_user_id(1)
-        for f in result:
-            print(f)
+        result = mapper.find_by_key(1)
+        #for f in result:
+            #print(f)
+        print(result)
 
