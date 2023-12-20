@@ -1,4 +1,4 @@
 host = "localhost"
 user = "root"
-password = "antene12.."
+password = "1234"
 database = "projectrack"
