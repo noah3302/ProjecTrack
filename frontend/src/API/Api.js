@@ -82,7 +82,6 @@ export function apipost(endpoint, data) {
 // id parameter points to the exact location of the ressource
 export function apiput(endpoint, id, data) {
   const url = `${baseURL}${endpoint}/${id}`;
-  console.log("Request URL:", url);
 
   return fetch(url, {
     method: "PUT",

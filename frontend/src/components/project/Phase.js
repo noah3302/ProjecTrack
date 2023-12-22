@@ -4,25 +4,27 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useParams } from "react-router-dom";
-import {
-  Box,
-  TextField,
-  Card,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, TextField, Card, Typography, IconButton,} from "@mui/material";
 import Task from "./Tasks";
 
 const Phase = () => {
   const [project, setProject] = useState([]);
   const [newPhaseName, setNewPhaseName] = useState("");
   let { id } = useParams();
+  const [reloadKey, setReloadKey] = useState(0);
+  const [newPhasenid, setNewPhasenid] = useState(null); 
 
   const phasenload = async () => {
     const response = await apiget(`phase/${id}`);
     const sortedResponse = response.sort((a, b) => a.indx - b.indx);
     setProject(sortedResponse);
   };
+
+  const updateParentComponent = async (newPhasenid) => {
+    setNewPhasenid(newPhasenid);
+    await phasenload(newPhasenid); 
+    setReloadKey(prevKey => prevKey + 1); 
+};
 
   useEffect(() => {
     phasenload();
@@ -232,7 +234,7 @@ const Phase = () => {
               >
                 <DeleteOutlineIcon />
               </IconButton>
-              <Task key={phase.id} phasenid={phase.id} />
+              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} />
             </Card>
           ))}
         <Card

@@ -40,6 +40,15 @@ const Modaltask = ({ phasesid, updatetasks }) => {
         phases_id: newTask.phases_id,
       });
       updatetasks((prev) => [...prev, response]);
+      handleClose();
+      setNewTask({
+        task_id: 0,
+        tasktitle: "",
+        description: "",
+        duedate: "",
+        user_id: null,
+        phases_id: phasesid,
+      })
 
       console.log(response);
     } catch (error) {

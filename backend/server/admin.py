@@ -160,6 +160,12 @@ class ProjectrackAdministration(object):
         with ProjectMapper() as mapper:
             return mapper.insert(project)
 
+    """Projekt löschen"""
+
+    def delete_project(self, number):
+        with ProjectMapper() as mapper:
+            return mapper.delete(number)
+
     def project_by_id(self, id):
         with ProjectMapper() as mapper:
             return mapper.find_by_key(id)

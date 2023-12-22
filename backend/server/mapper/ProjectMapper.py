@@ -125,7 +125,7 @@ class ProjectMapper(Mapper):
 
     def delete(self, project):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM project WHERE project_id='{}'".format(project.get_id())
+        command = "DELETE FROM project WHERE project_id='{}'".format(project)
         cursor.execute(command)
         self._cnx.commit()
 

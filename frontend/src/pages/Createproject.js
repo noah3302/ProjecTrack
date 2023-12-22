@@ -26,10 +26,13 @@ const Createproject = () => {
   async function getExistingUsers() {
     const allUsers = await apiget('/users')
     setExistingUsers(allUsers)
+    setStartDate("2023-12-01")
+    setStartDate("2023-12-01")
   }
 
   useEffect(() => {
     getExistingUsers()
+    console.log(user);
   }, []);
 
   function getUserNames(array) {
@@ -83,6 +86,15 @@ const Createproject = () => {
         ...member
       }))
     })
+    console.log(user);
+    const eigene = {
+      id: user.id,
+      surname: user.surname,
+      google_id: user.userid,
+      name: user.name,
+      nickname: user.nickname,
+    };
+    console.log(eigene);
 
     // sich selber auch als Member zum Projekt hinzufügen
     apiCalls.push(apipost(`project/${newProject.id}/user`, {
@@ -155,9 +167,8 @@ const Createproject = () => {
     marginBottom: '1rem',
   };
 
-
   return (
-    <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '20rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
+    <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '5rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
       <Typography align="center" variant="h5" mb={'1rem'}>
         Projekt erstellen
       </Typography>
@@ -183,24 +194,32 @@ const Createproject = () => {
         onChange={handleMembersChange}
         sx={{ width: '500px' }}
       />
-
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker 
-            localeText={{ start: 'Check-in', end: 'Check-out' }} 
-            onChange={selectedDates => {
-            // start date
-            if (selectedDates[0]) setStartDate(localISOTime(selectedDates[0].$d));
-            // end date
-            if (selectedDates[1]) setEndDate(localISOTime(selectedDates[1].$d));
-          }}
-            startText="Startdatum"
-            endText="Enddatum"
-            error={!startDate || !endDate}
-            helperText={(startDate && endDate) ? "" : "Diese Felder sind erforderlich."} 
-          />
-        </DemoContainer>
-      </LocalizationProvider>
+      <TextField
+        value={startDate}
+        label="Startdate"
+        type="date"
+        InputLabelProps={{
+          shrink: true,
+          focused: false,
+          style: { position: 'absolute' } 
+        }}
+        onChange={(e) => setStartDate(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        value={endDate}
+        label="Enddatum"
+        type="date"
+        InputLabelProps={{
+          shrink: true,
+          focused: false,
+          style: { position: 'absolute' } 
+        }}
+        onChange={(e) => setEndDate(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
 
       <TextField required error={!selectedPhase} style={phaseninput} label="Phasenauswahl" select value={selectedPhase} onChange={handlePhasenChange} multiple>
         {options.map((option) => (

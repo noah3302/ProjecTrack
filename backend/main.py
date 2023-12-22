@@ -208,6 +208,15 @@ class ProjectOperations(Resource):
 
 @api.route('/project/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'task_id')
+class ProjectListOperations(Resource):
+    def delete(self, id):
+        adm = ProjectrackAdministration()
+        project = adm.delete_project(id)
+        return project, 200
+
+@api.route('/project/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param("id","project id")
 class ProjectOperation(Resource):
 

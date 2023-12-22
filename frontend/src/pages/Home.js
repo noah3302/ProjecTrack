@@ -20,7 +20,6 @@ const Home = () => {
                     borderRadius: 1,
                 }} >
                 <Typography typography={"h4"}>Herzlich Willkommen {user?.displayName}</Typography>
-                <Typography typography={"h4"}>Herzlich Willkommen {user?.uid}</Typography>
             </Box>
             <Box m={"3rem"} >
                 <Projectcard></Projectcard>

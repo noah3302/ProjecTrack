@@ -4,10 +4,12 @@ import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-import { apiget, apiput} from "../API/Api";
-import DatePicker from "@mui/lab/DatePicker";
-
-
+import { apiget, apiput, apidelete} from "../API/Api";
+import { UserAuth } from "../Context/Authcontext";
+import { useNavigate } from "react-router-dom";
+ 
+ 
+ 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -18,34 +20,44 @@ export default function Projekt() {
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
-  //const user userauth holen
-  let { id } = useParams();
-
+  const { user } = UserAuth();
+  const navigate = useNavigate();
+  let { id } = useParams(); 
+ 
+  //stehen geblieben bei nicknamen bei founder
+ 
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        // const founderData = await apiget(`nickname/${project.founder}`);
+        // const founderData = await apiget(`nickname/${data.founder}`);
         // setFounderName(founderData.nickname);
-        // const nicknamesData = await apiget("nicknames"); // Replace with your API endpoint
-        // setNicknames(nicknamesData); // Assuming nicknamesData is an array of nicknames
+        // const nicknamesData = await apiget("nicknames");
+        // setNicknames(nicknamesData);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
     };
-    fetchData();
-  }, []);
-
+ 
+    if (id) {
+      fetchData();
+    }
+  }, [id]);  
+ 
+ 
+  //Enddatum anpassen und formatieren
   const handleDateChange = (date) => {
-    setProject({ ...project, end_date: date });
+    try {
+      const [day, month, year] = date.split('.'); // Annahme: Datumformat ist DD.MM.YYYY
+      const formattedDate = `${year}-${month}-${day}`;
+      setProject({ ...project, end_date: formattedDate });
+    } catch (error) {
+      console.error("Fehler beim Konvertieren des Datums:", error);
+    }
   };
-
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
-    return new Date(dateString).toLocaleDateString("de-DE", options);
-  };
-
+ 
   const style = {
     position: "absolute",
     top: "50%",
@@ -55,7 +67,7 @@ export default function Projekt() {
     boxShadow: 24,
     p: 4,
   };
-
+ 
   const headerStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -64,17 +76,17 @@ export default function Projekt() {
     padding: "10px",
     boxSizing: "border-box",
   };
-
+ 
   const infoContainerStyle = {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
   };
-
+ 
   const labelStyle = {
     marginBottom: "5px",
   };
-
+ 
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     console.log(project)
@@ -87,7 +99,7 @@ export default function Projekt() {
           start_date: project.start_date,
           end_date: project.end_date,
       };
-
+ 
         const updatedProject = await apiput('project', id, update);
         handleCloseSettings();
         setProject(update);
@@ -95,7 +107,19 @@ export default function Projekt() {
         console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
 };
-
+ 
+//Projekt löschen
+const handleDelete = async () => {
+  try {
+    await apidelete(`project`, id);
+    navigate("/home");
+    setProject('');
+  } catch (error) {
+    console.error("Fehler beim Löschen des Projekts:", error);
+  }
+};
+ 
+ 
   return (
     <>
       <Modal open={openSettings} onClose={handleCloseSettings}>
@@ -121,41 +145,46 @@ export default function Projekt() {
               margin="normal"
             />
             <TextField
-              label="Startdatum"
-              variant="outlined"
-              value={formatDate(project.start_date)}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                readOnly: true,         //kann man nicht bearbeiten
-                style: {
-                  pointerEvents: 'none',      //Cursor entfernen
-                  color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
-                  backgroundColor: '#f0f0f0', //Hintergrundfarbe
-                },
-              }}
-            />
+                label="Start"
+                type="datetime-local"
+                variant="outlined"
+                fullWidth
+                value={project.start_date}
+                InputProps={{
+                  readOnly: true,         //kann man nicht bearbeiten
+                  style: {
+                    pointerEvents: 'none',      //Cursor entfernen
+                    color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
+                    backgroundColor: '#f0f0f0', //Hintergrundfarbe
+                  },
+                }}
+              />
             <TextField
-              label="Enddatum"
-              type="date"
-              value={formatDate(project.end_date)}
-              onChange={(e) => handleDateChange(e.target.value)}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <DatePicker
-                      value={project.end_date}
-                      onChange={(newDate) => handleDateChange(newDate)}
-                      format="yyyy-MM-dd"
-                      variant="inline"
-                      inputFormat="yyyy-MM-dd"
-                    />
-                  </InputAdornment>
-                ),
-              }}
-            />
+                label="Ende"
+                type="datetime-local"
+                variant="outlined"
+                fullWidth
+                value={project.end_date}
+                onChange={(newDate) => handleDateChange(newDate)}
+                style={{ marginBottom: "10px" }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            {/* <DatePicker
+              value={project.end_date}
+              onChange={(newDate) => handleDateChange(newDate)}
+              inputFormat="yyyy-MM-dd"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Enddatum"
+                  type="date"
+                  fullWidth
+                  margin="normal"
+                />
+              )}
+            /> */}
             <Autocomplete
               width="100%"
               options={nicknames || []} //falls nicknames undefined, wird leere Liste als Standard gesetzt
@@ -174,7 +203,7 @@ export default function Projekt() {
                 setFounderName(newValue ? newValue.nickname || '' : '');
               }}
             />
-          </Box>
+          </Box >
           <Button
             variant="contained"
             color="secondary"
@@ -182,17 +211,17 @@ export default function Projekt() {
             onClick={() => { handleSave() }}
           >
             Speichern
-          </Button>
-          {/* {user?.user.id === project.founder(          
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ color: "black" }}
-            //onClick={() => { handleDelete() }}
-          >
-            Löschen
-          </Button>):(<></>)};
-           */}
+            </Button>
+          {/*  {user?.user && project && user?.user.id === project.founder && ( */}
+              <Button
+                variant="contained"
+                color="secondary"
+                style={{ color: "black" }}
+                onClick={() => { handleDelete() }}
+              >
+                Löschen
+              </Button>
+           {/*  )} */}
         </Box>
       </Modal>
       <Box style={headerStyle}>
