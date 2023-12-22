@@ -145,7 +145,7 @@ const Createproject = () => {
 
   const options = ['Standard (todo-doing-done)', 'Custom'];
 
-  const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate
+  const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate || customPhaseValues.some(value => !value.trim());
 
   const phaseStyle = {
     display: 'flex',
@@ -177,7 +177,7 @@ const Createproject = () => {
         style={input}
         options={getUserNames(existingUsers)}
         renderInput={(params) => (
-          <TextField {...params} label="Mitglieder" />
+          <TextField {...params} label="Mitglieder" error={selectedMembers.length === 0} helperText={selectedMembers.length === 0 ? "Dieses Feld ist erforderlich." : ""} />
         )}
         value={selectedMembers.map((selectedUser) => selectedUser.nickname)}
         onChange={handleMembersChange}
@@ -186,12 +186,19 @@ const Createproject = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DateRangePicker']}>
-          <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} onChange={selectedDates => {
+          <DateRangePicker 
+            localeText={{ start: 'Check-in', end: 'Check-out' }} 
+            onChange={selectedDates => {
             // start date
             if (selectedDates[0]) setStartDate(localISOTime(selectedDates[0].$d));
             // end date
             if (selectedDates[1]) setEndDate(localISOTime(selectedDates[1].$d));
-          }} />
+          }}
+            startText="Startdatum"
+            endText="Enddatum"
+            error={!startDate || !endDate}
+            helperText={(startDate && endDate) ? "" : "Diese Felder sind erforderlich."} 
+          />
         </DemoContainer>
       </LocalizationProvider>
 

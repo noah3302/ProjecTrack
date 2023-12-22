@@ -45,7 +45,25 @@ class ProjectrackAdministration(object):
 
         with UserMapper() as mapper:
             return mapper.insert(user)
+        
+    """profil updaten"""
 
+    def update_user(self, user_id, google_id, surname, name, nickname):
+        user = User()
+        user.set_id(user_id)
+        user.set_google_id(google_id)
+        user.set_surname(surname)
+        user.set_name(name)
+        user.set_nickname(nickname)
+        with UserMapper() as mapper:
+            return mapper.update(user)
+
+    """delete user"""
+
+    def delete_user(self, user_id):
+        with UserMapper() as mapper:
+            return mapper.delete(user_id)
+        
     """
     Alle User ausgeben
 
@@ -223,7 +241,7 @@ class ProjectrackAdministration(object):
     """Task"""
     """Task updaten"""
 
-    def update_task(self, id, tasktitle, description, duedate ,user_id, phases_id):
+    def update_task(self, id, tasktitle, description, duedate, user_id, phases_id):
         task = Task()
         task.set_id(id),
         task.set_tasktitle(tasktitle),

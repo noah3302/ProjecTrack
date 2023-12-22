@@ -198,7 +198,7 @@ class UserMapper(Mapper):
 
     def delete(self, user):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM user WHERE user_id='{}'".format(user.get_id())
+        command = "DELETE FROM user WHERE user_id='{}'".format(user)
         cursor.execute(command)
         self._cnx.commit()
 
