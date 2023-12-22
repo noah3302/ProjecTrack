@@ -301,6 +301,38 @@ class TaskListOperations(Resource):
             return u, 200
         else:
             return "", 500
+        
+        
+        """Task hinzufügen"""
+        
+@api.route('/task')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class TaskOperations(Resource):
+    
+
+    """Ein neue Task anlegen"""
+
+    @api.marshal_with(task, code=200)
+    @api.expect(task)
+    @secured
+    def post(self):
+        adm = ProjectrackAdministration()
+        proposal = Task.from_dict(api.payload)
+
+        if proposal is not None:
+            p = adm.create_task(
+                proposal.get_tasktitle(),
+                proposal.get_description(),
+                proposal.get_duedate(),
+                proposal.get_user_id(),
+                proposal.get_phases_id(),
+            )
+            return p, 200
+        else:
+            return "", 500
+
+
+
 
 @api.route('/tasks/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")

@@ -4,6 +4,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { apiget, apidelete, apiput } from "../../API/Api";
 import Comment from "../project/Comment";
+import Modaltask from "./Modaltask";
 
 const Task = ({ phasenid }) => {
   const [taskData, setTaskData] = useState(null);
@@ -85,6 +86,7 @@ const Task = ({ phasenid }) => {
 
   return (
     <>
+    <Modaltask phasesid={phasenid} updatetasks={setTaskData}/>
       {taskData.map((task, index) => (
         <Box key={index} style={taskBoxStyle}>
           <IconButton onClick={() => handleEdit(task.id)}>

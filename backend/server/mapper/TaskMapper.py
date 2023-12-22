@@ -129,7 +129,7 @@ class TaskMapper(Mapper):
             maxid = cursor.fetchone()[0]
             task.set_id(maxid + 1)
         command = ("INSERT INTO task (task_id, tasktitle, description, duedate, user_id, phases_id) VALUES "
-                   "(%s, %s, %s, %s, %s)")
+                   "(%s, %s, %s, %s, %s, %s)")
         data = (task.get_id(), task.get_tasktitle(), task.get_description(), task.get_duedate(), task.get_user_id(),
                 task.get_phases_id())
         cursor.execute(command, data)

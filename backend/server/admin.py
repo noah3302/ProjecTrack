@@ -239,6 +239,20 @@ class ProjectrackAdministration(object):
     def delete_task(self, number):
         with TaskMapper() as mapper:
             return mapper.delete(number)
+        
+        
+    """Task hinzufügen"""
+    
+    def create_task(self, tasktitle, description, duedate, user_id, phases_id):
+        task = Task()
+        task.set_tasktitle(tasktitle),
+        task.set_description(description),
+        task.set_duedate(duedate),
+        task.set_user_id(user_id),
+        task.set_phases_id(phases_id)
+
+        with TaskMapper() as mapper:
+            return mapper.insert(task)
 
 
 
