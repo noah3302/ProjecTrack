@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Typography, Autocomplete, InputAdornment } from "@mui/material";
+import { Box, TextField, Button, Typography, Autocomplete } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
@@ -21,7 +21,6 @@ export default function Projekt() {
   const handleClose = () => setOpen(false);
   const [project, setProject] = useState('');
   const [founderName, setFounderName] = useState('');
-  const [nicknames, setNicknames] = useState([]);
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
@@ -31,8 +30,10 @@ export default function Projekt() {
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
 
+
  
   useEffect(() => {
+    console.log(user);
     const fetchData = async () => {
       try {
         const data = await apiget(`project/${id}`);
@@ -51,7 +52,7 @@ export default function Projekt() {
     if (id) {
       fetchData();
     }
-  }, [id]);  
+  }, [id, user]);  
  
  
   //Enddatum anpassen und formatieren
@@ -90,10 +91,6 @@ export default function Projekt() {
     alignItems: "flex-start",
   };
  
-  const labelStyle = {
-    marginBottom: "5px",
-  };
- 
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     console.log(project)
@@ -107,7 +104,7 @@ export default function Projekt() {
           end_date: project.end_date,
       };
  
-        const updatedProject = await apiput('project', id, update);
+        await apiput('project', id, update);
         handleCloseSettings();
         setProject(update);
     } catch (error) {

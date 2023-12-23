@@ -11,7 +11,10 @@ Test.js
  
 # Dbconnection file
 backend/dbconnector/
- 
+
+# Test
+backend/server/test/
+
 # C extensions
 *.so
  

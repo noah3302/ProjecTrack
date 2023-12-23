@@ -96,6 +96,7 @@ class UserListOperations(Resource):
     @secured
     def post(self):
         adm = ProjectrackAdministration()
+        print(api.payload)
         proposal = User.from_dict(api.payload)
 
         if proposal is not None:

@@ -7,11 +7,13 @@ const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userdata, setUserdata] = useState(null);
 
   const googleSignIn = async () => {
     console.log(user);
     if (!user) {
       const provider = new GoogleAuthProvider();
+      console.log("angemeldet", user);
       try {
         const result = await signInWithPopup(auth, provider);
 
@@ -20,31 +22,38 @@ export const AuthContextProvider = ({ children }) => {
         document.cookie = `token=${token};path=/`;
 
         const { uid, displayName, photoURL } = result.user;
+        var currentUser;
+        try{
+          const g_user = await apiget(`google_user/${uid}`)
+          const userId = g_user.id ? g_user.id : false
+          currentUser = {
+            username: displayName,
+            profilePicture : photoURL,
+            surname: g_user.surname,
+            name: g_user.name,
+            nickname: g_user.nickname,
+            userid: uid,
+            id: userId
+          };
+        }catch{
+          currentUser = {
+            username: displayName,
+            profilePicture : photoURL,
+            userid: uid,
+          };
+        }
         
-        const g_user = await apiget(`google_user/${uid}`)
 
-        console.log(g_user)
-
-        const userId = g_user.id ? g_user.id : false
-
-        const currentUser = {
-          username: displayName,
-          profilePicture : photoURL,
-          surname: g_user.surname,
-          name: g_user.name,
-          nickname: g_user.nickname,
-          userid: uid,
-          id: userId
-        };
 
         setUser(currentUser);
         sessionStorage.setItem("user", JSON.stringify(currentUser));
         localStorage.setItem("user", JSON.stringify(currentUser));
         broadcastAuthState(currentUser);
-
       } catch (error) {
         console.error("Error signing in:", error);
       }
+    }else{
+      console.log("nicht ", user);
     }
   };
 
@@ -53,18 +62,30 @@ export const AuthContextProvider = ({ children }) => {
       if (googleUser) {
         try {
           const { uid, displayName, photoURL } = googleUser;
+          const g_user = await apiget(`google_user/${uid}`)
+  
+          const userId = g_user.id ? g_user.id : false
+  
           const currentUser = {
             username: displayName,
-            profilePicture: photoURL,
+            profilePicture : photoURL,
+            surname: g_user.surname,
+            name: g_user.name,
+            nickname: g_user.nickname,
             userid: uid,
+            id: userId
           };
+  
           setUser(currentUser);
+          setUserdata(true);
           broadcastAuthState(currentUser);
+
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       } else {
         setUser(null);
+        setUserdata(false);
         broadcastAuthState(null);
       }
     });
@@ -99,7 +120,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ googleSignIn, logOut, user, setUser }}>
+    <AuthContext.Provider value={{ googleSignIn, logOut, user, setUser, userdata, setUserdata }}>
       {children}
     </AuthContext.Provider>
   );

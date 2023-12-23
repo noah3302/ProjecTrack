@@ -3,12 +3,11 @@ import GoogleButton from "react-google-button";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../Context/Authcontext";
 import { Box, Typography } from "@mui/material";
-import { Timeline, TimelineItem, TimelineContent, TimelineSeparator, TimelineDot, TimelineConnector, TimelineOppositeContent } from "@mui/lab";
+import { Timeline, TimelineItem, TimelineContent, TimelineSeparator, TimelineDot, TimelineConnector } from "@mui/lab";
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import { apiget } from "../API/Api";
 import theme from "../Theme";
 
 
@@ -29,6 +28,7 @@ export default function Signin() {
   useEffect(() => {
     const checkExistingUser = async () => {
       if (signInDone) {
+        console.log(user);
         if (user && user.id) {
           navigate("/home");
         } else {

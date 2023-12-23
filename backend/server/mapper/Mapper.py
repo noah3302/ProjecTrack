@@ -1,7 +1,7 @@
 import mysql.connector as connector
 from contextlib import AbstractContextManager
 from abc import ABC, abstractmethod
-from backend.server.dbconnetor.dbconnector import host, user, password, database
+from backend.server.dbconnector.dbconnector import host, user, password, database
 
 
 class Mapper(AbstractContextManager, ABC):

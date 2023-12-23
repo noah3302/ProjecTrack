@@ -11,7 +11,7 @@ import { UserAuth } from "../Context/Authcontext";
 
 export default function Createprofil() {
     const navigate = useNavigate();
-    const { user, setUser } = UserAuth()
+    const { user, setUser, setUserdata } = UserAuth()
 
     useEffect(() => {
         apiget("users/nicknames").then((data) => {
@@ -36,6 +36,7 @@ export default function Createprofil() {
 
     const navigation = async () => {
         try {
+            console.log(user);
             const existingUser = await apipost(`users`, {
                 id: 0,
                 surname: nachname,
@@ -45,6 +46,7 @@ export default function Createprofil() {
             });
 
             await setUser({ ...user, ['id']: existingUser.id })
+            setUserdata(true);
 
             navigate("/home");
         } catch (error) {
