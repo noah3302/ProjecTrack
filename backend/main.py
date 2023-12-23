@@ -215,6 +215,18 @@ class ProjectListOperations(Resource):
         project = adm.delete_project(id)
         return project, 200
 
+@api.route('/project/members/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'project_id')
+class ProjectListOperations(Resource):
+    @api.marshal_list_with(project)
+    @api.expect(project)
+    def put(self, id):
+        adm = ProjectrackAdministration()
+        proposal = Project.from_dict(api.payload)
+        project = adm.delete_project_members(id, proposal)
+        return project, 200
+
 @api.route('/project/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param("id","project id")

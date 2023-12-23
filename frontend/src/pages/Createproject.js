@@ -97,13 +97,7 @@ const Createproject = () => {
     console.log(eigene);
 
     // sich selber auch als Member zum Projekt hinzufügen
-    apiCalls.push(apipost(`project/${newProject.id}/user`, {
-      id: user.id,
-      surname: user.surname,
-      google_id: user.userid,
-      name: user.name,
-      nickname: user.nickname,
-    }))
+    apiCalls.push(apipost(`project/${newProject.id}/user`, eigene))
 
     Promise.all([...apiCalls]).then((responses) => {
       navigate(`/project/${newProject.id}`);

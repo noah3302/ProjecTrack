@@ -202,6 +202,12 @@ class UserMapper(Mapper):
         cursor.execute(command)
         self._cnx.commit()
 
+    def delete_members(self, user, project):
+        cursor = self._cnx.cursor()
+        command = "DELETE FROM members WHERE user_id='{}' and project_id='{}'".format(user, project.get_id())
+        cursor.execute(command)
+        self._cnx.commit()
+
 
 if __name__ == "__main__":
     with UserMapper() as mapper:

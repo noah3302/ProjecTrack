@@ -7,6 +7,11 @@ import { useParams } from 'react-router-dom';
 import { apiget, apiput, apidelete} from "../API/Api";
 import { UserAuth } from "../Context/Authcontext";
 import { useNavigate } from "react-router-dom";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
  
  
  
@@ -22,16 +27,18 @@ export default function Projekt() {
   const handleCloseSettings = () => setOpenSettings(false);
   const { user } = UserAuth();
   const navigate = useNavigate();
-  let { id } = useParams(); 
- 
-  //stehen geblieben bei nicknamen bei founder
- 
+  const [projectUsers, setProjectUsers] = useState([]);
+  let { id } = useParams();
+  const [opendialog, setOpendialog] = React.useState(false);
+
  
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
+        // const projectUsersData = await apiget(`project/${id}/users`);
+        // setProjectUsers(projectUsersData);
         // const founderData = await apiget(`nickname/${data.founder}`);
         // setFounderName(founderData.nickname);
         // const nicknamesData = await apiget("nicknames");
@@ -119,9 +126,50 @@ const handleDelete = async () => {
   }
 };
  
+//Projekt verlassen
+const handleLeave = async () => {
+  try {
+    const a = Number(project.founder);
+    const b = Number(user.id);
+    if (a === b) {
+      setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
+    } else {
+      await apiput(`project/members`, user.id , project);
+      navigate("/home");
+    }
+  } catch (error) {
+    console.error("Fehler beim Verlassen des Projekts:", error);
+  }
+};
+
+  const handleClosedialog = () => {
+    setOpendialog(false);
+  };
  
   return (
     <>
+    <Dialog
+        open={opendialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Hast mal drüber nachgedacht was passiert, wenn der Chef das Projekt einfach verlässt?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Wäre vllt nicht die dümmste idee einen nachfolger vorher noch zu definieren, merkst selbst
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosedialog} autoFocus>
+            Okay, Chef
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      
       <Modal open={openSettings} onClose={handleCloseSettings}>
         <Box sx={style}>
           <Typography variant="h6">Projekteinstellungen</Typography>
@@ -171,38 +219,23 @@ const handleDelete = async () => {
                   shrink: true,
                 }}
               />
-            {/* <DatePicker
-              value={project.end_date}
-              onChange={(newDate) => handleDateChange(newDate)}
-              inputFormat="yyyy-MM-dd"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Enddatum"
-                  type="date"
-                  fullWidth
-                  margin="normal"
-                />
-              )}
-            /> */}
-            <Autocomplete
-              width="100%"
-              options={nicknames || []} //falls nicknames undefined, wird leere Liste als Standard gesetzt
-              getOptionLabel={(option) => option ? option.nickname || '' : ''}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Gründer"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                />
-              )}
-              value={founderName}
-              onChange={(event, newValue) => {
-                setFounderName(newValue ? newValue.nickname || '' : '');
-              }}
-            />
+              <Autocomplete
+                options={projectUsers || []}
+                getOptionLabel={(option) => option ? option.nickname || '' : ''}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Gründer"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                  />
+                )}
+                value={founderName}
+                onChange={(event, newValue) => {
+                  setFounderName(newValue ? newValue.nickname || '' : '');
+                }}
+              />
           </Box >
           <Button
             variant="contained"
@@ -219,13 +252,20 @@ const handleDelete = async () => {
                 style={{ color: "black" }}
                 onClick={() => { handleDelete() }}
               >
-                Löschen
+              Löschen
               </Button>
-           {/*  )} */}
+              <Button
+            variant="contained"
+            color="secondary"
+            style={{ color: "black" }}
+            onClick={() => { handleLeave() }}
+          >
+            Projekt verlassen
+            </Button>
         </Box>
       </Modal>
       <Box style={headerStyle}>
-        <Typography variant="h6">Herzlich Willkommen in {project.project_title}</Typography>
+        <Typography variant="h6">{project.project_title}</Typography>
         <Button variant="contained" color="secondary" style={{ marginLeft: "auto", color: "black" }} onClick={handleOpen}>
           Projektstatistik
         </Button>

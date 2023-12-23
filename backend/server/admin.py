@@ -166,6 +166,10 @@ class ProjectrackAdministration(object):
         with ProjectMapper() as mapper:
             return mapper.delete(number)
 
+    def delete_project_members(self, user, project):
+        with UserMapper() as mapper:
+            return mapper.delete_members(user, project)
+
     def project_by_id(self, id):
         with ProjectMapper() as mapper:
             return mapper.find_by_key(id)

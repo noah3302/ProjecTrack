@@ -234,7 +234,7 @@ const Phase = () => {
               >
                 <DeleteOutlineIcon />
               </IconButton>
-              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} />
+              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} />
             </Card>
           ))}
         <Card

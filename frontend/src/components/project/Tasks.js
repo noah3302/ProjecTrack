@@ -7,7 +7,7 @@ import Modaltask from "./Modaltask";
 import Comment from "./Comment";
 import { UserAuth } from "../../Context/Authcontext";
 
-const Task = ({ phasenid, updateParent, newid }) => {
+const Task = ({ phasenid, updateParent, newid, project }) => {
   const [reloadKey, setReloadKey] = useState(0);
   const [taskData, setTaskData] = useState(null);
   const [editedTask, setEditedTask] = useState(null);
@@ -21,9 +21,11 @@ const Task = ({ phasenid, updateParent, newid }) => {
   const { user } = UserAuth();
 
   function getUserNames(array) {
-    return array.filter((exUser) => {
-      return exUser.id != user.id
-    }).map((exUser) => exUser.nickname);
+    return array.map((exUser) => exUser.nickname);
+  }
+
+  function getPhaseNames(array) {
+    return array.map((exPhase) => exPhase.phasename);
   }
 
   useEffect(() => {
@@ -140,14 +142,9 @@ const Task = ({ phasenid, updateParent, newid }) => {
 
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
-    return new Date(dateString).toLocaleDateString("de-DE", options);
-  };
-
   return (
     <>
-    <Modaltask phasesid={phasenid} updatetasks={setTaskData}/>
+      <Modaltask phasesid={phasenid} updatetasks={setTaskData} />
       {taskData.map((task, index) => (
         <Box key={index} style={BoxStyle}>
           <Box style={taskBoxStyle}>
@@ -188,11 +185,15 @@ const Task = ({ phasenid, updateParent, newid }) => {
           {editedTask && editedTask.id === task.id ? (
             <TextField
               label="Enddatum"
-              type="date"
-              value={formatDate(editedDueDate)}
-              onChange={(e) => setEditedDueDate(e.target.value)}
+              type="datetime-local"
+              variant="outlined"
               fullWidth
-              margin="normal"
+              value={editedDueDate}
+              onChange={(e) => setEditedDueDate(e.target.value)}
+              style={{ marginBottom: "10px" }}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           ) : (
             <Typography variant="body1">DueDate: {task.duedate}</Typography>
@@ -201,30 +202,37 @@ const Task = ({ phasenid, updateParent, newid }) => {
             <Autocomplete
               options={getUserNames(existingUsers)}
               renderInput={(params) => (
-                <TextField {...params} label="Verantwortlicher" />
+                <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }} />
               )}
-              value={existingUsers.find((user) => user.id.toString() === task.user_id)?.nickname}
-              onChange={(event, newValue) => {const selectedUser = existingUsers.find(
-                  (user) => user.nickname === newValue);
-                setEditedUserId(selectedUser ? selectedUser.id : '');
-                console.log(editedUserId)
+              value={editedUserId !== null ? existingUsers.find((user) => user.id.toString() === editedUserId)?.nickname : ''}
+              onChange={(event, newValue) => {
+                const selectedUser = existingUsers.find((user) => user.nickname === newValue);
+                if (selectedUser) {
+                  setEditedUserId(selectedUser.id.toString());
+                }
               }}
-              error={!editedUserId}
+              error={editedUserId === null ? 'Verantwortlicher ist erforderlich' : undefined}
             />
-
           ) : (
             <Typography variant="body1">Verantwortlicher:
               {existingUsers.find(user => user.id.toString() === task.user_id)?.nickname || 'Nicht gefunden'}
             </Typography>
           )}
           {editedTask && editedTask.id === task.id ? (
-            <TextField
-              label="Phase"
-              variant="outlined"
-              value={editedPhasesId}
-              onChange={(e) => setEditedPhasesId(e.target.value)}
-              style={textFieldStyle}
-            />
+            <Autocomplete
+            options={getPhaseNames(project)}
+            renderInput={(params) => (
+              <TextField {...params} label="Phase" style={{ marginBottom: "10px" }} />
+            )}
+            value={editedPhasesId !== null ? project.find((phase) => phase.id.toString() === editedPhasesId)?.phasename : ''}
+            onChange={(event, newValue) => {
+              const selectedPhase = project.find((phase) => phase.phasename === newValue);
+              if (selectedPhase) {
+                setEditedPhasesId(selectedPhase.id.toString());
+              }
+            }}
+            error={editedPhasesId === null ? 'Phase ist erforderlich' : undefined}
+          />
           ) : (
             <Typography variant="body1"></Typography>
           )}
