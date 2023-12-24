@@ -1,5 +1,5 @@
-from backend.server.mapper.Mapper import Mapper
-from backend.server.bo.ProjectBO import Project
+from server.mapper.Mapper import Mapper
+from server.bo.ProjectBO import Project
 import json
 
 

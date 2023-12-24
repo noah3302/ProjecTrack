@@ -1,7 +1,7 @@
 import mysql.connector as connector
 from contextlib import AbstractContextManager
 from abc import ABC, abstractmethod
-from backend.server.dbconnector.dbconnector import host, user, password, database
+import os
 
 
 class Mapper(AbstractContextManager, ABC):
@@ -10,9 +10,19 @@ class Mapper(AbstractContextManager, ABC):
         self._cnx = None
 
     def __enter__(self):
-         # Hier mit der eigenen lokalen Datenbank verbinden
-        self._cnx = connector.connect(user=user, password=password,
-                                        host=host, database=database)
+        """if: Checks if it's inside a Cloud --> enters Cloud Credentials
+        else: Checks if it's a local deployment (development) and enters necessary credntials """
+
+        if os.getenv('GAE_ENV', '').startswith('standard'):
+            '''Enter Cloud Credentials'''
+            self._cnx = connector.connect(user='root', password='1234',
+                                          unix_socket='/cloudsql/projectrack:europe-west3:projectrack',
+                                          database='projectrack')
+        else:
+            from server.dbconnector.dbconnector import host, user, password, database
+            '''Enter Credentials for Local deployment'''
+            self._cnx = connector.connect(user=user, password=password,
+                                          host=host, database=database)
 
         return self
 

@@ -89,10 +89,10 @@ const Createproject = () => {
     console.log(user);
     const eigene = {
       id: user.id,
-      surname: user.surname,
-      google_id: user.userid,
-      name: user.name,
-      nickname: user.nickname,
+      surname: "",
+      google_id: "",
+      name: "",
+      nickname: "",
     };
     console.log(eigene);
 

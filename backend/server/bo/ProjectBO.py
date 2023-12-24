@@ -1,4 +1,4 @@
-from backend.server.bo.BuisnessObject import BusinessObject
+from server.bo.BuisnessObject import BusinessObject
 
 
 class Project(BusinessObject):

@@ -1,0 +1,6 @@
+dispatch:
+  - url: "*/projectrack/*"
+    service: backend
+
+  - url: "projectrack.ey.r.appspot.com/*"
+    service: default

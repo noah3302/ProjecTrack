@@ -1,0 +1,6 @@
+runtime: python39
+service: backend
+
+handlers:
+  - url: /.*
+    script: main.app

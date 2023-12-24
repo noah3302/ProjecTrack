@@ -1,5 +1,5 @@
-from backend.server.mapper.Mapper import Mapper
-from backend.server.bo.Task import Task
+from server.mapper.Mapper import Mapper
+from server.bo.Task import Task
 
 class TaskMapper(Mapper):
     def __init__(self):

@@ -11,7 +11,6 @@ export default function Protected({ children }) {
 
 
   useEffect(() => {
-    console.log(userdata);
     if (userdata != null) {
       if (userdata) {
         setLogedin(true);

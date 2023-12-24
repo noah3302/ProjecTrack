@@ -1,5 +1,5 @@
-from backend.server.mapper.Mapper import Mapper
-from backend.server.bo.Comment import Comment
+from server.mapper.Mapper import Mapper
+from server.bo.Comment import Comment
 from datetime import datetime
 
 class CommentMapper(Mapper):
