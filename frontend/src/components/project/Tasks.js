@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, IconButton, TextField, Button, InputAdornment, Autocomplete } from "@mui/material";
+import { Box, Typography, IconButton, TextField, Button, Slider, Autocomplete } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { apiget, apidelete, apiput } from "../../API/Api";
 import Modaltask from "./Modaltask";
 import Comment from "./Comment";
 import { UserAuth } from "../../Context/Authcontext";
+import { useParams } from 'react-router-dom';
 
-const Task = ({ phasenid, updateParent, newid, project }) => {
+const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   const [reloadKey, setReloadKey] = useState(0);
   const [taskData, setTaskData] = useState(null);
   const [editedTask, setEditedTask] = useState(null);
@@ -17,8 +18,8 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
   const [editedDueDate, setEditedDueDate] = useState("");
   const [editedUserId, setEditedUserId] = useState("");
   const [editedPhasesId, setEditedPhasesId] = useState("");
-  const [existingUsers, setExistingUsers] = useState([]);
   const { user } = UserAuth();
+  let { id } = useParams();
 
   function getUserNames(array) {
     return array.map((exUser) => exUser.nickname);
@@ -33,8 +34,6 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
       try {
         const response = await apiget(`phase/task/${phasenid}`);
         setTaskData(response);
-        const allUsers = await apiget('/users')
-        setExistingUsers(allUsers)
       } catch (error) {
         console.error("Fehler beim Abrufen der Phasen:", error);
       }
@@ -182,6 +181,14 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
           ) : (
             <Typography variant="body1">{task.description}</Typography>
           )}
+          <Slider
+            disabled={true}
+            marks
+            max={5}
+            min={1}
+            size="medium"
+            valueLabelDisplay="auto"
+          />
           {editedTask && editedTask.id === task.id ? (
             <TextField
               label="Enddatum"
@@ -200,13 +207,13 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
           )}
           {editedTask && editedTask.id === task.id ? (
             <Autocomplete
-              options={getUserNames(existingUsers)}
+              options={getUserNames(projectusers)}
               renderInput={(params) => (
                 <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }} />
               )}
-              value={editedUserId !== null ? existingUsers.find((user) => user.id.toString() === editedUserId)?.nickname : ''}
+              value={editedUserId !== null ? projectusers.find((user) => user.id.toString() === editedUserId)?.nickname : ''}
               onChange={(event, newValue) => {
-                const selectedUser = existingUsers.find((user) => user.nickname === newValue);
+                const selectedUser = projectusers.find((user) => user.nickname === newValue);
                 if (selectedUser) {
                   setEditedUserId(selectedUser.id.toString());
                 }
@@ -215,24 +222,24 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
             />
           ) : (
             <Typography variant="body1">Verantwortlicher:
-              {existingUsers.find(user => user.id.toString() === task.user_id)?.nickname || 'Nicht gefunden'}
+              {projectusers.find(user => user.id.toString() === task.user_id)?.nickname || 'Nicht gefunden'}
             </Typography>
           )}
           {editedTask && editedTask.id === task.id ? (
             <Autocomplete
-            options={getPhaseNames(project)}
-            renderInput={(params) => (
-              <TextField {...params} label="Phase" style={{ marginBottom: "10px" }} />
-            )}
-            value={editedPhasesId !== null ? project.find((phase) => phase.id.toString() === editedPhasesId)?.phasename : ''}
-            onChange={(event, newValue) => {
-              const selectedPhase = project.find((phase) => phase.phasename === newValue);
-              if (selectedPhase) {
-                setEditedPhasesId(selectedPhase.id.toString());
-              }
-            }}
-            error={editedPhasesId === null ? 'Phase ist erforderlich' : undefined}
-          />
+              options={getPhaseNames(project)}
+              renderInput={(params) => (
+                <TextField {...params} label="Phase" style={{ marginBottom: "10px" }} />
+              )}
+              value={editedPhasesId !== null ? project.find((phase) => phase.id.toString() === editedPhasesId)?.phasename : ''}
+              onChange={(event, newValue) => {
+                const selectedPhase = project.find((phase) => phase.phasename === newValue);
+                if (selectedPhase) {
+                  setEditedPhasesId(selectedPhase.id.toString());
+                }
+              }}
+              error={editedPhasesId === null ? 'Phase ist erforderlich' : undefined}
+            />
           ) : (
             <Typography variant="body1"></Typography>
           )}
@@ -241,7 +248,7 @@ const Task = ({ phasenid, updateParent, newid, project }) => {
               Speichern
             </Button>
           )}
-          <Comment key={task.id} taskid={task.id} />
+          <Comment key={task.id} taskid={task.id} projectusers={projectusers} />
         </Box>
       ))}
     </>

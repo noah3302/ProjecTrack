@@ -125,6 +125,12 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_by_nickname(number)
 
+
+    def get_all_users_by_project_id(self, number):
+        with UserMapper() as mapper:
+            return mapper.get_members_by_project_id(number)
+
+
     """Project"""
     """Project by user id"""
 

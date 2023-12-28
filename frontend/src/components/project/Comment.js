@@ -6,35 +6,39 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { UserAuth } from '../../Context/Authcontext';
 import { apiget, apipost, apidelete, apiput } from "../../API/Api";
- 
-const Comment = ({ taskid }) => {
+
+const Comment = ({ taskid, projectusers }) => {
     const [comment, setComment] = useState([]);
     const [nicknames, setNicknames] = useState(null);
     const [newComment, setNewComment] = useState("");
     const [editIndex, setEditIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const { user } = UserAuth();
- 
+
     const commentload = async () => {
         try {
             const response = await apiget(`task/comment/${taskid}`);
-            if (response && response.length > 0 && response[0].user_id) {
-                const userid = response[0].user_id;
-                const name = await apiget(`nickname/${userid}`);
-                setNicknames(name);
-            }
-       
             const sortedResponse = response.slice().sort((a, b) => new Date(a.creationdate) - new Date(b.creationdate));
             setComment(sortedResponse);
         } catch (error) {
             console.error("Fehler beim Laden der Kommentare:", error);
         }
     };
- 
+
     useEffect(() => {
         commentload();
     }, []);
- 
+
+    useEffect(() => {
+        if (projectusers && projectusers.length > 0) {
+            const userNicknames = {};
+            projectusers.forEach((user) => {
+                userNicknames[user.id] = user.nickname;
+            });
+            setNicknames(userNicknames);
+        }
+    }, [projectusers]);
+
     const handleCommentSubmit = async () => {
         try {
             const newcom = await apipost('comment', {
@@ -44,28 +48,28 @@ const Comment = ({ taskid }) => {
                 user_id: user.id,
                 task_id: taskid,
             });
-       
+
             setComment([...comment, newcom]);
             setNewComment("");
         } catch (error) {
             console.error("Fehler beim Hinzufügen des Kommentars:", error);
         }
     };
- 
+
     const isCurrentUserComment = (Comment) => {
         return Comment.user_id === user.id.toString();
     };
- 
+
     const handleEdit = (index) => {
         setEditIndex(index);
         setEditedComment(comment[index].comment);
     };
- 
+
     const handleUpdate = async () => {
         try {
             const updatedComments = [...comment];
             updatedComments[editIndex].comment = editedComment;
-            await apiput('comment' , updatedComments[editIndex].id, {
+            await apiput('comment', updatedComments[editIndex].id, {
                 id: updatedComments[editIndex].id,
                 comment: editedComment,
                 creationdate: new Date().toISOString(),
@@ -78,7 +82,7 @@ const Comment = ({ taskid }) => {
             console.error("Fehler beim Aktualisieren des Kommentars:", error);
         }
     };
- 
+
     const handleDelete = async (index, Comment) => {
         try {
             await apidelete(`coment`, Comment.id);
@@ -88,7 +92,7 @@ const Comment = ({ taskid }) => {
             console.error("Fehler beim Löschen des Kommentars:", error);
         }
     };
- 
+
     const kommentarfeld = {
         backgroundColor: "white",
         padding: "5px",
@@ -96,22 +100,22 @@ const Comment = ({ taskid }) => {
         borderRadius: "8px",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     };
- 
+
     const chipStyle = {
         marginRight: "8px",
         marginBottom: "5px",
         fontSize: "10px",
     };
- 
+
     const creationDateStyle = {
         fontSize: "10px",
         color: "#777",
     };
- 
+
     const editDeleteIconStyle = {
         fontSize: "10px",
     };
- 
+
     const kommentarContainer = (Comment) => {
         if (comment.length > 3) {
             return {
@@ -136,7 +140,7 @@ const Comment = ({ taskid }) => {
             };
         }
     };
- 
+
     return (
         <>
             <Container style={kommentarContainer(Comment)}>
@@ -146,25 +150,25 @@ const Comment = ({ taskid }) => {
                             <div style={{ display: "flex", alignItems: "center" }}>
                                 <Chip
                                     icon={<FaceIcon />}
-                                    label={nicknames && nicknames.nickname}
+                                    label={nicknames[Comment.user_id] || "Unknown"}
                                     style={chipStyle}
                                     size="small"
                                 />
-                                {Comment.user_id === user.id.toString() ? (                                
-                                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
-                                    {editIndex === index ? (
-                                        <IconButton onClick={handleUpdate}>
-                                            <SendIcon />
+                                {Comment.user_id === user.id.toString() ? (
+                                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                                        {editIndex === index ? (
+                                            <IconButton onClick={handleUpdate}>
+                                                <SendIcon />
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton style={editDeleteIconStyle} onClick={() => handleEdit(index)}>
+                                                <EditIcon fontSize="small" />
+                                            </IconButton>
+                                        )}
+                                        <IconButton style={editDeleteIconStyle} onClick={() => handleDelete(index, Comment)}>
+                                            <DeleteIcon fontSize="small" />
                                         </IconButton>
-                                    ) : (
-                                        <IconButton style={editDeleteIconStyle} onClick={() => handleEdit(index)}>
-                                            <EditIcon fontSize="small"/>
-                                        </IconButton>
-                                    )}
-                                    <IconButton style={editDeleteIconStyle} onClick={() => handleDelete(index, Comment)}>
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </div>):(<></>)}
+                                    </div>) : (<></>)}
                             </div>
                             <div style={{ flex: 1 }}>
                                 {editIndex === index ? (
@@ -208,5 +212,5 @@ const Comment = ({ taskid }) => {
         </>
     );
 };
- 
+
 export default Comment;

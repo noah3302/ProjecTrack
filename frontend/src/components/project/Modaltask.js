@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, Slider } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { UserAuth } from "../../Context/Authcontext";
 import { apipost } from "../../API/Api";
@@ -102,7 +102,6 @@ const Modaltask = ({ phasesid, updatetasks }) => {
                 }
                 style={{ marginBottom: "10px" }}
               />
-
               <TextField
                 label="Beschreibung"
                 variant="outlined"
@@ -114,7 +113,15 @@ const Modaltask = ({ phasesid, updatetasks }) => {
                 }
                 style={{ marginBottom: "10px" }}
               />
-
+              <Typography>Wie schwer ist die Task?</Typography>
+              <Slider
+                disabled={false}
+                marks
+                max={5}
+                min={1}
+                size="medium"
+                valueLabelDisplay="auto"
+              />
               <TextField
                 label="Due Date"
                 type="datetime-local"

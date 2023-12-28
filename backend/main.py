@@ -303,6 +303,17 @@ class ProjectListOperations(Resource):
         else:
             return "", 500
 
+@api.route('/project/<int:id>/users')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+class ProjectListOperations(Resource):
+
+    @api.marshal_list_with(user)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        users = adm.get_all_users_by_project_id(id)
+        return users
+
+
 @api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserProjectOperations(Resource):

@@ -4,7 +4,7 @@ import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-import { apiget, apiput, apidelete} from "../API/Api";
+import { apiget, apiput, apidelete } from "../API/Api";
 import { UserAuth } from "../Context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import Dialog from '@mui/material/Dialog';
@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
- 
+
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
@@ -25,13 +25,9 @@ export default function Projekt() {
   const handleCloseSettings = () => setOpenSettings(false);
   const { user } = UserAuth();
   const navigate = useNavigate();
-  const [projectUsers, setProjectUsers] = useState([]);
+  const [projectUsers, setProjectUsers] = useState();
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
-
-  // function getUserNames(array) {
-  //   return array.map((exUser) => exUser.nickname);
-  // }
 
   useEffect(() => {
     console.log(user);
@@ -39,22 +35,17 @@ export default function Projekt() {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        // const projectUsersData = await apiget(`project/${id}/users`);
-        // setProjectUsers(projectUsersData);
-        // const founderData = await apiget(`nickname/${data.founder}`);
-        // setFounderName(founderData.nickname);
-        // const nicknamesData = await apiget("nicknames");
-        // setNicknames(nicknamesData);
+        const users = await apiget(`project/${id}/users`);
+        setProjectUsers(users);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
     };
- 
     if (id) {
       fetchData();
     }
-  }, [id, user]);  
- 
+  }, [id, user]);
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -64,7 +55,7 @@ export default function Projekt() {
     boxShadow: 24,
     p: 4,
   };
- 
+
   const headerStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -73,70 +64,70 @@ export default function Projekt() {
     padding: "10px",
     boxSizing: "border-box",
   };
- 
+
   const infoContainerStyle = {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    marginTop: "10px", 
+    marginTop: "10px",
     width: "100%"
   };
- 
+
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     console.log(project)
     try {
-        const update = {
-          id: id,
-          project_title: project.project_title,
-          project_description: project.project_description,
-          founder: project.founder,
-          start_date: project.start_date,
-          end_date: project.end_date,
+      const update = {
+        id: id,
+        project_title: project.project_title,
+        project_description: project.project_description,
+        founder: project.founder,
+        start_date: project.start_date,
+        end_date: project.end_date,
       };
- 
-        await apiput('project', id, update);
-        handleCloseSettings();
-        setProject(update);
+
+      await apiput('project', id, update);
+      handleCloseSettings();
+      setProject(update);
     } catch (error) {
-        console.error("Fehler beim Aktualisieren des Projekts:", error);
+      console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
-};
- 
-//Projekt löschen
-const handleDelete = async () => {
-  try {
-    await apidelete(`project`, id);
-    navigate("/home");
-    setProject('');
-  } catch (error) {
-    console.error("Fehler beim Löschen des Projekts:", error);
-  }
-};
- 
-//Projekt verlassen
-const handleLeave = async () => {
-  try {
-    const a = Number(project.founder);
-    const b = Number(user.id);
-    if (a === b) {
-      setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
-    } else {
-      await apiput(`project/members`, user.id , project);
+  };
+
+  //Projekt löschen
+  const handleDelete = async () => {
+    try {
+      await apidelete(`project`, id);
       navigate("/home");
+      setProject('');
+    } catch (error) {
+      console.error("Fehler beim Löschen des Projekts:", error);
     }
-  } catch (error) {
-    console.error("Fehler beim Verlassen des Projekts:", error);
-  }
-};
+  };
+
+  //Projekt verlassen
+  const handleLeave = async () => {
+    try {
+      const a = Number(project.founder);
+      const b = Number(user.id);
+      if (a === b) {
+        setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
+      } else {
+        await apiput(`project/members`, user.id, project);
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Fehler beim Verlassen des Projekts:", error);
+    }
+  };
 
   const handleClosedialog = () => {
     setOpendialog(false);
   };
- 
+
   return (
     <>
-    <Dialog
+      <Dialog
         open={opendialog}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -182,38 +173,38 @@ const handleLeave = async () => {
               style={{ marginTop: '10px' }}
             />
             <TextField
-                label="Start"
-                type="datetime-local"
-                variant="outlined"
-                fullWidth
-                value={project.start_date}
-                InputProps={{
-                  readOnly: true,         //kann man nicht bearbeiten
-                  style: {
-                    pointerEvents: 'none',      //Cursor entfernen
-                    color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
-                    backgroundColor: '#f0f0f0', //Hintergrundfarbe
-                  },
-                }}
-                style={{ marginTop: '10px' }}
-              />
-              <TextField
-                label="Ende"
-                type="datetime-local"
-                variant="outlined"
-                fullWidth
-                value={project.end_date}
-                onChange={(e) => setProject({ ...project, end_date: e.target.value })}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                style={{ marginTop: '10px' }} 
-              />
-              <Autocomplete
-                options={projectUsers || []}
-                getOptionLabel={(option) => option && option.nickname ? option.nickname : ''}
-                renderInput={(params) => (
-                  <TextField
+              label="Start"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              value={project.start_date}
+              InputProps={{
+                readOnly: true,         //kann man nicht bearbeiten
+                style: {
+                  pointerEvents: 'none',      //Cursor entfernen
+                  color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
+                  backgroundColor: '#f0f0f0', //Hintergrundfarbe
+                },
+              }}
+              style={{ marginTop: '10px' }}
+            />
+            <TextField
+              label="Ende"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              value={project.end_date}
+              onChange={(e) => setProject({ ...project, end_date: e.target.value })}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{ marginTop: '10px' }}
+            />
+            <Autocomplete
+              options={projectUsers ? projectUsers : []}
+              getOptionLabel={(option) => option.nickname || ''}
+              renderInput={(params) => (
+                <TextField
                   {...params}
                   label="Gründer"
                   variant="outlined"
@@ -221,46 +212,45 @@ const handleLeave = async () => {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  style={{ marginTop: '10px', width: '500px', marginBottom: '10px' }}
-                  />
-                )}
-                value={projectUsers && projectUsers.find((user) => user.id.toString() === founderName) || null}
-                onChange={(event, newValue) => {
-                  if (newValue) {
-                    setFounderName(newValue.id.toString()); 
-                  } else {
-                    setFounderName('');
-                  }
-                }}
-              />
+                  style={{ marginTop: '10px', width: "70vw", marginBottom: '10px' }}
+                />
+              )}
+              value={projectUsers && projectUsers.find((user) => user.id.toString() === project.founder) || null}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setProject({ ...project, founder: newValue.id.toString() }); // Sicherstellen, dass die ID in String-Form übergeben wird
+                } else {
+                  setProject({ ...project, founder: '' }); // Setzen des Gründers auf leer, wenn kein Wert ausgewählt ist
+                }
+              }}
+            />
           </Box >
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ color: "black" }}
-            onClick={() => { handleSave() }}
-          >
-            Speichern
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => { handleSave() }}
+            >
+              Speichern
             </Button>
-          {/*  {user?.user && project && user?.user.id === project.founder && ( */}
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ color: "black" }}
-                onClick={() => { handleDelete() }}
-              >
+            {/*  {user?.user && project && user?.user.id === project.founder && ( */}
+            <Button
+              variant="contained"
+              sx={{backgroundColor: "primary.contrastText"}}
+              style={{ color: "white" }}
+              onClick={() => { handleDelete() }}
+            >
               Löschen
-              </Button>
-              <Button
-            variant="contained"
-            color="secondary"
-            style={{ color: "black" }}
-            onClick={() => { handleLeave() }}
-          >
-            Projekt verlassen
             </Button>
-            </div>
+            <Button
+              variant="contained"
+              sx={{backgroundColor: "primary.contrastText"}}
+              style={{ color: "white" }}
+              onClick={() => { handleLeave() }}
+            >
+              Projekt verlassen
+            </Button>
+          </div>
         </Box>
       </Modal>
       <Box style={headerStyle}>
@@ -277,7 +267,13 @@ const handleLeave = async () => {
           <Arbeitsstatistik />
         </Box>
       </Modal>
-      <Phase />
+      {project && projectUsers ? (
+            <Box sx={{ overflow: "hidden", overflowX: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '5rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
+        <Phase key={id} projectusers={projectUsers} projektid={id} />
+        </Box>
+      ) : (
+        <Typography>Loading...</Typography>
+      )}
     </>
   );
 }

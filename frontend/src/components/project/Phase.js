@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { Box, TextField, Card, Typography, IconButton,} from "@mui/material";
 import Task from "./Tasks";
 
-const Phase = () => {
+const Phase = ({projectusers, projektid}) => {
   const [project, setProject] = useState([]);
   const [newPhaseName, setNewPhaseName] = useState("");
   let { id } = useParams();
@@ -15,7 +15,7 @@ const Phase = () => {
   const [newPhasenid, setNewPhasenid] = useState(null); 
 
   const phasenload = async () => {
-    const response = await apiget(`phase/${id}`);
+    const response = await apiget(`phase/${projektid}`);
     const sortedResponse = response.sort((a, b) => a.indx - b.indx);
     setProject(sortedResponse);
   };
@@ -24,7 +24,7 @@ const Phase = () => {
     setNewPhasenid(newPhasenid);
     await phasenload(newPhasenid); 
     setReloadKey(prevKey => prevKey + 1); 
-};
+  };
 
   useEffect(() => {
     phasenload();
@@ -136,8 +136,7 @@ const Phase = () => {
     }
   };
 
-  const changePhaseName = async (index, newName) => {
-    console.log(project);
+  const changePhaseName = async (id, index, newName) => {
     if (newName !== null && newName !== "") {
       try {
         const updatedData = [...project];
@@ -153,22 +152,18 @@ const Phase = () => {
 
   // Stil für die Phase-Karten
   const phaseCardStyle = {
-    marginBottom: "40px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    position: "relative",
-    width: "calc(33.33% - 10px)", // Drei Karten pro Reihe, mit 20px Abstand
-    marginRight: "10px", // Abstand zwischen den Karten
+    flex: "0 0 auto", // Verhindert, dass die Karten ihre Breite ändern
+    width: "300px", // Setzt eine feste Breite für jede Phase
+    marginRight: "10px", // Abstand zwischen den Phasen
   };
 
   // Stil für den Container der Phasen
   const phaseContainerStyle = {
     display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
+    overflowX: "auto", // Horizontales Scrollen ermöglichen
     padding: "1px", // Außenabstand
-  };
+    width: "100%", // Container füllt die verfügbare Breite
+  }
 
   const iconStyle = {
     marginRight: "auto",
@@ -204,7 +199,7 @@ const Phase = () => {
                   id="phasenname"
                   defaultValue={phase.phasename}
                   onChange={(event) =>
-                    changePhaseName(index, event.target.value)
+                    changePhaseName(phase.id, index, event.target.value)
                   }
                   variant="standard"
                   sx={{
@@ -234,7 +229,7 @@ const Phase = () => {
               >
                 <DeleteOutlineIcon />
               </IconButton>
-              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} />
+              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers}/>
             </Card>
           ))}
         <Card
