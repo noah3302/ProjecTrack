@@ -43,12 +43,14 @@ export default function Signin() {
   return (
     <>
       <Box sx={{ maxWidth: "40rem", marginRight: "auto", marginLeft: "auto", marginTop: "8rem" }}>
-        <Typography align="center">Herzlich willkommen bei ProjecTrack</Typography>
-        <Typography mt={"1rem"} align="center">Hier kannst du dich anmelden/registrieren:</Typography>
+      <Typography variant="h3" align="center" fontWeight="bold" >
+          Herzlich Willkommen bei ProjecTrack!
+        </Typography>
+        <Typography mt={"1rem"} variant="h6" align="center">Hier kannst du dich anmelden/registrieren:</Typography>
         <GoogleButton style={{ margin: "2rem auto" }} onClick={handleGoogleSignIn} />
       </Box>
-      <Box style={{ align: "center" }}>
-        <Timeline position="alternate" style={{ backgroundColor: "white", width: "50%" }}>
+      <Box style={{ backgroundColor: theme.palette.secondary.dark, width: "100%", display: "flex", justifyContent: "center", padding: "2rem 0" }}>
+         <Timeline position="alternate" style={{ width: "80%" }}>
           <TimelineItem>
             <TimelineSeparator>
               <TimelineConnector />
@@ -59,9 +61,9 @@ export default function Signin() {
             </TimelineSeparator>
             <TimelineContent sx={{ py: '15px', px: 2 }}>
               <Typography variant="h6" component="span">
-                Create your own project
+                Erstellen Sie Ihr eigenes Projekt!
               </Typography>
-              <Typography>With the power of ProjecTrack you can create your own projects for free</Typography>
+              <Typography>Mit der Leistungsfähigkeit von ProjecTrack können Sie Ihre eigenen Projekte kostenlos erstellen</Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -74,9 +76,9 @@ export default function Signin() {
             </TimelineSeparator>
             <TimelineContent sx={{ py: '12px', px: 2 }}>
               <Typography variant="h6" component="span">
-                Invite other prople
+                Laden Sie andere Personen ein!
               </Typography>
-              <Typography>Get your team in your project simple and save</Typography>
+              <Typography>Bringen Sie Ihr Team einfach und sicher in Ihr Projekt</Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -89,9 +91,9 @@ export default function Signin() {
             </TimelineSeparator>
             <TimelineContent sx={{ py: '15px', px: 2 }}>
               <Typography variant="h6" component="span">
-                Distribute tasks
+                Verteilen Sie Aufgaben!
               </Typography>
-              <Typography>Assign tasks to members of your project and see the progress at any time</Typography>
+              <Typography>Weisen Sie den Mitgliedern Ihres Projekts Aufgaben zu und sehen Sie jederzeit den Fortschritt</Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -104,9 +106,9 @@ export default function Signin() {
             </TimelineSeparator>
             <TimelineContent sx={{ py: '15px', px: 2 }}>
               <Typography variant="h6" component="span">
-                Steer the project
+                Steuern Sie das Projekt!
               </Typography>
-              <Typography>Reporting functions allow you to view and analyze the progress of your project at any time</Typography>
+              <Typography>Reporting-Funktionen ermöglichen es Ihnen, den Fortschritt Ihres Projekts jederzeit einzusehen und zu analysieren</Typography>
             </TimelineContent>
           </TimelineItem>
         </Timeline>

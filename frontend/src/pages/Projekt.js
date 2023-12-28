@@ -13,8 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
  
- 
- 
+
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -30,8 +29,10 @@ export default function Projekt() {
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
 
+  // function getUserNames(array) {
+  //   return array.map((exUser) => exUser.nickname);
+  // }
 
- 
   useEffect(() => {
     console.log(user);
     const fetchData = async () => {
@@ -53,18 +54,6 @@ export default function Projekt() {
       fetchData();
     }
   }, [id, user]);  
- 
- 
-  //Enddatum anpassen und formatieren
-  const handleDateChange = (date) => {
-    try {
-      const [day, month, year] = date.split('.'); // Annahme: Datumformat ist DD.MM.YYYY
-      const formattedDate = `${year}-${month}-${day}`;
-      setProject({ ...project, end_date: formattedDate });
-    } catch (error) {
-      console.error("Fehler beim Konvertieren des Datums:", error);
-    }
-  };
  
   const style = {
     position: "absolute",
@@ -89,6 +78,8 @@ export default function Projekt() {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    marginTop: "10px", 
+    width: "100%"
   };
  
   //Aktualisieren der Daten in die Datenbank
@@ -152,24 +143,23 @@ const handleLeave = async () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Hast mal drüber nachgedacht was passiert, wenn der Chef das Projekt einfach verlässt?"}
+          {"Du kannst als Gründer nicht einfach das Projekt verlassen."}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Wäre vllt nicht die dümmste idee einen nachfolger vorher noch zu definieren, merkst selbst
+            Bitte wähle zuerst einen Nachfolger, danach kannst du das Projekt verlassen.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClosedialog} autoFocus>
-            Okay, Chef
+            Okay
           </Button>
         </DialogActions>
       </Dialog>
 
-      
       <Modal open={openSettings} onClose={handleCloseSettings}>
         <Box sx={style}>
-          <Typography variant="h6">Projekteinstellungen</Typography>
+          <Typography variant="h6" mb={2}>Projekteinstellungen</Typography>
           <Box style={infoContainerStyle}>
             <TextField
               label="Projekttitel"
@@ -178,6 +168,7 @@ const handleLeave = async () => {
               onChange={(e) => setProject({ ...project, project_title: e.target.value })}
               fullWidth
               margin="normal"
+              style={{ marginTop: '10px' }}
             />
             <TextField
               label="Beschreibung"
@@ -188,6 +179,7 @@ const handleLeave = async () => {
               multiline
               rows={4}
               margin="normal"
+              style={{ marginTop: '10px' }}
             />
             <TextField
                 label="Start"
@@ -203,37 +195,46 @@ const handleLeave = async () => {
                     backgroundColor: '#f0f0f0', //Hintergrundfarbe
                   },
                 }}
+                style={{ marginTop: '10px' }}
               />
-            <TextField
+              <TextField
                 label="Ende"
                 type="datetime-local"
                 variant="outlined"
                 fullWidth
                 value={project.end_date}
-                onChange={(newDate) => handleDateChange(newDate)}
-                style={{ marginBottom: "10px" }}
+                onChange={(e) => setProject({ ...project, end_date: e.target.value })}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                style={{ marginTop: '10px' }} 
               />
               <Autocomplete
                 options={projectUsers || []}
-                getOptionLabel={(option) => option ? option.nickname || '' : ''}
+                getOptionLabel={(option) => option && option.nickname ? option.nickname : ''}
                 renderInput={(params) => (
                   <TextField
-                    {...params}
-                    label="Gründer"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
+                  {...params}
+                  label="Gründer"
+                  variant="outlined"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  style={{ marginTop: '10px', width: '500px', marginBottom: '10px' }}
                   />
                 )}
-                value={founderName}
+                value={projectUsers && projectUsers.find((user) => user.id.toString() === founderName) || null}
                 onChange={(event, newValue) => {
-                  setFounderName(newValue ? newValue.nickname || '' : '');
+                  if (newValue) {
+                    setFounderName(newValue.id.toString()); 
+                  } else {
+                    setFounderName('');
+                  }
                 }}
               />
           </Box >
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
           <Button
             variant="contained"
             color="secondary"
@@ -259,10 +260,11 @@ const handleLeave = async () => {
           >
             Projekt verlassen
             </Button>
+            </div>
         </Box>
       </Modal>
       <Box style={headerStyle}>
-        <Typography variant="h6">{project.project_title}</Typography>
+        <Typography variant="h4" align="center" >{project.project_title}</Typography>
         <Button variant="contained" color="secondary" style={{ marginLeft: "auto", color: "black" }} onClick={handleOpen}>
           Projektstatistik
         </Button>
