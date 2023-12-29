@@ -255,10 +255,10 @@ export default function Projekt() {
       </Modal>
       <Box style={headerStyle}>
         <Typography variant="h4" align="center" >{project.project_title}</Typography>
-        <Button variant="contained" color="secondary" style={{ marginLeft: "auto", color: "black" }} onClick={handleOpen}>
+        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
           Projektstatistik
         </Button>
-        <Button variant="contained" color="secondary" style={{ marginLeft: "5px", color: "black" }} onClick={handleOpenSettings}>
+        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
       </Box>

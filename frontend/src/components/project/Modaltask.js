@@ -13,6 +13,7 @@ const Modaltask = ({ phasesid, updatetasks }) => {
     task_id: 0,
     tasktitle: "",
     description: "",
+    score: "",
     duedate: "",
     user_id: null,
     phases_id: phasesid,
@@ -35,6 +36,7 @@ const Modaltask = ({ phasesid, updatetasks }) => {
         id: newTask.task_id,
         tasktitle: newTask.tasktitle,
         description: newTask.description,
+        score: newTask.score,
         duedate: newTask.duedate,
         user_id: newTask.user_id,
         phases_id: newTask.phases_id,
@@ -45,6 +47,7 @@ const Modaltask = ({ phasesid, updatetasks }) => {
         task_id: 0,
         tasktitle: "",
         description: "",
+        score: "",
         duedate: "",
         user_id: null,
         phases_id: phasesid,
@@ -62,10 +65,9 @@ const Modaltask = ({ phasesid, updatetasks }) => {
         <Box onClick={handleOpen}>
           <Button
             variant="contained"
-            color="secondary"
-            style={{ marginLeft: "auto", color: "black" }}
+            sx={{ marginLeft: "auto", backgroundColor:"secondary.dark" }}
           >
-            <Typography color="#000000" align="center">
+            <Typography color="lightgrey" align="center">
               Aufgabe erstellen
             </Typography>
           </Button>
@@ -117,12 +119,12 @@ const Modaltask = ({ phasesid, updatetasks }) => {
               />
               <Typography>Wie schwer ist die Task?</Typography>
               <Slider
-                disabled={false}
                 marks
                 max={5}
                 min={1}
                 size="medium"
                 valueLabelDisplay="auto"
+                onChange={(e) => setNewTask({ ...newTask, score: e.target.value})}
               />
               <TextField
                 label="Due Date"

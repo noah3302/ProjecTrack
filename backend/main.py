@@ -56,6 +56,7 @@ project = api.inherit('Project', bo, {
 task = api.inherit('Task', bo, {
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
+        'score': fields.String(attribute='_score', description='Score der Task'),
         'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
         'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
@@ -363,6 +364,7 @@ class TaskListOperations(Resource):
                 id,
                 proposal.get_tasktitle(),
                 proposal.get_description(),
+                proposal.get_score(),
                 proposal.get_duedate(),
                 proposal.get_user_id(),
                 proposal.get_phases_id()
@@ -383,7 +385,6 @@ class TaskOperations(Resource):
 
     @api.marshal_with(task, code=200)
     @api.expect(task)
-    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Task.from_dict(api.payload)
@@ -392,6 +393,7 @@ class TaskOperations(Resource):
             p = adm.create_task(
                 proposal.get_tasktitle(),
                 proposal.get_description(),
+                proposal.get_score(),
                 proposal.get_duedate(),
                 proposal.get_user_id(),
                 proposal.get_phases_id(),

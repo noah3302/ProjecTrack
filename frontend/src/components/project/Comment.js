@@ -127,7 +127,7 @@ const Comment = ({ taskid, projectusers }) => {
                 borderRadius: "8px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 overflowX: "hidden",
-                backgroundColor: "white",
+                backgroundColor: "rgb(233, 233, 233)",
             };
         } else {
             return {
@@ -136,7 +136,7 @@ const Comment = ({ taskid, projectusers }) => {
                 marginBottom: "5px",
                 borderRadius: "8px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "white",
+                backgroundColor: "rgb(233, 233, 233)",
             };
         }
     };
@@ -196,7 +196,6 @@ const Comment = ({ taskid, projectusers }) => {
                         onChange={(e) => setNewComment(e.target.value)}
                         fullWidth
                         multiline
-                        style={{ marginBottom: "10px" }}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">

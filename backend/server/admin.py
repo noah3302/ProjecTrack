@@ -199,13 +199,12 @@ class ProjectrackAdministration(object):
                 user_phase_task_count[
                     user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
                 for phase_id, phase_name in phases.items():
-                    tasks = mapper.find_by_phase_id_and_user_id(phase_id,
-                                                                user_id)  # Erhalte Tasks für die Phase und Benutzer
-                    task_count = len(tasks)  # Anzahl der Tasks für die Phase und Benutzer
-                    user_phase_task_count[user_nickname][
-                        phase_name] = task_count  # Speichere die Task-Anzahl für den Phasennamen
+                    tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
+                    score = 0
+                    for task in tasks:
+                        score = score + int(task.get_score())
+                    user_phase_task_count[user_nickname][phase_name] = score  # Speichert die summierten Task scores für den Phasennamen
 
-        print(user_phase_task_count)
         return user_phase_task_count
 
     """Tasks"""
@@ -257,11 +256,12 @@ class ProjectrackAdministration(object):
     """Task"""
     """Task updaten"""
 
-    def update_task(self, id, tasktitle, description, duedate, user_id, phases_id):
+    def update_task(self, id, tasktitle, description, score, duedate, user_id, phases_id):
         task = Task()
         task.set_id(id),
         task.set_tasktitle(tasktitle),
         task.set_description(description),
+        task.set_score(score),
         task.set_duedate(duedate),
         task.set_user_id(user_id),
         task.set_phases_id(phases_id)
@@ -277,10 +277,11 @@ class ProjectrackAdministration(object):
         
     """Task hinzufügen"""
     
-    def create_task(self, tasktitle, description, duedate, user_id, phases_id):
+    def create_task(self, tasktitle, description, score, duedate, user_id, phases_id):
         task = Task()
         task.set_tasktitle(tasktitle),
         task.set_description(description),
+        task.set_score(score),
         task.set_duedate(duedate),
         task.set_user_id(user_id),
         task.set_phases_id(phases_id)

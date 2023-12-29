@@ -4,7 +4,7 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useParams } from "react-router-dom";
-import { Box, TextField, Card, Typography, IconButton,} from "@mui/material";
+import { Box, TextField, Card, Typography, IconButton, Divider} from "@mui/material";
 import Task from "./Tasks";
 
 const Phase = ({projectusers, projektid}) => {
@@ -150,29 +150,28 @@ const Phase = ({projectusers, projektid}) => {
     }
   };
 
-  // Stil für die Phase-Karten
   const phaseCardStyle = {
+    backgroundColor: "rgb(233, 233, 233)",
     width: "auto",
-    marginRight: "10px",
+    marginRight: "8px",
+    marginLeft: "8px",
     display: "flex",
     flexDirection: "column",
     marginBottom: "10px",
-    height: "fit-content" //Höhe wird an Inhalt angepasst
+    height: "fit-content" 
   }
 
-  // Stil für den Container der Phasen
   const phaseContainerStyle = {
     display: "flex",
-    overflowX: "auto", // Horizontales Scrollen
-    padding: "1px", // Außenabstand
-    width: "100%", // Container füllt die verfügbare Breite
+    overflowX: "auto", 
+    padding: "1px", 
+    width: "100%", 
   }
 
   const iconStyle = {
     marginRight: "auto",
   };
 
-  // Arbeitsstatistik
   const style = {
     position: "absolute",
     top: "50%",
@@ -195,7 +194,8 @@ const Phase = ({projectusers, projektid}) => {
       <Box style={phaseContainerStyle}>
         {Array.isArray(project) &&
           project.map((phase, index) => (
-            <Card key={phase.id} style={phaseCardStyle}>
+            <>
+            <Card key={phase.id} sx={phaseCardStyle}>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <IconButton
                   style={iconStyle}
@@ -240,6 +240,8 @@ const Phase = ({projectusers, projektid}) => {
                 <DeleteOutlineIcon />
               </IconButton>
             </Card>
+            <Divider orientation="vertical" flexItem></Divider>
+            </>
           ))}
         <Card
           style={{          

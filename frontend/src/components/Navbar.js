@@ -62,7 +62,7 @@ export default function Navbar() {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#blue" }}>
+      <AppBar position="fixed" sx={{ backgroundColor: "primary.main" }}>
         <Container maxWidth="xl" disableGutters>
           <Toolbar sx={{ height: "50px" }}>
             <IconButton

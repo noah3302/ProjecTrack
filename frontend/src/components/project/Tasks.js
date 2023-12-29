@@ -15,6 +15,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   const [editedTitle, setEditedTitle] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [editedDescription, setEditedDescription] = useState("");
+  const [editedScore, setEditedScore] = useState("");
   const [editedDueDate, setEditedDueDate] = useState("");
   const [editedUserId, setEditedUserId] = useState("");
   const [editedPhasesId, setEditedPhasesId] = useState("");
@@ -54,6 +55,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
     setEditedTask(taskToEdit);
     setEditedTitle(taskToEdit.tasktitle);
     setEditedDescription(taskToEdit.description);
+    setEditedScore(taskToEdit.score);
     setEditedDueDate(taskToEdit.duedate);
     setEditedUserId(taskToEdit.user_id);
     setEditedPhasesId(taskToEdit.phases_id);
@@ -66,6 +68,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
         id: editedTask.id,
         tasktitle: editedTitle,
         description: editedDescription,
+        score: editedScore,
         duedate: editedDueDate,
         user_id: editedUserId,
         phases_id: editedPhasesId,
@@ -112,13 +115,17 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   };
 
   const BoxStyle = {
-    backgroundColor: "#f5f5f5",
+    width: "80%",
     padding: "1rem",
-    marginBottom: "20px",
-    borderRadius: "8px",
+    marginTop: "10px",
+    marginBottom: "10px",
+    borderRadius: "5px",
     position: "relative",
     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+    marginLeft: "auto",
+    marginRight: "auto",
   };
+  
 
   const editDeleteButtonStyle = {
     position: "absolute",
@@ -142,10 +149,10 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   };
 
   return (
-    <>
-      <Modaltask phasesid={phasenid} updatetasks={setTaskData} />
+    <Box sx={{marginTop:"0.5rem"}}>
+      <Modaltask phasesid={phasenid} updatetasks={setTaskData}/>
       {taskData.map((task, index) => (
-        <Box key={index} style={BoxStyle}>
+        <Box key={index} style={BoxStyle} sx={{backgroundColor: "white"}}>
           <Box style={taskBoxStyle}>
             {editedTask && editedTask.id === task.id ? (
               <TextField
@@ -181,14 +188,27 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
           ) : (
             <Typography variant="body1">{task.description}</Typography>
           )}
-          <Slider
-            disabled={true}
-            marks
-            max={5}
-            min={1}
-            size="medium"
-            valueLabelDisplay="auto"
-          />
+          {editedTask && editedTask.id === task.id ? (
+            <Slider
+              value={editedScore}
+              marks
+              max={5}
+              min={1}
+              size="medium"
+              valueLabelDisplay="auto"
+              onChange={(e) => setEditedScore(e.target.value)}
+            />
+          ) : (
+            <Slider
+              disabled={true}
+              value={task.score}
+              marks
+              max={5}
+              min={1}
+              size="medium"
+              valueLabelDisplay="auto"
+            />
+          )}
           {editedTask && editedTask.id === task.id ? (
             <TextField
               label="Enddatum"
@@ -209,7 +229,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
             <Autocomplete
               options={getUserNames(projectusers)}
               renderInput={(params) => (
-                <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }}  />
+                <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }} />
               )}
               value={editedUserId !== null ? projectusers.find((user) => user.id.toString() === editedUserId)?.nickname : ''}
               onChange={(event, newValue) => {
@@ -244,14 +264,14 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
             <Typography variant="body1"></Typography>
           )}
           {editedTask && editedTask.id === task.id && (
-            <Button variant="contained" onClick={handleSave} style={saveButtonStyle}>
+            <Button variant="contained" onClick={handleSave} style={saveButtonStyle} sx={{ marginLeft: "auto", backgroundColor:"secondary.dark", color:"lightgrey" }}>
               Speichern
             </Button>
           )}
           <Comment key={task.id} taskid={task.id} projectusers={projectusers} />
         </Box>
       ))}
-    </>
+    </Box>
   );
 };
 
