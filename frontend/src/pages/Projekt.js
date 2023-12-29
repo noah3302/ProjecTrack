@@ -70,7 +70,7 @@ export default function Projekt() {
     flexDirection: "column",
     alignItems: "flex-start",
     marginTop: "10px",
-    width: "100%"
+    width: "100%",
   };
 
   //Aktualisieren der Daten in die Datenbank
@@ -268,9 +268,7 @@ export default function Projekt() {
         </Box>
       </Modal>
       {project && projectUsers ? (
-            <Box sx={{ overflow: "hidden", overflowX: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '5rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
         <Phase key={id} projectusers={projectUsers} projektid={id} />
-        </Box>
       ) : (
         <Typography>Loading...</Typography>
       )}

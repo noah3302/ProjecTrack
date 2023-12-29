@@ -58,16 +58,18 @@ const Modaltask = ({ phasesid, updatetasks }) => {
 
   return (
     <>
-      <Box onClick={handleOpen}>
-        <Button
-          variant="contained"
-          color="secondary"
-          style={{ marginLeft: "5px", color: "black" }}
-        >
-          <Typography color="#000000" align="center">
-            Task erstellen
-          </Typography>
-        </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box onClick={handleOpen}>
+          <Button
+            variant="contained"
+            color="secondary"
+            style={{ marginLeft: "auto", color: "black" }}
+          >
+            <Typography color="#000000" align="center">
+              Aufgabe erstellen
+            </Typography>
+          </Button>
+        </Box>
       </Box>
 
       <Modal

@@ -152,15 +152,18 @@ const Phase = ({projectusers, projektid}) => {
 
   // Stil für die Phase-Karten
   const phaseCardStyle = {
-    flex: "0 0 auto", // Verhindert, dass die Karten ihre Breite ändern
-    width: "300px", // Setzt eine feste Breite für jede Phase
-    marginRight: "10px", // Abstand zwischen den Phasen
-  };
+    width: "auto",
+    marginRight: "10px",
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "10px",
+    height: "fit-content" //Höhe wird an Inhalt angepasst
+  }
 
   // Stil für den Container der Phasen
   const phaseContainerStyle = {
     display: "flex",
-    overflowX: "auto", // Horizontales Scrollen ermöglichen
+    overflowX: "auto", // Horizontales Scrollen
     padding: "1px", // Außenabstand
     width: "100%", // Container füllt die verfügbare Breite
   }
@@ -178,6 +181,13 @@ const Phase = ({projectusers, projektid}) => {
     bgcolor: "#D3D3D3",
     boxShadow: 24,
     p: 4,
+  };
+
+  const deleteButtonStyle = {
+    marginTop: "auto",
+    alignSelf: "flex-end",
+    padding: "3px",
+    display: "flex",
   };
 
   return (
@@ -206,6 +216,7 @@ const Phase = ({projectusers, projektid}) => {
                     textAlign: "center",
                     "& input": {
                       textAlign: "center",
+                      fontSize: "1.5rem"
                     },
                   }}
                 />
@@ -218,25 +229,26 @@ const Phase = ({projectusers, projektid}) => {
                   <ArrowRightIcon />
                 </IconButton>
               </div>
-              
+              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers}/>
               <IconButton
-                style={{
-                  position: "absolute",
-                  bottom: "5px", 
-                  right: "5px", 
-                }}
+                style={deleteButtonStyle}
                 onClick={() => handleDeleteButtonClick(phase.id)}
               >
+                <Typography>
+                  Phase löschen
+                </Typography>
                 <DeleteOutlineIcon />
               </IconButton>
-              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers}/>
             </Card>
           ))}
         <Card
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginLeft: "auto",
+          style={{          
+              flex: "0 0 auto",
+              width: "auto",
+              display: "flex",
+              flexDirection: "column",
+              marginBottom: "10px",
+              height: "fit-content",
           }}
         >
           {/* Neue Phase hinzufügen */}

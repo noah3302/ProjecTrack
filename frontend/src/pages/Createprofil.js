@@ -14,7 +14,7 @@ export default function Createprofil() {
     const { user, setUser, setUserdata } = UserAuth()
 
     useEffect(() => {
-        apiget("users/nicknames").then((data) => {
+        apiget(`users/nicknames`).then((data) => {
             setNicknames(data.nicknames)
         })
     }, []);

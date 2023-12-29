@@ -203,13 +203,13 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               }}
             />
           ) : (
-            <Typography variant="body1">DueDate: {task.duedate}</Typography>
+            <Typography variant="body1" > <strong>DueDate:</strong> {task.duedate}</Typography>
           )}
           {editedTask && editedTask.id === task.id ? (
             <Autocomplete
               options={getUserNames(projectusers)}
               renderInput={(params) => (
-                <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }} />
+                <TextField {...params} label="Verantwortlicher" style={{ marginBottom: "10px" }}  />
               )}
               value={editedUserId !== null ? projectusers.find((user) => user.id.toString() === editedUserId)?.nickname : ''}
               onChange={(event, newValue) => {
@@ -221,7 +221,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               error={editedUserId === null ? 'Verantwortlicher ist erforderlich' : undefined}
             />
           ) : (
-            <Typography variant="body1">Verantwortlicher:
+            <Typography variant="body1"> <strong>Verantwortlicher: </strong>
               {projectusers.find(user => user.id.toString() === task.user_id)?.nickname || 'Nicht gefunden'}
             </Typography>
           )}
