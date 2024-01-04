@@ -4,7 +4,7 @@ import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-import { apiget, apiput, apidelete} from "../API/Api";
+import { apiget, apiput, apidelete } from "../API/Api";
 import { UserAuth } from "../Context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import Dialog from '@mui/material/Dialog';
@@ -12,9 +12,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
- 
- 
- 
+import TransferList from "../components/TransferList";
+
+
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -26,46 +26,27 @@ export default function Projekt() {
   const handleCloseSettings = () => setOpenSettings(false);
   const { user } = UserAuth();
   const navigate = useNavigate();
-  const [projectUsers, setProjectUsers] = useState([]);
+  const [projectUsers, setProjectUsers] = useState();
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
 
-
- 
   useEffect(() => {
     console.log(user);
     const fetchData = async () => {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        // const projectUsersData = await apiget(`project/${id}/users`);
-        // setProjectUsers(projectUsersData);
-        // const founderData = await apiget(`nickname/${data.founder}`);
-        // setFounderName(founderData.nickname);
-        // const nicknamesData = await apiget("nicknames");
-        // setNicknames(nicknamesData);
+        const users = await apiget(`project/${id}/users`);
+        setProjectUsers(users);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
     };
- 
     if (id) {
       fetchData();
     }
-  }, [id, user]);  
- 
- 
-  //Enddatum anpassen und formatieren
-  const handleDateChange = (date) => {
-    try {
-      const [day, month, year] = date.split('.'); // Annahme: Datumformat ist DD.MM.YYYY
-      const formattedDate = `${year}-${month}-${day}`;
-      setProject({ ...project, end_date: formattedDate });
-    } catch (error) {
-      console.error("Fehler beim Konvertieren des Datums:", error);
-    }
-  };
- 
+  }, [id, user]);
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -75,7 +56,7 @@ export default function Projekt() {
     boxShadow: 24,
     p: 4,
   };
- 
+
   const headerStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -84,92 +65,93 @@ export default function Projekt() {
     padding: "10px",
     boxSizing: "border-box",
   };
- 
+
   const infoContainerStyle = {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    marginTop: "10px",
+    width: "100%",
   };
- 
+
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     console.log(project)
     try {
-        const update = {
-          id: id,
-          project_title: project.project_title,
-          project_description: project.project_description,
-          founder: project.founder,
-          start_date: project.start_date,
-          end_date: project.end_date,
+      const update = {
+        id: id,
+        project_title: project.project_title,
+        project_description: project.project_description,
+        founder: project.founder,
+        start_date: project.start_date,
+        end_date: project.end_date,
       };
- 
-        await apiput('project', id, update);
-        handleCloseSettings();
-        setProject(update);
+
+      await apiput('project', id, update);
+      handleCloseSettings();
+      setProject(update);
     } catch (error) {
-        console.error("Fehler beim Aktualisieren des Projekts:", error);
+      console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
-};
- 
-//Projekt löschen
-const handleDelete = async () => {
-  try {
-    await apidelete(`project`, id);
-    navigate("/home");
-    setProject('');
-  } catch (error) {
-    console.error("Fehler beim Löschen des Projekts:", error);
-  }
-};
- 
-//Projekt verlassen
-const handleLeave = async () => {
-  try {
-    const a = Number(project.founder);
-    const b = Number(user.id);
-    if (a === b) {
-      setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
-    } else {
-      await apiput(`project/members`, user.id , project);
+  };
+
+  //Projekt löschen
+  const handleDelete = async () => {
+    try {
+      await apidelete(`project`, id);
       navigate("/home");
+      setProject('');
+    } catch (error) {
+      console.error("Fehler beim Löschen des Projekts:", error);
     }
-  } catch (error) {
-    console.error("Fehler beim Verlassen des Projekts:", error);
-  }
-};
+  };
+
+  //Projekt verlassen
+  const handleLeave = async () => {
+    try {
+      const a = Number(project.founder);
+      const b = Number(user.id);
+      if (a === b) {
+        setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
+      } else {
+        await apiput(`project/members`, user.id, project);
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Fehler beim Verlassen des Projekts:", error);
+    }
+  };
 
   const handleClosedialog = () => {
     setOpendialog(false);
   };
- 
+
   return (
     <>
-    <Dialog
+      <Dialog
         open={opendialog}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Hast mal drüber nachgedacht was passiert, wenn der Chef das Projekt einfach verlässt?"}
+          {"Du kannst als Gründer nicht einfach das Projekt verlassen."}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Wäre vllt nicht die dümmste idee einen nachfolger vorher noch zu definieren, merkst selbst
+            Bitte wähle zuerst einen Nachfolger, danach kannst du das Projekt verlassen.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClosedialog} autoFocus>
-            Okay, Chef
+            Okay
           </Button>
         </DialogActions>
       </Dialog>
 
-      
       <Modal open={openSettings} onClose={handleCloseSettings}>
         <Box sx={style}>
-          <Typography variant="h6">Projekteinstellungen</Typography>
+          <Typography variant="h6" mb={2}>Projekteinstellungen</Typography>
           <Box style={infoContainerStyle}>
             <TextField
               label="Projekttitel"
@@ -178,6 +160,7 @@ const handleLeave = async () => {
               onChange={(e) => setProject({ ...project, project_title: e.target.value })}
               fullWidth
               margin="normal"
+              style={{ marginTop: '10px' }}
             />
             <TextField
               label="Beschreibung"
@@ -188,85 +171,95 @@ const handleLeave = async () => {
               multiline
               rows={4}
               margin="normal"
+              style={{ marginTop: '10px' }}
             />
             <TextField
-                label="Start"
-                type="datetime-local"
-                variant="outlined"
-                fullWidth
-                value={project.start_date}
-                InputProps={{
-                  readOnly: true,         //kann man nicht bearbeiten
-                  style: {
-                    pointerEvents: 'none',      //Cursor entfernen
-                    color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
-                    backgroundColor: '#f0f0f0', //Hintergrundfarbe
-                  },
-                }}
-              />
+              label="Start"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              value={project.start_date}
+              InputProps={{
+                readOnly: true,         //kann man nicht bearbeiten
+                style: {
+                  pointerEvents: 'none',      //Cursor entfernen
+                  color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
+                  backgroundColor: '#f0f0f0', //Hintergrundfarbe
+                },
+              }}
+              style={{ marginTop: '10px' }}
+            />
             <TextField
-                label="Ende"
-                type="datetime-local"
-                variant="outlined"
-                fullWidth
-                value={project.end_date}
-                onChange={(newDate) => handleDateChange(newDate)}
-                style={{ marginBottom: "10px" }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-              <Autocomplete
-                options={projectUsers || []}
-                getOptionLabel={(option) => option ? option.nickname || '' : ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Gründer"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                  />
-                )}
-                value={founderName}
-                onChange={(event, newValue) => {
-                  setFounderName(newValue ? newValue.nickname || '' : '');
-                }}
-              />
+              label="Ende"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              value={project.end_date}
+              onChange={(e) => setProject({ ...project, end_date: e.target.value })}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{ marginTop: '10px' }}
+            />
+            <Autocomplete
+              options={projectUsers ? projectUsers : []}
+              getOptionLabel={(option) => option.nickname || ''}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Gründer"
+                  variant="outlined"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  style={{ marginTop: '10px', width: "70vw", marginBottom: '10px' }}
+                />
+              )}
+              value={projectUsers && projectUsers.find((user) => user.id.toString() === project.founder) || null}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setProject({ ...project, founder: newValue.id.toString() }); // Sicherstellen, dass die ID in String-Form übergeben wird
+                } else {
+                  setProject({ ...project, founder: '' }); // Setzen des Gründers auf leer, wenn kein Wert ausgewählt ist
+                }
+              }}
+            />
           </Box >
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ color: "black" }}
-            onClick={() => { handleSave() }}
-          >
-            Speichern
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => { handleSave() }}
+            >
+              Speichern
             </Button>
-          {/*  {user?.user && project && user?.user.id === project.founder && ( */}
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ color: "black" }}
-                onClick={() => { handleDelete() }}
-              >
+            {/*  {user?.user && project && user?.user.id === project.founder && ( */}
+            <Button
+              variant="contained"
+              sx={{backgroundColor: "primary.contrastText"}}
+              style={{ color: "white" }}
+              onClick={() => { handleDelete() }}
+            >
               Löschen
-              </Button>
-              <Button
-            variant="contained"
-            color="secondary"
-            style={{ color: "black" }}
-            onClick={() => { handleLeave() }}
-          >
-            Projekt verlassen
             </Button>
+            <Button
+              variant="contained"
+              sx={{backgroundColor: "primary.contrastText"}}
+              style={{ color: "white" }}
+              onClick={() => { handleLeave() }}
+            >
+              Projekt verlassen
+            </Button>
+          </div>
         </Box>
       </Modal>
       <Box style={headerStyle}>
-        <Typography variant="h6">{project.project_title}</Typography>
-        <Button variant="contained" color="secondary" style={{ marginLeft: "auto", color: "black" }} onClick={handleOpen}>
+        <Typography variant="h4" align="center" >{project.project_title}</Typography>
+        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
           Projektstatistik
         </Button>
-        <Button variant="contained" color="secondary" style={{ marginLeft: "5px", color: "black" }} onClick={handleOpenSettings}>
+        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
       </Box>
@@ -275,7 +268,12 @@ const handleLeave = async () => {
           <Arbeitsstatistik />
         </Box>
       </Modal>
-      <Phase />
+      {project && projectUsers ? (
+        <Phase key={id} projectusers={projectUsers} projektid={id} />
+      ) : (
+        <Typography>Loading...</Typography>
+      )}
+    <TransferList />
     </>
   );
 }
