@@ -150,7 +150,7 @@ const Comment = ({ taskid, projectusers }) => {
                             <div style={{ display: "flex", alignItems: "center" }}>
                                 <Chip
                                     icon={<FaceIcon />}
-                                    label={nicknames[Comment.user_id] || "Unknown"}
+                                    label={nicknames[Comment.user_id] || "User left project"}
                                     style={chipStyle}
                                     size="small"
                                 />

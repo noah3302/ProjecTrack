@@ -8,12 +8,12 @@ import EngineeringIcon from '@mui/icons-material/Engineering';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-
+ 
 export default function Signin() {
   const { googleSignIn, user } = UserAuth();
   const [signInDone, setSignInDone] = useState();
   const navigate = useNavigate();
-
+ 
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
@@ -22,7 +22,7 @@ export default function Signin() {
       console.error("Fehler bei der Anmeldung:", error);
     }
   };
-
+ 
   useEffect(() => {
     const checkExistingUser = async () => {
       if (signInDone) {
@@ -34,10 +34,10 @@ export default function Signin() {
         }
       }
     };
-
+ 
     checkExistingUser();
   }, [user, signInDone]);
-
+ 
   return (
     <>
       <Box sx={{ maxWidth: "40rem", marginRight: "auto", marginLeft: "auto", marginTop: "8rem" }}>
@@ -47,7 +47,7 @@ export default function Signin() {
         <Typography mt={"1rem"} variant="h6" align="center">Hier kannst du dich anmelden/registrieren:</Typography>
         <GoogleButton style={{ margin: "2rem auto" }} onClick={handleGoogleSignIn} />
       </Box>
-      <Box sx={{ backgroundColor:  "secondary.light" }} style={{ width: "100%", display: "flex", justifyContent: "center", padding: "2rem 0" }}>
+      <Box sx={{ backgroundColor:  "rgb(233, 233, 233)" }} style={{ width: "100%", display: "flex", justifyContent: "center", padding: "2rem 0" }}>
          <Timeline position="alternate" style={{ width: "80%" }}>
           <TimelineItem>
             <TimelineSeparator>
@@ -57,7 +57,7 @@ export default function Signin() {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent sx={{ py: '15px', px: 2 }}>
+            <TimelineContent sx={{ py: '15px', px: 2 }} >
               <Typography variant="h6" component="span">
                 Erstellen Sie Ihr eigenes Projekt!
               </Typography>
@@ -110,34 +110,6 @@ export default function Signin() {
             </TimelineContent>
           </TimelineItem>
         </Timeline>
-      </Box>
-      <Box>
-        <Typography>Theme Farben</Typography>
-        <Typography>Primary</Typography>
-        <Box sx={{ backgroundColor:  "primary.light" }}><Typography>light</Typography></Box>
-        <Box sx={{ backgroundColor:  "primary.main" }}><Typography>main</Typography></Box>
-        <Box sx={{ backgroundColor:  "primary.dark" }}><Typography>dark</Typography></Box>
-        <Box sx={{ backgroundColor:  "primary.contrastText" }}><Typography>contrastText</Typography></Box>
-        <Typography>secondary</Typography>
-        <Box sx={{ backgroundColor:  "secondary.light" }}><Typography>light</Typography></Box>
-        <Box sx={{ backgroundColor:  "secondary.main" }}><Typography>main</Typography></Box>
-        <Box sx={{ backgroundColor:  "secondary.dark" }}><Typography>dark</Typography></Box>
-        <Box sx={{ backgroundColor:  "secondary.contrastText" }}><Typography>contrastText</Typography></Box>
-        <Typography>action</Typography>
-        <Box sx={{ backgroundColor:  "action.light" }}><Typography>light</Typography></Box>
-        <Box sx={{ backgroundColor:  "action.main" }}><Typography>main</Typography></Box>
-        <Box sx={{ backgroundColor:  "action.dark" }}><Typography>dark</Typography></Box>
-        <Box sx={{ backgroundColor:  "action.contrastText" }}><Typography>contrastText</Typography></Box>
-        <Typography>error</Typography>
-        <Box sx={{ backgroundColor:  "error.light" }}><Typography>light</Typography></Box>
-        <Box sx={{ backgroundColor:  "error.main" }}><Typography>main</Typography></Box>
-        <Box sx={{ backgroundColor:  "error.dark" }}><Typography>dark</Typography></Box>
-        <Box sx={{ backgroundColor:  "error.contrastText" }}><Typography>contrastText</Typography></Box>
-        <Typography>accent</Typography>
-        <Box sx={{ backgroundColor:  "accent.light" }}><Typography>light</Typography></Box>
-        <Box sx={{ backgroundColor:  "accent.main" }}><Typography>main</Typography></Box>
-        <Box sx={{ backgroundColor:  "accent.dark" }}><Typography>dark</Typography></Box>
-        <Box sx={{ backgroundColor:  "accent.contrastText" }}><Typography>contrastText</Typography></Box>
       </Box>
     </>
   );

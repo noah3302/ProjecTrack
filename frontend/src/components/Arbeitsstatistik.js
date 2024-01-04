@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { apiget } from "../API/Api";
 import { useParams } from 'react-router-dom';
+import { Typography } from '@mui/material';
 
 const Arbeitsstatistik = () => {
   const [data, setData] = useState([]);
@@ -41,15 +42,15 @@ const Arbeitsstatistik = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Arbeitsstatistik</h2>
+    <>
+      <Typography>Report-Ansicht</Typography>
       <BarChart
         width={700}
         height={300}
         series={data}
         xAxis={[{ data: nicknames, scaleType: 'band' }]}
       />
-    </div>
+    </>
   );
 }
 

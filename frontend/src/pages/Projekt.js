@@ -30,7 +30,6 @@ export default function Projekt() {
   const [opendialog, setOpendialog] = React.useState(false);
 
   useEffect(() => {
-    console.log(user);
     const fetchData = async () => {
       try {
         const data = await apiget(`project/${id}`);
@@ -233,15 +232,15 @@ export default function Projekt() {
             >
               Speichern
             </Button>
-            {/*  {user?.user && project && user?.user.id === project.founder && ( */}
+            {user?.id.toString() === project?.founder && ( 
             <Button
               variant="contained"
               sx={{backgroundColor: "primary.contrastText"}}
               style={{ color: "white" }}
               onClick={() => { handleDelete() }}
             >
-              Löschen
-            </Button>
+              Projekt Löschen
+            </Button>)}
             <Button
               variant="contained"
               sx={{backgroundColor: "primary.contrastText"}}
@@ -256,7 +255,7 @@ export default function Projekt() {
       <Box style={headerStyle}>
         <Typography variant="h4" align="center" >{project.project_title}</Typography>
         <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
-          Projektstatistik
+          Report-Ansicht
         </Button>
         <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
           Projekteinstellungen
@@ -268,7 +267,7 @@ export default function Projekt() {
         </Box>
       </Modal>
       {project && projectUsers ? (
-        <Phase key={id} projectusers={projectUsers} projektid={id} />
+        <Phase key={id} projectusers={projectUsers} projektid={id}/>
       ) : (
         <Typography>Loading...</Typography>
       )}

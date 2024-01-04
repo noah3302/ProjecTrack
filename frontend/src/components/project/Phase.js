@@ -4,15 +4,15 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useParams } from "react-router-dom";
-import { Box, TextField, Card, Typography, IconButton, Divider} from "@mui/material";
+import { Box, TextField, Card, Typography, IconButton, Grid, Divider } from "@mui/material";
 import Task from "./Tasks";
 
-const Phase = ({projectusers, projektid}) => {
+const Phase = ({ projectusers, projektid }) => {
   const [project, setProject] = useState([]);
   const [newPhaseName, setNewPhaseName] = useState("");
   let { id } = useParams();
   const [reloadKey, setReloadKey] = useState(0);
-  const [newPhasenid, setNewPhasenid] = useState(null); 
+  const [newPhasenid, setNewPhasenid] = useState(null);
 
   const phasenload = async () => {
     const response = await apiget(`phase/${projektid}`);
@@ -22,8 +22,8 @@ const Phase = ({projectusers, projektid}) => {
 
   const updateParentComponent = async (newPhasenid) => {
     setNewPhasenid(newPhasenid);
-    await phasenload(newPhasenid); 
-    setReloadKey(prevKey => prevKey + 1); 
+    await phasenload(newPhasenid);
+    setReloadKey(prevKey => prevKey + 1);
   };
 
   useEffect(() => {
@@ -158,15 +158,13 @@ const Phase = ({projectusers, projektid}) => {
     display: "flex",
     flexDirection: "column",
     marginBottom: "10px",
-    height: "fit-content" 
+    height: "fit-content"
   }
 
   const phaseContainerStyle = {
-    display: "flex",
-    overflowX: "auto", 
-    padding: "1px", 
-    width: "100%", 
-  }
+    padding: "1px",
+    width: "100%",
+  };
 
   const iconStyle = {
     marginRight: "auto",
@@ -191,82 +189,87 @@ const Phase = ({projectusers, projektid}) => {
 
   return (
     <>
-      <Box style={phaseContainerStyle}>
+      <Grid container spacing={2} style={phaseContainerStyle}>
         {Array.isArray(project) &&
           project.map((phase, index) => (
             <>
-            <Card key={phase.id} sx={phaseCardStyle}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <IconButton
-                  style={iconStyle}
-                  onClick={() => {
-                    moveLeftAndLowerIndex(index);
-                  }}
-                >
-                  <ArrowLeftIcon />
-                </IconButton>
-                <TextField
-                  id="phasenname"
-                  defaultValue={phase.phasename}
-                  onChange={(event) =>
-                    changePhaseName(phase.id, index, event.target.value)
-                  }
-                  variant="standard"
-                  sx={{
-                    textAlign: "center",
-                    "& input": {
-                      textAlign: "center",
-                      fontSize: "1.5rem"
-                    },
-                  }}
-                />
-                <IconButton
-                  style={iconStyle}
-                  onClick={() => {
-                    handleMoveRight(index);
-                  }}
-                >
-                  <ArrowRightIcon />
-                </IconButton>
-              </div>
-              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers}/>
-              <IconButton
-                style={deleteButtonStyle}
-                onClick={() => handleDeleteButtonClick(phase.id)}
-              >
-                <Typography>
-                  Phase löschen
-                </Typography>
-                <DeleteOutlineIcon />
-              </IconButton>
-            </Card>
-            <Divider orientation="vertical" flexItem></Divider>
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={phase.id}>
+
+                <Card key={phase.id} sx={phaseCardStyle}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <IconButton
+                      style={iconStyle}
+                      onClick={() => {
+                        moveLeftAndLowerIndex(index);
+                      }}
+                    >
+                      <ArrowLeftIcon />
+                    </IconButton>
+                    <TextField
+                      id="phasenname"
+                      defaultValue={phase.phasename}
+                      onChange={(event) =>
+                        changePhaseName(phase.id, index, event.target.value)
+                      }
+                      variant="standard"
+                      sx={{
+                        textAlign: "center",
+                        "& input": {
+                          textAlign: "center",
+                          fontSize: "1.5rem"
+                        },
+                      }}
+                    />
+                    <IconButton
+                      style={iconStyle}
+                      onClick={() => {
+                        handleMoveRight(index);
+                      }}
+                    >
+                      <ArrowRightIcon />
+                    </IconButton>
+                  </div>
+                  <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers} />
+                  <IconButton
+                    style={deleteButtonStyle}
+                    onClick={() => handleDeleteButtonClick(phase.id)}
+                  >
+                    <Typography>
+                      Phase löschen
+                    </Typography>
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                </Card>
+                <Divider orientation="vertical" flexItem></Divider>
+              </Grid>
             </>
           ))}
-        <Card
-          style={{          
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Card
+            style={{
               flex: "0 0 auto",
               width: "auto",
               display: "flex",
               flexDirection: "column",
               marginBottom: "10px",
               height: "fit-content",
-          }}
-        >
-          {/* Neue Phase hinzufügen */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              id="newPhaseName"
-              label="Neue Phase"
-              value={newPhaseName}
-              onChange={handleNewPhaseNameChange}
-            />
-            <IconButton onClick={addNewPhase}>
-              <Typography variant="body2">hinzufügen</Typography>
-            </IconButton>
-          </div>
-        </Card>
-      </Box>
+            }}
+          >
+            {/* Neue Phase hinzufügen */}
+            <Box style={{ display: "flex", alignItems: "center" }}>
+              <TextField
+                id="newPhaseName"
+                label="Neue Phase"
+                value={newPhaseName}
+                onChange={handleNewPhaseNameChange}
+              />
+              <IconButton onClick={addNewPhase}>
+                <Typography variant="body2">hinzufügen</Typography>
+              </IconButton>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
     </>
   );
 };
