@@ -1,24 +1,20 @@
-import React, { useEffect, useState } from 'react';
 import { apiget, apipost, apidelete } from "../API/Api";
 
 const Member = {
   // Mitglieder abrufen
-  getAllMembers: async () => {
-    const members = await apiget('/members');
+  getAllUsers: async () => {
+    const members = await apiget('users');
     return members;
   },
 
   // Mitglied hinzufügen
-  addMember: async (memberData) => {
-    console.log("apipost: Mitglied hinzufügen - Implementiere apipost-Funktion");
-    const newMember = await apipost('/members', memberData);
-    return newMember;
+  addMember: async (projectId, memberData) => {
+    return await apipost(`project/${projectId}/user`, memberData);
   },
 
   // Mitglied entfernen
-  removeMember: async (memberId) => {
-    console.log("apidelete: Mitglied entfernen - Implementiere apidelete-Funktion");
-    await apidelete(`/members/${memberId}`);
+  removeMember: async (projectId, memberId) => {
+    return await apidelete(`project/${projectId}/user`, memberId);
   },
 };
 

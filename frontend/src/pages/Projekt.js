@@ -12,13 +12,16 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import TransferList from "../components/TransferList";
+import TransferList from '../components/TransferList';
 
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [openMembers, setOpenMembers] = useState(false);
+  const handleOpenMembers = () => setOpenMembers(true);
+  const handleCloseMembers = () => setOpenMembers(false);
   const [project, setProject] = useState('');
   const [founderName, setFounderName] = useState('');
   const [openSettings, setOpenSettings] = useState(false);
@@ -26,7 +29,7 @@ export default function Projekt() {
   const handleCloseSettings = () => setOpenSettings(false);
   const { user } = UserAuth();
   const navigate = useNavigate();
-  const [projectUsers, setProjectUsers] = useState();
+  const [projectUsers, setProjectUsers] = useState([]);
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
 
@@ -36,7 +39,7 @@ export default function Projekt() {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
-        const users = await apiget(`project/${id}/users`);
+        const users = await apiget(`project/${id}/user`);
         setProjectUsers(users);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
@@ -55,6 +58,8 @@ export default function Projekt() {
     bgcolor: "white",
     boxShadow: 24,
     p: 4,
+    width: '70%',
+    maxWidth: 600
   };
 
   const headerStyle = {
@@ -237,7 +242,7 @@ export default function Projekt() {
             {/*  {user?.user && project && user?.user.id === project.founder && ( */}
             <Button
               variant="contained"
-              sx={{backgroundColor: "primary.contrastText"}}
+              sx={{ backgroundColor: "primary.contrastText" }}
               style={{ color: "white" }}
               onClick={() => { handleDelete() }}
             >
@@ -245,7 +250,7 @@ export default function Projekt() {
             </Button>
             <Button
               variant="contained"
-              sx={{backgroundColor: "primary.contrastText"}}
+              sx={{ backgroundColor: "primary.contrastText" }}
               style={{ color: "white" }}
               onClick={() => { handleLeave() }}
             >
@@ -256,10 +261,13 @@ export default function Projekt() {
       </Modal>
       <Box style={headerStyle}>
         <Typography variant="h4" align="center" >{project.project_title}</Typography>
-        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
+        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenMembers} disabled={projectUsers.length === 0}>
+          Mitglieder verwalten
+        </Button>
+        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
           Projektstatistik
         </Button>
-        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
+        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
       </Box>
@@ -273,7 +281,15 @@ export default function Projekt() {
       ) : (
         <Typography>Loading...</Typography>
       )}
-    <TransferList />
+      {projectUsers.length > 0 ?
+        <Modal open={openMembers} onClose={handleCloseMembers}>
+          <Box sx={style}>
+            <TransferList members={projectUsers} userId={user.id} founderId={parseInt(project.founder)} />
+          </Box>
+        </Modal>
+        :
+        null
+      }
     </>
   );
 }
