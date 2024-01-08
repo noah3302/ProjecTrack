@@ -275,7 +275,7 @@ class ProjectMembertOperations(Resource):
         p.set_id(id)
         adm.delete_project_members(userId, p)
 
-        return '', 204
+        return 200
 
 
 @api.route('/project/<int:id>/phases')

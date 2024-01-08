@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Typography, Autocomplete } from "@mui/material";
+import { Box, TextField, Button, Typography, Autocomplete, Grid, List, ListItem, ListItemIcon, ListItemText, Paper } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Arbeitsstatistik from "../components/Arbeitsstatistik";
+import Arbeitsstatistik from "../components/project/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
-import { apiget, apiput, apidelete } from "../API/Api";
+import { apiget, apiput, apidelete, apipost } from "../API/Api";
 import { UserAuth } from "../Context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import Dialog from '@mui/material/Dialog';
@@ -12,15 +12,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
+import Divider from '@mui/material/Divider';
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [openMembers, setOpenMembers] = useState(false);
-  const handleOpenMembers = () => setOpenMembers(true);
-  const handleCloseMembers = () => setOpenMembers(false);
   const [project, setProject] = useState('');
   const [founderName, setFounderName] = useState('');
   const [openSettings, setOpenSettings] = useState(false);
@@ -31,6 +30,9 @@ export default function Projekt() {
   const [projectUsers, setProjectUsers] = useState();
   let { id } = useParams();
   const [opendialog, setOpendialog] = React.useState(false);
+  const [projectusersFilter, setProjectusersFilter] = useState("");
+  const [notmemberFilter, setnotmemberFilter] = useState("");
+  const [notmember, setNotmember] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +41,9 @@ export default function Projekt() {
         setProject(data);
         const users = await apiget(`project/${id}/users`);
         setProjectUsers(users);
+        const members = await apiget('users');
+        const filteredMembers = members.filter((user) => !users.some((projectUser) => projectUser.id === user.id));
+        setNotmember(filteredMembers);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
@@ -57,7 +62,10 @@ export default function Projekt() {
     boxShadow: 24,
     p: 4,
     width: '70%',
-    maxWidth: 600
+    maxWidth: 500,
+    minWidth: 200,
+    maxHeight: 700,
+    overflow: 'auto',
   };
 
   const headerStyle = {
@@ -129,6 +137,32 @@ export default function Projekt() {
     setOpendialog(false);
   };
 
+  const moveNameTonotMember = (user) => {
+    try {
+      apidelete(`project/${id}/user`, user.id);
+      setProjectUsers(prevUsers => prevUsers.filter((value) => value.id !== user.id)); // Überprüfe, ob der Name der ID-Eigenschaft unterschiedlich ist
+      setNotmember(prevNotmember => [...prevNotmember, user]);
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Projekts:", error);
+    }
+  };
+
+  const moveNameToprojectusers = (user) => {
+    try {
+      apipost(`project/${id}/user`, user)
+      setNotmember(notmember.filter((value) => value.id !== user.id));
+      setProjectUsers(prevmember => [...prevmember, user]);
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Projekts:", error);
+    }
+  };
+
+  const listStyle = {
+    width: '100%',
+    maxHeight: 200,
+    overflow: 'auto',
+  };
+
   return (
     <>
       <Dialog
@@ -176,6 +210,81 @@ export default function Projekt() {
               margin="normal"
               style={{ marginTop: '10px' }}
             />
+            {project && projectUsers ? (      
+              <Grid
+                container
+                justifyContent="center"
+                alignItems="flex-start"
+                spacing={2}
+              >
+                <Grid item xs={12}>
+                  <Typography variant="h7" align="center" gutterBottom>
+                    Mitglieder verwalten
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box >
+                    <Paper>
+                      <TextField
+                        label="Filter user"
+                        variant="outlined"
+                        value={notmemberFilter}
+                        onChange={(e) => setnotmemberFilter(e.target.value)}
+                        fullWidth
+                      />
+                      <List dense component="div" role="list" sx={listStyle}>
+                        {notmember
+                          .filter((user) =>
+                            user.nickname.toLowerCase().includes(notmemberFilter.toLowerCase())
+                          )
+                          .map((user, index) => (
+                            <>
+                              <ListItem key={user.user_id} button onClick={() => moveNameToprojectusers(user)}>
+                                <ListItemText primary={user.nickname} />
+                                <ListItemIcon style={{ color: 'green' }}>
+                                  <GroupAddIcon />
+                                </ListItemIcon>
+                              </ListItem>
+                              {index !== notmember.length - 1 && <Divider />}
+                            </>
+                          ))}
+                      </List>
+                    </Paper>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box>
+                    <Paper>
+                      <TextField
+                        label="Filter projectmember"
+                        variant="outlined"
+                        value={projectusersFilter}
+                        onChange={(e) => setProjectusersFilter(e.target.value)}
+                        fullWidth
+                      />
+                      <List dense component="div" role="list" sx={listStyle}>
+                        {projectUsers.filter((member) =>
+                          member.nickname.toLowerCase().includes(projectusersFilter.toLowerCase())
+                        )
+                          .map((member, index) => (
+                            <>
+                              <ListItem key={member.user_id} disabled={member.id.toString() === project.founder || member.id === user.id } button onClick={() => moveNameTonotMember(member)}>
+                                <ListItemText primary={member.nickname} />
+                                <ListItemIcon style={{ color: 'red' }}>
+                                  <GroupRemoveIcon />
+                                </ListItemIcon>
+                              </ListItem>
+                              {index !== projectUsers.length - 1 && <Divider />}
+                            </>
+                          ))}
+                      </List>
+                    </Paper>
+                  </Box>
+                </Grid>
+              </Grid>
+            ) : (
+              <Typography>Loading...</Typography>
+            )}
             <TextField
               label="Start"
               type="datetime-local"
@@ -216,7 +325,7 @@ export default function Projekt() {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  style={{ marginTop: '10px', width: "70vw", marginBottom: '10px' }}
+                  style={{ marginTop: '10px',minWidth:200, maxWidth: 480, width:"40rem", marginBottom: '10px' }}
                 />
               )}
               value={projectUsers && projectUsers.find((user) => user.id.toString() === project.founder) || null}
@@ -240,7 +349,7 @@ export default function Projekt() {
             {user?.id.toString() === project?.founder && ( 
             <Button
               variant="contained"
-              sx={{backgroundColor: "primary.contrastText"}}
+              sx={{ backgroundColor: "primary.contrastText" }}
               style={{ color: "white" }}
               onClick={() => { handleDelete() }}
             >
@@ -248,7 +357,7 @@ export default function Projekt() {
             </Button>)}
             <Button
               variant="contained"
-              sx={{backgroundColor: "primary.contrastText"}}
+              sx={{ backgroundColor: "primary.contrastText" }}
               style={{ color: "white" }}
               onClick={() => { handleLeave() }}
             >
@@ -262,7 +371,7 @@ export default function Projekt() {
         <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
           Report-Ansicht
         </Button>
-        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
+        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
       </Box>

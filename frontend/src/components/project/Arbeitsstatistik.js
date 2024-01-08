@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { apiget } from "../API/Api";
+import { apiget } from "../../API/Api";
 import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
