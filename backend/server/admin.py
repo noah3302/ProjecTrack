@@ -325,6 +325,12 @@ class ProjectrackAdministration(object):
 
     """Project"""
 
+    """Project member"""
+    def get_members_from_project_by_id(self, project_id):
+        with UserMapper() as mapper:
+            return mapper.get_members_by_project_id(project_id)
+
+
     """Project updaten"""
     def update_project(self, id, project_title, project_description, founder, start_date, end_date):
         project = Project()

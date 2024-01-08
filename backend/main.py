@@ -244,6 +244,13 @@ class ProjectOperation(Resource):
 @api.route('/project/<int:id>/user')
 @api.response(500, "Falls es zu serverseitigen Fehler kommt")
 class ProjectMemberListOperations(Resource):
+    @api.marshal_list_with(user)
+    @secured
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        members = adm.get_members_from_project_by_id(id)
+        return members, 200
+
     @api.marshal_with(user)
     @api.expect(user)
     @secured
@@ -256,6 +263,20 @@ class ProjectMemberListOperations(Resource):
             return member, 200
         else:
             return "", 500
+
+
+@api.route('/project/<int:id>/user/<int:userId>')
+@api.response(500, "Falls es zu serverseitigen Fehler kommt")
+class ProjectMembertOperations(Resource):
+    @secured
+    def delete(self, id, userId):
+        adm = ProjectrackAdministration()
+        p = Project()
+        p.set_id(id)
+        adm.delete_project_members(userId, p)
+
+        return '', 204
+
 
 @api.route('/project/<int:id>/phases')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")

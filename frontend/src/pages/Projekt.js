@@ -18,6 +18,9 @@ export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [openMembers, setOpenMembers] = useState(false);
+  const handleOpenMembers = () => setOpenMembers(true);
+  const handleCloseMembers = () => setOpenMembers(false);
   const [project, setProject] = useState('');
   const [founderName, setFounderName] = useState('');
   const [openSettings, setOpenSettings] = useState(false);
@@ -54,6 +57,8 @@ export default function Projekt() {
     bgcolor: "white",
     boxShadow: 24,
     p: 4,
+    width: '70%',
+    maxWidth: 600
   };
 
   const headerStyle = {
