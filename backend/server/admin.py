@@ -113,8 +113,6 @@ class ProjectrackAdministration(object):
     def get_user_by_google_id(self, google_id):
         with UserMapper() as mapper:
             user = mapper.find_by_google_id(google_id)
-            # if user is not None:
-            #    user = mapper.
             return user
 
     """r

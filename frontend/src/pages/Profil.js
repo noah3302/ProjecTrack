@@ -20,15 +20,13 @@ export default function Profil() {
   const [helper, setHelper] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingNicknames, setExistingNicknames] = useState([]);
-  const [changeNickname, setChangeNickname] = useState(false);
+  const [disable, setDisable] = useState(true);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     fetchExistingNicknames();
     fetchUserData();
   }, []);
-
 
   const [userGoogleData, setUserGoogleData] = useState("")
   const fetchUserData = async () => {
@@ -128,16 +126,22 @@ export default function Profil() {
   };
 
   const handleNicknameChange = (event) => {
-    const newNickname = event.target.value;
-    setNickname(newNickname);
-
-    // Überprüfe, ob der Nickname bereits existiert
-    if (existingNicknames.includes(newNickname)) {
-      setHelper('Nickname bereits vergeben');
+    setNickname(event.target.value);
+    const regex = /^[a-zA-Z0-9]{4,12}$/;
+    if (regex.test(event.target.value)) {
+      setDisable(false);
+        if (existingNicknames.includes(event.target.value)) {
+            setHelper("Der Nickname existiert bereits");
+            setDisable(false);
+        } else {
+            setHelper('');
+            setDisable(true);
+        }
     } else {
-      setHelper('');
+        setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.");
+        setDisable(false);
     }
-  };
+};
 
   return (
     <>
@@ -182,7 +186,7 @@ export default function Profil() {
               color="success"
               onClick={handleSaveProfile}
               endIcon={<SendIcon />}
-              disabled={!isEditMode || !vorname || !nachname || !nickname || helper}
+              disabled={!isEditMode || !vorname || !nachname || !disable }
             >
               Profil aktualisieren
             </Button>

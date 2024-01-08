@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Typography, Autocomplete, Grid, List, ListItem, ListItemIcon, ListItemText, Paper } from "@mui/material";
+import { Box, TextField, Button, SpeedDial, SpeedDialAction, Typography, Autocomplete, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/project/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
@@ -15,6 +15,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import Divider from '@mui/material/Divider';
+import SettingsIcon from '@mui/icons-material/Settings';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
@@ -33,6 +37,9 @@ export default function Projekt() {
   const [projectusersFilter, setProjectusersFilter] = useState("");
   const [notmemberFilter, setnotmemberFilter] = useState("");
   const [notmember, setNotmember] = useState([]);
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+  const isSmallScreen = useMediaQuery('(max-width:800px)'); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -163,6 +170,12 @@ export default function Projekt() {
     overflow: 'auto',
   };
 
+  const handleToggleSpeedDial = () => {
+    setSpeedDialOpen((prevState) => ({
+      ...prevState || false,
+    }));
+  };
+
   return (
     <>
       <Dialog
@@ -210,7 +223,7 @@ export default function Projekt() {
               margin="normal"
               style={{ marginTop: '10px' }}
             />
-            {project && projectUsers ? (      
+            {project && projectUsers ? (
               <Grid
                 container
                 justifyContent="center"
@@ -268,7 +281,7 @@ export default function Projekt() {
                         )
                           .map((member, index) => (
                             <>
-                              <ListItem key={member.user_id} disabled={member.id.toString() === project.founder || member.id === user.id } button onClick={() => moveNameTonotMember(member)}>
+                              <ListItem key={member.user_id} disabled={member.id.toString() === project.founder || member.id === user.id} button onClick={() => moveNameTonotMember(member)}>
                                 <ListItemText primary={member.nickname} />
                                 <ListItemIcon style={{ color: 'red' }}>
                                   <GroupRemoveIcon />
@@ -325,7 +338,7 @@ export default function Projekt() {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  style={{ marginTop: '10px',minWidth:200, maxWidth: 480, width:"40rem", marginBottom: '10px' }}
+                  style={{ marginTop: '10px', minWidth: 200, maxWidth: 480, width: "40rem", marginBottom: '10px' }}
                 />
               )}
               value={projectUsers && projectUsers.find((user) => user.id.toString() === project.founder) || null}
@@ -346,15 +359,15 @@ export default function Projekt() {
             >
               Speichern
             </Button>
-            {user?.id.toString() === project?.founder && ( 
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "primary.contrastText" }}
-              style={{ color: "white" }}
-              onClick={() => { handleDelete() }}
-            >
-              Projekt Löschen
-            </Button>)}
+            {user?.id.toString() === project?.founder && (
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "primary.contrastText" }}
+                style={{ color: "white" }}
+                onClick={() => { handleDelete() }}
+              >
+                Projekt Löschen
+              </Button>)}
             <Button
               variant="contained"
               sx={{ backgroundColor: "primary.contrastText" }}
@@ -368,12 +381,25 @@ export default function Projekt() {
       </Modal>
       <Box style={headerStyle}>
         <Typography variant="h4" align="center" >{project.project_title}</Typography>
-        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor:"secondary.dark" }} onClick={handleOpen}>
+        {!isSmallScreen ? (
+        <>
+        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
           Report-Ansicht
         </Button>
         <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
+        </>
+         ) : (
+        <>
+        <IconButton variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
+          <AssessmentIcon/>
+        </IconButton>
+        <IconButton variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
+          <SettingsIcon helper="Settings"/>
+        </IconButton>
+      </>
+       )}
       </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -381,7 +407,7 @@ export default function Projekt() {
         </Box>
       </Modal>
       {project && projectUsers ? (
-        <Phase key={id} projectusers={projectUsers} projektid={id}/>
+        <Phase key={id} projectusers={projectUsers} projektid={id} />
       ) : (
         <Typography>Loading...</Typography>
       )}

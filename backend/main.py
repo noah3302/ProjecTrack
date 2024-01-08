@@ -148,12 +148,11 @@ class UserOperations(Resource):
             return {"exist": False}
 
 
-@api.route('/google_user/<string:uid>')
+@api.route('/google_user/<uid>')
 @api.response(500, 'Falls es zu einem serverseitigen error kommt')
 @api.param('id', 'ID des User-Objekts')
 class UserOperations(Resource):
     @api.marshal_with(user)
-    @secured
     def get(self, uid):
         adm = ProjectrackAdministration()
         user = adm.get_user_by_google_id(uid)
