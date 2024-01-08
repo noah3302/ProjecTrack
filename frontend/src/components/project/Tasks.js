@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, IconButton, TextField, Button, Slider, Autocomplete } from "@mui/material";
+import { Box, Typography, IconButton, TextField, Button, Slider, Autocomplete, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { apiget, apidelete, apiput } from "../../API/Api";
 import Modaltask from "./Modaltask";
 import Comment from "./Comment";
 import { UserAuth } from "../../Context/Authcontext";
-import { useParams } from 'react-router-dom';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CommentIcon from '@mui/icons-material/Comment';
 
 const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   const [reloadKey, setReloadKey] = useState(0);
+  const [showComment, setShowComment] = useState(false);
   const [taskData, setTaskData] = useState(null);
   const [editedTask, setEditedTask] = useState(null);
   const [editedTitle, setEditedTitle] = useState("");
-  const [selectedMembers, setSelectedMembers] = useState([]);
   const [editedDescription, setEditedDescription] = useState("");
   const [editedScore, setEditedScore] = useState("");
   const [editedDueDate, setEditedDueDate] = useState("");
   const [editedUserId, setEditedUserId] = useState("");
   const [editedPhasesId, setEditedPhasesId] = useState("");
-  const { user } = UserAuth();
-  let { id } = useParams();
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
 
   function getUserNames(array) {
     return array.map((exUser) => exUser.nickname);
@@ -108,6 +108,13 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
     }
   };
 
+  const handleToggleSpeedDial = (taskId) => {
+    setSpeedDialOpen((prevState) => ({
+      ...prevState,
+      [taskId]: !prevState[taskId] || false,
+    }));
+  };
+
   const taskBoxStyle = {
     display: "grid",
     gridTemplateColumns: "1fr auto",
@@ -125,7 +132,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
     marginLeft: "auto",
     marginRight: "auto",
   };
-  
+
 
   const editDeleteButtonStyle = {
     position: "absolute",
@@ -149,10 +156,10 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   };
 
   return (
-    <Box sx={{marginTop:"0.5rem"}}>
-      <Modaltask phasesid={phasenid} updatetasks={setTaskData}/>
+    <Box sx={{ marginTop: "0.5rem", maxHeight: "600px", overflowY: "auto" }}>
+      <Modaltask phasesid={phasenid} updatetasks={setTaskData} />
       {taskData.map((task, index) => (
-        <Box key={index} style={BoxStyle} sx={{backgroundColor: "white"}}>
+        <Box key={index} style={BoxStyle} sx={{ backgroundColor: "white" }}>
           <Box style={taskBoxStyle}>
             {editedTask && editedTask.id === task.id ? (
               <TextField
@@ -166,15 +173,52 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{task.tasktitle}</Typography>
             )}
             <Box style={editDeleteButtonContainerStyle}>
-              {editedTask && editedTask.id === task.id ? (<></>
-              ) : (
-                <IconButton onClick={() => handleEdit(task.id)}>
-                  <EditIcon />
-                </IconButton>
-              )}
-              <IconButton onClick={() => handleDelete(task.id)}>
-                <DeleteIcon />
-              </IconButton>
+              {!editedTask || editedTask.id !== task.id ? (
+                <SpeedDial
+                  direction="left"
+                  ariaLabel="Task Options"
+                  sx={{
+                    marginLeft: '3px',
+                    marginRight: '3px',
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    "& .MuiSpeedDial-fab": {
+                      padding: '20px',
+                      width: '25px',
+                      height: '25px',
+                      backgroundColor: 'grey',
+                      color: 'lightgrey',
+                    }
+                  }}
+                  icon={<MoreVertIcon />}
+                  onClick={() => handleToggleSpeedDial(task.id)}
+                  open={speedDialOpen[task.id] || false}
+                >
+                  <SpeedDialAction
+                    sx={{ marginLeft: '3px', marginRight: '3px' }}
+                    key="comment"
+                    icon={<CommentIcon />}
+                    tooltipTitle={showComment[task.id] ? 'Close comment' : 'Load comment'}
+                    onClick={() => setShowComment(prevState => ({ ...prevState, [task.id]: !prevState[task.id] }))}
+                  />
+                  <SpeedDialAction
+                    sx={{ marginLeft: '3px', marginRight: '3px' }}
+                    key="edit"
+                    icon={<EditIcon />}
+                    tooltipTitle="Edit"
+                    onClick={() => handleEdit(task.id)}
+                  />
+
+                  <SpeedDialAction
+                    sx={{ marginLeft: '3px', marginRight: '3px' }}
+                    key="delete"
+                    icon={<DeleteIcon />}
+                    tooltipTitle="Delete"
+                    onClick={() => handleDelete(task.id)}
+                  />
+                </SpeedDial>
+              ) : (<></>)}
             </Box>
           </Box>
           {editedTask && editedTask.id === task.id ? (
@@ -242,7 +286,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
             />
           ) : (
             <Typography variant="body1"> <strong>Verantwortlicher: </strong>
-              {projectusers.find(user => user.id.toString() === task.user_id)?.nickname || 'Nicht gefunden'}
+              {projectusers.find(user => user.id.toString() === task.user_id)?.nickname || 'User left project'}
             </Typography>
           )}
           {editedTask && editedTask.id === task.id ? (
@@ -264,11 +308,13 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
             <Typography variant="body1"></Typography>
           )}
           {editedTask && editedTask.id === task.id && (
-            <Button variant="contained" onClick={handleSave} style={saveButtonStyle} sx={{ marginLeft: "auto", backgroundColor:"secondary.dark", color:"lightgrey" }}>
+            <Button variant="contained" onClick={handleSave} style={saveButtonStyle} sx={{ marginLeft: "auto", backgroundColor: "secondary.dark", color: "lightgrey" }}>
               Speichern
             </Button>
           )}
-          <Comment key={task.id} taskid={task.id} projectusers={projectusers} />
+          {showComment[task.id] && (
+            <Comment key={task.id} taskid={task.id} projectusers={projectusers} />
+          )}
         </Box>
       ))}
     </Box>

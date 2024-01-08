@@ -102,9 +102,9 @@ export default function Profil() {
         setNachname('');
         setNickname('');
 
-        
-        await logOut();        
-  
+
+        await logOut();
+
         navigate("/");
       } else {
         console.log('Löschen des Profils abgebrochen');
@@ -113,7 +113,7 @@ export default function Profil() {
       console.error('Fehler beim Löschen des Profils:', error);
     }
   };
-  
+
 
   const handleEditProfile = () => {
     setIsEditMode(true);
@@ -176,26 +176,20 @@ export default function Profil() {
               disabled={!isEditMode}
             />
           </Box>
-          <Box mb="1rem" sx={{ display: 'flex', justifyContent: 'center' }}>
-            {!isEditMode && (
-              <Button
-                sx={{ outline: '1px solid blue', color: 'blue', marginRight: '1rem' }}
-                onClick={handleEditProfile}
-              >
-                Profil bearbeiten
-              </Button>
-            )}
+          <Box mb="1rem" sx={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
             <Button
-              sx={{ outline: '1px solid green', color: 'green', marginRight: '1rem' }}
+              variant="contained"
+              color="success"
               onClick={handleSaveProfile}
               endIcon={<SendIcon />}
-              disabled={!isEditMode || !vorname || !nachname || !nickname || !!helper}
+              disabled={!isEditMode || !vorname || !nachname || !nickname || helper}
             >
-              Profil {isEditMode ? 'aktualisieren' : 'erstellen'}
+              Profil aktualisieren
             </Button>
             {isEditMode && (
               <Button
-                sx={{ outline: '1px solid red', color: 'red' }}
+                sx={{ backgroundColor: "primary.contrastText" }}
+                style={{ color: "white" }}
                 onClick={handleDeleteProfile}
                 startIcon={<DeleteIcon />}
               >
