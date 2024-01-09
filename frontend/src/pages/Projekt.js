@@ -19,6 +19,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
@@ -392,12 +393,38 @@ export default function Projekt() {
         </>
          ) : (
         <>
-        <IconButton variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
-          <AssessmentIcon/>
-        </IconButton>
-        <IconButton variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
-          <SettingsIcon helper="Settings"/>
-        </IconButton>
+         <Tooltip title="Report-Ansicht">
+          <IconButton
+    variant="contained"
+    sx={{
+      marginLeft: "auto",
+      color: "lightgrey",
+      backgroundColor: "secondary.dark",
+      "&:hover": {
+        backgroundColor: "#001420",
+      },
+    }}
+    onClick={handleOpen}
+  >
+    <AssessmentIcon />
+  </IconButton>
+  </Tooltip>
+  <Tooltip title="Projekteinstellungen">
+  <IconButton
+    variant="contained"
+    sx={{
+      marginLeft: "5px",
+      color: "lightgrey",
+      backgroundColor: "secondary.dark",
+      "&:hover": {
+        backgroundColor: "#001420",
+      },
+    }}
+    onClick={handleOpenSettings}
+  >
+    <SettingsIcon helper="Settings" />
+  </IconButton>
+  </Tooltip>
       </>
        )}
       </Box>
