@@ -59,7 +59,8 @@ task = api.inherit('Task', bo, {
         'score': fields.String(attribute='_score', description='Score der Task'),
         'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.String(attribute='_user_id', description='Userid des Verantwortlichen'),
-        'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task')
+        'phases_id': fields.String(attribute='_phases_id', description='phase_id der Task'),
+        'creator_id': fields.String(attribute='_creator_id', description='creator_id der Task')
 })
 
 phase = api.inherit('Phase', bo, {
@@ -387,7 +388,8 @@ class TaskListOperations(Resource):
                 proposal.get_score(),
                 proposal.get_duedate(),
                 proposal.get_user_id(),
-                proposal.get_phases_id()
+                proposal.get_phases_id(),
+                proposal.get_creator_id()
             )
             return u, 200
         else:
@@ -417,6 +419,7 @@ class TaskOperations(Resource):
                 proposal.get_duedate(),
                 proposal.get_user_id(),
                 proposal.get_phases_id(),
+                proposal.get_creator_id()
             )
             return p, 200
         else:

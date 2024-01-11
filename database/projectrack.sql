@@ -142,38 +142,41 @@ CREATE TABLE `task` (
   `duedate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `user_id` int(11) NOT NULL DEFAULT  '0',
   `phases_id` int(11) NOT NULL DEFAULT  '0',
+  `creator_id` int(11) NOT NULL DEFAULT  '0',
   PRIMARY KEY (`task_id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
-  FOREIGN KEY (`phases_id`) REFERENCES `phases` (`phases_id`) on delete cascade
+  FOREIGN KEY (`phases_id`) REFERENCES `phases` (`phases_id`) on delete cascade,
+  FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) on delete cascade
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `task` WRITE;
 /*!40000 ALTER TABLE `task` DISABLE KEYS */;
 INSERT INTO `task` VALUES
-(1,'Firebase','To Do', '1', "2024-06-10 12:00:00",'1','1'),
-(2,'authcontext','In Ptogress','2', "2024-06-10 12:00:00",'2','3'),
-(3,'login','beschreibung','2', "2024-06-10 12:00:00",'3','2'),
-(4,'createprofil','beschreibung','3', "2024-06-10 12:00:00",'3','1'),
-(5,'home','beschreibung','3', "2024-06-10 12:00:00",'1','2'),
-(6,'test1','beschreibung','4', "2024-06-10 12:00:00",'2','1'),
-(7,'test3','To Do','5', "2024-06-10 12:00:00",'1','1'),
-(8,'tes2','In Ptogress','1', "2024-06-10 12:00:00",'2','3'),
-(9,'tese2','beschreibung','4', "2024-06-10 12:00:00",'3','2'),
-(10,'createprofil','beschreibung','2', "2024-06-10 12:00:00",'3','1'),
-(11,'home','beschreibung','3', "2024-06-10 12:00:00",'1','2'),
-(12,'about','beschreibung','1', "2024-06-10 12:00:00",'1','1'),
-(13,'Firebase','To Do','3', "2024-06-10 12:00:00",'1','1'),
-(14,'authcontext','In Ptogress','2', "2024-06-10 12:00:00",'2','3'),
-(15,'login','beschreibung','4', "2024-06-10 12:00:00",'3','2'),
-(16,'createprofil','beschreibung','4', "2024-06-10 12:00:00",'3','3'),
-(17,'home','beschreibung','5', "2024-06-10 12:00:00",'2','4'),
-(18,'test1','beschreibung','1', "2024-06-10 12:00:00",'2','4'),
-(19,'test3','To Do','1', "2024-06-10 12:00:00",'1','1'),
-(20,'tes2','In Ptogress','1', "2024-06-10 12:00:00",'2','4'),
-(21,'tese2','beschreibung','3', "2024-06-10 12:00:00",'2','3'),
-(22,'createprofil','beschreibung','2', "2024-06-10 12:00:00",'2','4'),
-(23,'home','beschreibung','4', "2024-06-10 12:00:00",'1','3'),
-(24,'about','beschreibung','5', "2024-06-10 12:00:00",'1','3');
+(1,'Firebase','To Do', '1', "2024-06-10 12:00:00",'1','1','1'),
+(2,'authcontext','In Ptogress','2', "2024-06-10 12:00:00",'2','3','1'),
+(3,'login','beschreibung','2', "2024-06-10 12:00:00",'3','2','1'),
+(4,'createprofil','beschreibung','3', "2024-06-10 12:00:00",'3','1','1'),
+(5,'home','beschreibung','3', "2024-06-10 12:00:00",'1','2','1'),
+(6,'test1','beschreibung','4', "2024-06-10 12:00:00",'2','1','1'),
+(7,'test3','To Do','5', "2024-06-10 12:00:00",'1','1','1'),
+(8,'tes2','In Ptogress','1', "2024-06-10 12:00:00",'2','3','1'),
+(9,'tese2','beschreibung','4', "2024-06-10 12:00:00",'3','2','1'),
+(10,'createprofil','beschreibung','2', "2024-06-10 12:00:00",'3','1','1'),
+(11,'home','beschreibung','3', "2024-06-10 12:00:00",'1','2','1'),
+(12,'about','beschreibung','1', "2024-06-10 12:00:00",'1','1','1'),
+(13,'Firebase','To Do','3', "2024-06-10 12:00:00",'1','1','1'),
+(14,'authcontext','In Ptogress','2', "2024-06-10 12:00:00",'2','3','1'),
+(15,'login','beschreibung','4', "2024-06-10 12:00:00",'3','2','1'),
+(16,'createprofil','beschreibung','4', "2024-06-10 12:00:00",'3','3','1'),
+(17,'home','beschreibung','5', "2024-06-10 12:00:00",'2','4','1'),
+(18,'test1','beschreibung','1', "2024-06-10 12:00:00",'2','4','1'),
+(19,'test3','To Do','1', "2024-06-10 12:00:00",'1','1','1'),
+(20,'tes2','In Ptogress','1', "2024-06-10 12:00:00",'2','4','1'),
+(21,'tese2','beschreibung','3', "2024-06-10 12:00:00",'2','3','1'),
+(22,'createprofil','beschreibung','2', "2024-06-10 12:00:00",'2','4','1'),
+(23,'home','beschreibung','4', "2024-06-10 12:00:00",'1','3','1'),
+(24,'about','beschreibung','5', "2024-06-10 12:00:00",'1','3','1');
 
 /*!40000 ALTER TABLE `task` ENABLE KEYS */;
 UNLOCK TABLES;
