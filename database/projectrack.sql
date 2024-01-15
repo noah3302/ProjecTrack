@@ -87,7 +87,8 @@ CREATE TABLE `project` (
   `project_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(110) NOT NULL DEFAULT '',
   `description` varchar(110) NOT NULL DEFAULT '',
-  `founder` varchar(110) NOT NULL DEFAULT '',
+  `founder` int(11) NOT NULL DEFAULT '0',
+  `manager` int(11) NOT NULL DEFAULT '0',
   `startdate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `enddate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`project_id`)
@@ -96,12 +97,12 @@ CREATE TABLE `project` (
 LOCK TABLES `project` WRITE;
 /*!40000 ALTER TABLE `project` DISABLE KEYS */;
 INSERT INTO `project` VALUES
-(1,"Sopra",'Testprojekt','1',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
-(2,"Fahrradgruppe",'Testprojekt2','1',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
-(3,"Forster",'Testprojekt3','2',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
-(4,"Data Science",'Testprojekt1','3',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
-(5,"Freidrichsen",'Testprojekt2','4',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
-(6,"Test",'Testprojekt3','4',"2023-12-10 16:00:00", "2024-06-10 12:00:00");
+(1,"Sopra",'Testprojekt','7','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
+(2,"Fahrradgruppe",'Testprojekt2','1','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
+(3,"Forster",'Testprojekt3','2','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
+(4,"Data Science",'Testprojekt1','3','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
+(5,"Freidrichsen",'Testprojekt2','4','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00"),
+(6,"Test",'Testprojekt3','4','7',"2023-12-10 16:00:00", "2024-06-10 12:00:00");
 
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -112,7 +113,7 @@ DROP TABLE IF EXISTS `phases`;
 CREATE TABLE `phases` (
   `phases_id` int(11) NOT NULL AUTO_INCREMENT ,
   `phasename` varchar(110) NOT NULL DEFAULT '',
-  `indx` varchar(110) NOT NULL DEFAULT '',
+  `ranking` int(11) NOT NULL DEFAULT 0,
   `project_id` int(11) NOT NULL DEFAULT '0',
  PRIMARY KEY (`phases_id`),
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade

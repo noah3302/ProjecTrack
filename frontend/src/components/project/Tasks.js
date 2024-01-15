@@ -20,7 +20,10 @@ import Comment from "./Comment";
 import { UserAuth } from "../../Context/Authcontext";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommentIcon from "@mui/icons-material/Comment";
-import FaceIcon from "@mui/icons-material/Face";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 
 const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   const [reloadKey, setReloadKey] = useState(0);
@@ -35,6 +38,8 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   const [editedPhasesId, setEditedPhasesId] = useState("");
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [editedCreatorId, setEditedCreatorId] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTaskId, setDeleteTaskId] = useState(null);
 
   function getUserNames(array) {
     return array.map((exUser) => exUser.nickname);
@@ -91,8 +96,8 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
 
       await apiput(`task/`, editedTask.id, updatedTask);
 
-      const phasenIdAsString = phasenid.toString();
-      const updatedPhasesIdAsString = updatedTask.phases_id.toString();
+      const phasenIdAsString = phasenid;
+      const updatedPhasesIdAsString = updatedTask.phases_id;
 
       if (updatedPhasesIdAsString !== phasenIdAsString) {
         const updatedTasksCurrentPhase = taskData.filter(
@@ -114,15 +119,26 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
     }
   };
 
-  const handleDelete = async (taskId) => {
+  const handleDelete = (taskId) => {
+    setDeleteTaskId(taskId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirmed = async () => {
     try {
-      await apidelete(`tasks`, taskId);
-      const updatedTasks = taskData.filter((task) => task.id !== taskId);
+      await apidelete(`tasks`, deleteTaskId);
+      const updatedTasks = taskData.filter((task) => task.id !== deleteTaskId);
       setTaskData(updatedTasks);
       console.log("Task gelöscht!");
+      setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Fehler beim Löschen des Tasks:", error);
     }
+  };
+
+  const handleDeleteCanceled = () => {
+    setDeleteTaskId(null);
+    setDeleteDialogOpen(false);
   };
 
   const handleToggleSpeedDial = (taskId) => {
@@ -315,7 +331,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               value={
                 editedUserId !== null
                   ? projectusers.find(
-                      (user) => user.id.toString() === editedUserId
+                      (user) => user.id === editedUserId
                     )?.nickname
                   : ""
               }
@@ -324,7 +340,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
                   (user) => user.nickname === newValue
                 );
                 if (selectedUser) {
-                  setEditedUserId(selectedUser.id.toString());
+                  setEditedUserId(selectedUser.id);
                 }
               }}
               error={
@@ -337,7 +353,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
             <Typography variant="body1">
               {" "}
               <strong>Verantwortlicher: </strong>
-              {projectusers.find((user) => user.id.toString() === task.user_id)
+              {projectusers.find((user) => user.id === task.user_id)
                 ?.nickname || "User left project"}
             </Typography>
           )}
@@ -354,7 +370,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               value={
                 editedPhasesId !== null
                   ? project.find(
-                      (phase) => phase.id.toString() === editedPhasesId
+                      (phase) => phase.id === editedPhasesId
                     )?.phasename
                   : ""
               }
@@ -363,7 +379,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
                   (phase) => phase.phasename === newValue
                 );
                 if (selectedPhase) {
-                  setEditedPhasesId(selectedPhase.id.toString());
+                  setEditedPhasesId(selectedPhase.id);
                 }
               }}
               error={
@@ -396,6 +412,16 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
           )}
         </Box>
       ))}
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCanceled}>
+        <DialogTitle>Löschen bestätigen</DialogTitle>
+        <DialogContent>
+          <Typography>Sind Sie sicher, dass Sie diesen Task löschen möchten?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCanceled}>Abbrechen</Button>
+          <Button onClick={handleDeleteConfirmed} color="error">Löschen</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

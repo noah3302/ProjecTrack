@@ -3,10 +3,6 @@ import { TextField, Button, Box, Grid, IconButton, Typography, MenuItem } from '
 import SendIcon from '@mui/icons-material/Send';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { apiget, apipost } from '../API/Api';
 import { UserAuth } from "../Context/Authcontext";
 
@@ -63,6 +59,7 @@ const Createproject = () => {
       project_title: name,
       project_description: beschreibung,
       founder: user.id,
+      manager: user.id,
       start_date: startDate,
       end_date: endDate
     })
@@ -75,7 +72,7 @@ const Createproject = () => {
     const phaseData = customPhaseValues.map((phase, idx) => ({
       id: 0,
       phasename: phase,
-      indx: idx + 1,
+      ranking: idx + 1,
       project_id: newProject.id
     }))
     apiCalls.push(apipost(`project/${newProject.id}/phases`, phaseData))

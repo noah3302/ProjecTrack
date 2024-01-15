@@ -39,8 +39,9 @@ export default function Projekt() {
   const [notmemberFilter, setnotmemberFilter] = useState("");
   const [notmember, setNotmember] = useState([]);
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const isSmallScreen = useMediaQuery('(max-width:800px)'); 
+  const isSmallScreen = useMediaQuery('(max-width:800px)');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,29 +96,37 @@ export default function Projekt() {
 
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
-    console.log(project)
     try {
-      const update = {
+      const updatedproject = {
         id: id,
         project_title: project.project_title,
         project_description: project.project_description,
         founder: project.founder,
+        manager: project.manager,
         start_date: project.start_date,
         end_date: project.end_date,
       };
 
-      await apiput('project', id, update);
+      await apiput(`project/${id}/user`, user.id, updatedproject);
       handleCloseSettings();
-      setProject(update);
+      setProject(updatedproject);
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
   };
 
-  //Projekt löschen
+  const handleOpenDeleteDialog = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  // Projekt löschen
   const handleDelete = async () => {
     try {
-      await apidelete(`project`, id);
+      await apidelete(`project/${id}/userid`, user.id);
       navigate("/home");
       setProject('');
     } catch (error) {
@@ -133,7 +142,7 @@ export default function Projekt() {
       if (a === b) {
         setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
       } else {
-        await apiput(`project/members`, user.id, project);
+        await apidelete(`project/${id}/members`, user.id);
         navigate("/home");
       }
     } catch (error) {
@@ -147,7 +156,7 @@ export default function Projekt() {
 
   const moveNameTonotMember = (user) => {
     try {
-      apidelete(`project/${id}/user`, user.id);
+      apidelete(`project/${id}/members`, user.id);
       setProjectUsers(prevUsers => prevUsers.filter((value) => value.id !== user.id)); // Überprüfe, ob der Name der ID-Eigenschaft unterschiedlich ist
       setNotmember(prevNotmember => [...prevNotmember, user]);
     } catch (error) {
@@ -282,7 +291,7 @@ export default function Projekt() {
                         )
                           .map((member, index) => (
                             <>
-                              <ListItem key={member.user_id} disabled={member.id.toString() === project.founder || member.id === user.id} button onClick={() => moveNameTonotMember(member)}>
+                              <ListItem key={member.user_id} disabled={member.id === project.founder || member.id === user.id} button onClick={() => moveNameTonotMember(member)}>
                                 <ListItemText primary={member.nickname} />
                                 <ListItemIcon style={{ color: 'red' }}>
                                   <GroupRemoveIcon />
@@ -333,7 +342,7 @@ export default function Projekt() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Gründer"
+                  label="Manager"
                   variant="outlined"
                   fullWidth
                   InputLabelProps={{
@@ -342,12 +351,12 @@ export default function Projekt() {
                   style={{ marginTop: '10px', minWidth: 200, maxWidth: 480, width: "40rem", marginBottom: '10px' }}
                 />
               )}
-              value={projectUsers && projectUsers.find((user) => user.id.toString() === project.founder) || null}
+              value={projectUsers && projectUsers.find((user) => user.id === project.manager) || null}
               onChange={(event, newValue) => {
                 if (newValue) {
-                  setProject({ ...project, founder: newValue.id.toString() }); // Sicherstellen, dass die ID in String-Form übergeben wird
+                  setProject({ ...project, manager: newValue.id });
                 } else {
-                  setProject({ ...project, founder: '' }); // Setzen des Gründers auf leer, wenn kein Wert ausgewählt ist
+                  setProject({ ...project, manager: '' }); 
                 }
               }}
             />
@@ -360,12 +369,12 @@ export default function Projekt() {
             >
               Speichern
             </Button>
-            {user?.id.toString() === project?.founder && (
+            {user?.id === project?.manager && (
               <Button
                 variant="contained"
                 sx={{ backgroundColor: "primary.contrastText" }}
                 style={{ color: "white" }}
-                onClick={() => { handleDelete() }}
+                onClick={() => { handleOpenDeleteDialog() }}
               >
                 Projekt Löschen
               </Button>)}
@@ -383,50 +392,52 @@ export default function Projekt() {
       <Box style={headerStyle}>
         <Typography variant="h4" align="center" >{project.project_title}</Typography>
         {!isSmallScreen ? (
-        <>
-        <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
-          Report-Ansicht
-        </Button>
-        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
-          Projekteinstellungen
-        </Button>
-        </>
-         ) : (
-        <>
-         <Tooltip title="Report-Ansicht">
-          <IconButton
-    variant="contained"
-    sx={{
-      marginLeft: "auto",
-      color: "lightgrey",
-      backgroundColor: "secondary.dark",
-      "&:hover": {
-        backgroundColor: "#001420",
-      },
-    }}
-    onClick={handleOpen}
-  >
-    <AssessmentIcon />
-  </IconButton>
-  </Tooltip>
-  <Tooltip title="Projekteinstellungen">
-  <IconButton
-    variant="contained"
-    sx={{
-      marginLeft: "5px",
-      color: "lightgrey",
-      backgroundColor: "secondary.dark",
-      "&:hover": {
-        backgroundColor: "#001420",
-      },
-    }}
-    onClick={handleOpenSettings}
-  >
-    <SettingsIcon helper="Settings" />
-  </IconButton>
-  </Tooltip>
-      </>
-       )}
+          <>
+            <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
+              Report-Ansicht
+            </Button>
+            {user?.id === project?.founder && (
+            <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
+              Projekteinstellungen
+            </Button>)}
+          </>          
+
+        ) : (
+          <>
+            <Tooltip title="Report-Ansicht">
+              <IconButton
+                variant="contained"
+                sx={{
+                  marginLeft: "auto",
+                  color: "lightgrey",
+                  backgroundColor: "secondary.dark",
+                  "&:hover": {
+                    backgroundColor: "#001420",
+                  },
+                }}
+                onClick={handleOpen}
+              >
+                <AssessmentIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Projekteinstellungen">
+              <IconButton
+                variant="contained"
+                sx={{
+                  marginLeft: "5px",
+                  color: "lightgrey",
+                  backgroundColor: "secondary.dark",
+                  "&:hover": {
+                    backgroundColor: "#001420",
+                  },
+                }}
+                onClick={handleOpenSettings}
+              >
+                <SettingsIcon helper="Settings" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
       </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -434,10 +445,31 @@ export default function Projekt() {
         </Box>
       </Modal>
       {project && projectUsers ? (
-        <Phase key={id} projectusers={projectUsers} projektid={id} />
+        <Phase key={id} projectusers={projectUsers} projektid={id} project={project} />
       ) : (
         <Typography>Loading...</Typography>
       )}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Projekt löschen</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Sind Sie sicher, dass Sie das Projekt löschen möchten?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Abbrechen
+          </Button>
+          <Button onClick={handleDelete} color="primary" autoFocus>
+            Löschen
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import { apiget, apiput, apidelete, apipost } from '../API/Api';
+import { apiget, apiput, apidelete } from '../API/Api';
 import { UserAuth } from '../Context/Authcontext';
 
 export default function Profil() {

@@ -14,12 +14,14 @@ export default function Createprofil() {
     const { user, setUser, setUserdata } = UserAuth()
 
     useEffect(() => {
-        apiget(`users/nicknames`).then((data) => {
-            setNicknames(data.nicknames)
+        apiget(`users`).then((data) => {
+            const nicknames = data.map(user => user.nickname);
+            setExistingusers(nicknames)
+            console.log(nicknames)
         })
     }, []);
 
-    const [nicknames, setNicknames] = useState('');
+    const [existingusers, setExistingusers] = useState('');
     const [vorname, setVorname] = useState('');
     const [nachname, setNachname] = useState('');
     const [nickname, setNickname] = useState('');
@@ -68,7 +70,7 @@ export default function Createprofil() {
     const handlenicknameChange = (event) => {
         const regex = /^[a-zA-Z0-9]{4,12}$/;
         if (regex.test(event.target.value)) {
-            if (nicknames.includes(event.target.value)) {
+            if (existingusers.includes(event.target.value)) {
                 setHelper("Der Nickname existiert bereits");
                 setNickname("");
             } else {
@@ -79,7 +81,6 @@ export default function Createprofil() {
             setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.");
             setNickname("");
         }
-
     };
 
     return (

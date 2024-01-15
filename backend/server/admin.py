@@ -73,11 +73,8 @@ class ProjectrackAdministration(object):
         with UserMapper() as mapper:
             return mapper.find_all()
 
-    """
-    Alle Nicknames ausgeben
 
-    """
-
+    """Alle Nicknames ausgeben"""
     def get_all_nicknames(self):
         with UserMapper() as mapper:
             users = mapper.find_all_nicknames()
@@ -166,13 +163,18 @@ class ProjectrackAdministration(object):
 
     """Projekt löschen"""
 
-    def delete_project(self, number):
+    def delete_project(self, pid, uid):
         with ProjectMapper() as mapper:
-            return mapper.delete(number)
+            verantwortlicher = mapper.find_by_key(pid).get_manager()
+        if uid == verantwortlicher:
+            with ProjectMapper() as mapper:
+                return mapper.delete(pid)
+        else:
+            return "error"
 
-    def delete_project_members(self, user, project):
+    def delete_project_members(self, pid, uid):
         with UserMapper() as mapper:
-            return mapper.delete_members(user, project)
+            return mapper.delete_members(pid, uid)
 
     def project_by_id(self, id):
         with ProjectMapper() as mapper:
@@ -227,25 +229,30 @@ class ProjectrackAdministration(object):
             return mapper.insert(number)
 
     """Phasen hinzufügen zu projekt"""
-    def create_phase(self, phasename, indx, project_id):
+    def create_phase(self, phasename, ranking, project_id):
         phase = Phase()
         phase.set_phasename(phasename),
-        phase.set_indx(indx),
+        phase.set_ranking(ranking),
         phase.set_project_id(project_id)
 
         with PhaseMapper() as mapper:
             return mapper.insert(phase)
 
     """Phasen aus projekt löschen"""
-    def delete_phase(self, number):
-        with PhaseMapper() as mapper:
-            return mapper.delete(number)
+    def delete_phase(self,phaseid, projectid, userid):
+        with ProjectMapper() as mapper:
+            verantwortlicher = mapper.find_by_key(projectid).get_manager()
+        if userid == verantwortlicher:
+            with PhaseMapper() as mapper:
+                return mapper.delete(phaseid)
+        else:
+            return "error"
 
-    def update_phase(self, id, phasename, indx, project_id):
+    def update_phase(self, id, phasename, ranking, project_id):
         phase = Phase()
         phase.set_id(id),
         phase.set_phasename(phasename),
-        phase.set_indx(indx),
+        phase.set_ranking(ranking),
         phase.set_project_id(project_id),
         with PhaseMapper() as mapper:
             return mapper.update(phase)
@@ -332,16 +339,22 @@ class ProjectrackAdministration(object):
 
 
     """Project updaten"""
-    def update_project(self, id, project_title, project_description, founder, start_date, end_date):
-        project = Project()
-        project.set_id(id),
-        project.set_project_title(project_title),
-        project.set_project_description(project_description),
-        project.set_founder(founder),
-        project.set_start_date(start_date),
-        project.set_end_date(end_date)
+    def update_project(self, userid, id, project_title, project_description, founder, manager, start_date, end_date):
         with ProjectMapper() as mapper:
-            return mapper.update(project)
+            verantwortlicher = mapper.find_by_key(id).get_manager()
+        if userid == verantwortlicher:
+            project = Project()
+            project.set_id(id),
+            project.set_project_title(project_title),
+            project.set_project_description(project_description),
+            project.set_founder(founder),
+            project.set_manager(manager),
+            project.set_start_date(start_date),
+            project.set_end_date(end_date)
+            with ProjectMapper() as mapper:
+                return mapper.update(project)
+        else:
+            return "error"
 
     def add_member_to_project(self, member, project_id):
         with UserMapper() as mapper:
