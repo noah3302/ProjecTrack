@@ -2,10 +2,9 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 export default function About() {
-
   return (
     <Box sx={{ p: 4, maxWidth: "800px", margin: "0 auto" }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom>  
         About
       </Typography>
 
@@ -16,7 +15,7 @@ export default function About() {
       <Typography paragraph>
         Unser Team besteht aus den folgenden Mitgliedern:
       </Typography>
-      <ul style={{ listStyleType: "disc", pl: "20px" }}>
+      <ul style={{ listStyleType: "disc", pl: "20px" }}> 
         <li>Dimitrios Saltsoglidis</li>
         <li>Michele De Rinaldis</li>
         <li>Noah Braun</li>
@@ -34,7 +33,7 @@ export default function About() {
       </Typography>
 
       <Typography paragraph>
-        Kontaktieren Sie uns gerne per E-Mail:{" "}
+        Kontaktieren Sie uns gerne per E-Mail:{" "} 
         <a href="mailto:ProjecTrack@example.com">ProjecTrack@example.com</a>
       </Typography>
 
