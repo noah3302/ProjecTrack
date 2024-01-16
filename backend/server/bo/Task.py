@@ -9,6 +9,7 @@ class Task(BusinessObject):
         self._duedate = ""
         self._user_id = ""
         self._phases_id = ""
+        self._creator_id = ""
 
     def get_id(self):
         return self._id
@@ -49,11 +50,16 @@ class Task(BusinessObject):
     def set_phases_id(self, phases_id):
         self._phases_id = phases_id
 
+    def get_creator_id(self):
+        return self._creator_id
+
+    def set_creator_id(self, creator_id):
+        self._creator_id = creator_id
+
     def __str__(self):
-        return "id: {}\ntasktitle: {}\ndescription: {}\nscore: {}\nduedate: {}\nuser_id: {}\nphases_id {}\n".format(
-                                                                                self.get_id(), self._tasktitle,
-                                                                                    self._description, self._score,
-                                                                        self._duedate, self._user_id, self._phases_id,)
+        return "id: {}\ntasktitle: {}\ndescription: {}\nscore: {}\nduedate: {}\nuser_id: {}\nphases_id: {}\ncreator_id: {}\n".format(
+            self.get_id(), self._tasktitle, self._description, self._score,
+            self._duedate, self._user_id, self._phases_id, self._creator_id)
 
     @staticmethod
     def from_dict(dictio=dict()):
@@ -65,5 +71,6 @@ class Task(BusinessObject):
         obj.set_duedate(dictio["duedate"])
         obj.set_user_id(dictio["user_id"])
         obj.set_phases_id(dictio["phases_id"])
+        obj.set_creator_id(dictio["creator_id"])
 
         return obj

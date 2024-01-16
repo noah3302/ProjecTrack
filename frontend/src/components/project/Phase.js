@@ -4,56 +4,79 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useParams } from "react-router-dom";
-import { Box, TextField, Card, Typography, IconButton, Divider} from "@mui/material";
+import { Box, TextField, Card, Typography, IconButton, Grid, Divider, Button } from "@mui/material";
 import Task from "./Tasks";
+import { UserAuth } from "../../Context/Authcontext";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
-const Phase = ({projectusers, projektid}) => {
-  const [project, setProject] = useState([]);
+const Phase = ({ projectusers, projektid, project }) => {
+  const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState([]);
   const [newPhaseName, setNewPhaseName] = useState("");
+  const [deletePhaseId, setDeletePhaseId] = useState(null);
   let { id } = useParams();
   const [reloadKey, setReloadKey] = useState(0);
-  const [newPhasenid, setNewPhasenid] = useState(null); 
+  const [newPhasenid, setNewPhasenid] = useState(null);
+  const { user } = UserAuth();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const phasenload = async () => {
     const response = await apiget(`phase/${projektid}`);
-    const sortedResponse = response.sort((a, b) => a.indx - b.indx);
-    setProject(sortedResponse);
+    const sortedResponse = response.sort((a, b) => a.ranking - b.ranking);
+    setPhase(sortedResponse);
   };
 
   const updateParentComponent = async (newPhasenid) => {
     setNewPhasenid(newPhasenid);
-    await phasenload(newPhasenid); 
-    setReloadKey(prevKey => prevKey + 1); 
+    await phasenload(newPhasenid);
+    setReloadKey(prevKey => prevKey + 1);
   };
 
   useEffect(() => {
     phasenload();
+    console.log(project);
   }, []);
 
   const handleDeleteButtonClick = (phaseId) => {
-    console.log("Delete button clicked with ID:", phaseId);
-    console.log(project.project_id);
-    handleDeletePhase(phaseId);
+    setDeletePhaseId(phaseId);
+    setOpen(true);
   };
 
-  //Phase löschen und Indexe anpassen
+  const handleDeleteConfirmed = async () => {
+    try {
+      await handleDeletePhase(deletePhaseId);
+      setOpen(false);
+    } catch (error) {
+      console.error("Fehler beim Löschen der Phase:", error);
+    }
+  };
+
+  const handleDeleteCanceled = () => {
+    setDeletePhaseId(null);
+    setOpen(false);
+  };
+
   const handleDeletePhase = async (phaseId) => {
     try {
-      await apidelete(`phase`, phaseId);
+      await apidelete(`phase/${phaseId}/project/${id}/user/`, user.id);
 
-      setProject((prevProject) => {
-        const updatedProject = prevProject.filter(
+      setPhase((prevPhase) => {
+        const updatedPhase = prevPhase.filter(
           (phase) => phase.id !== phaseId
         );
 
-        // Die Indexe der verbleibenden Phasen werden neu zugewiesen
-        updatedProject.forEach((phase, index) => {
-          phase.indx = String(index + 1);
+        updatedPhase.forEach((phase, index) => {
+          phase.ranking = index + 1;
         });
 
-        console.log(updatedProject); // Nutze updatedProject statt project
-
-        return updatedProject;
+        return updatedPhase;
       });
     } catch (error) {
       console.error("Fehler beim Löschen der Phase:", error);
@@ -71,12 +94,12 @@ const Phase = ({projectusers, projektid}) => {
       const newPhase = {
         id: 0,
         phasename: newPhaseName.trim(),
-        indx: String(project.length + 1),
+        ranking: phase.length + 1,
         project_id: id,
       };
       const response = await apipost("phase", newPhase);
       console.log(response);
-      setProject((prevProject) => [...prevProject, response]);
+      setPhase((prevPhase) => [...prevPhase, response]);
       setNewPhaseName("");
     }
   };
@@ -85,20 +108,20 @@ const Phase = ({projectusers, projektid}) => {
   const moveLeftAndLowerIndex = (index) => {
     try {
       if (index > 0) {
-        setProject((prevproject) => {
-          const updatedproject = [...prevproject];
-          [updatedproject[index], updatedproject[index - 1]] = [
-            updatedproject[index - 1],
-            updatedproject[index],
+        setPhase((prevPhase) => {
+          const updatedPhase = [...prevPhase];
+          [updatedPhase[index], updatedPhase[index - 1]] = [
+            updatedPhase[index - 1],
+            updatedPhase[index],
           ];
 
-          updatedproject.forEach((phase, i) => {
-            phase.indx = i + 1;
+          updatedPhase.forEach((phase, i) => {
+            phase.ranking = i + 1;
           });
 
-          updatePhases(updatedproject[index], updatedproject[index - 1]);
+          updatePhases(updatedPhase[index], updatedPhase[index - 1]);
 
-          return updatedproject;
+          return updatedPhase;
         });
       }
     } catch (error) {
@@ -119,31 +142,31 @@ const Phase = ({projectusers, projektid}) => {
 
   //Verschiebung rechts
   const handleMoveRight = async (index) => {
-    if (index < project.length - 1) {
-      const updatedProject = [...project];
-      [updatedProject[index], updatedProject[index + 1]] = [
-        updatedProject[index + 1],
-        updatedProject[index],
+    if (index < phase.length - 1) {
+      const updatedPhase = [...phase];
+      [updatedPhase[index], updatedPhase[index + 1]] = [
+        updatedPhase[index + 1],
+        updatedPhase[index],
       ];
 
-      updatedProject.forEach((phase, i) => {
-        phase.indx = i + 1;
+      updatedPhase.forEach((phase, i) => {
+        phase.ranking = i + 1;
       });
 
-      await updatePhases(updatedProject[index], updatedProject[index + 1]);
+      await updatePhases(updatedPhase[index], updatedPhase[index + 1]);
 
-      setProject(updatedProject);
+      setPhase(updatedPhase);
     }
   };
 
   const changePhaseName = async (id, index, newName) => {
     if (newName !== null && newName !== "") {
       try {
-        const updatedData = [...project];
-        const newphase = project[index];
+        const updatedData = [...phase];
+        const newphase = phase[index];
         updatedData[index].phasename = newName;
         await apiput("phases", id, newphase);
-        setProject(updatedData);
+        setPhase(updatedData);
       } catch (error) {
         console.log(error);
       }
@@ -158,15 +181,13 @@ const Phase = ({projectusers, projektid}) => {
     display: "flex",
     flexDirection: "column",
     marginBottom: "10px",
-    height: "fit-content" 
+    height: "fit-content"
   }
 
   const phaseContainerStyle = {
-    display: "flex",
-    overflowX: "auto", 
-    padding: "1px", 
-    width: "100%", 
-  }
+    padding: "1px",
+    width: "100%",
+  };
 
   const iconStyle = {
     marginRight: "auto",
@@ -191,82 +212,110 @@ const Phase = ({projectusers, projektid}) => {
 
   return (
     <>
-      <Box style={phaseContainerStyle}>
-        {Array.isArray(project) &&
-          project.map((phase, index) => (
+      <Grid container spacing={2} style={phaseContainerStyle}>
+        {Array.isArray(phase) &&
+          phase.map((phase, index) => (
             <>
-            <Card key={phase.id} sx={phaseCardStyle}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <IconButton
-                  style={iconStyle}
-                  onClick={() => {
-                    moveLeftAndLowerIndex(index);
-                  }}
-                >
-                  <ArrowLeftIcon />
-                </IconButton>
-                <TextField
-                  id="phasenname"
-                  defaultValue={phase.phasename}
-                  onChange={(event) =>
-                    changePhaseName(phase.id, index, event.target.value)
-                  }
-                  variant="standard"
-                  sx={{
-                    textAlign: "center",
-                    "& input": {
-                      textAlign: "center",
-                      fontSize: "1.5rem"
-                    },
-                  }}
-                />
-                <IconButton
-                  style={iconStyle}
-                  onClick={() => {
-                    handleMoveRight(index);
-                  }}
-                >
-                  <ArrowRightIcon />
-                </IconButton>
-              </div>
-              <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} project={project} projectusers={projectusers}/>
-              <IconButton
-                style={deleteButtonStyle}
-                onClick={() => handleDeleteButtonClick(phase.id)}
-              >
-                <Typography>
-                  Phase löschen
-                </Typography>
-                <DeleteOutlineIcon />
-              </IconButton>
-            </Card>
-            <Divider orientation="vertical" flexItem></Divider>
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={phase.id}>
+
+                <Card key={phase.id} sx={phaseCardStyle}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <IconButton
+                      style={iconStyle}
+                      onClick={() => {
+                        moveLeftAndLowerIndex(index);
+                      }}
+                    >
+                      <ArrowLeftIcon />
+                    </IconButton>
+                    <TextField
+                      id="phasenname"
+                      defaultValue={phase.phasename}
+                      onChange={(event) =>
+                        changePhaseName(phase.id, index, event.target.value)
+                      }
+                      variant="standard"
+                      sx={{
+                        textAlign: "center",
+                        "& input": {
+                          textAlign: "center",
+                          fontSize: "1.5rem"
+                        },
+                      }}
+                    />
+                    <IconButton
+                      style={iconStyle}
+                      onClick={() => {
+                        handleMoveRight(index);
+                      }}
+                    >
+                      <ArrowRightIcon />
+                    </IconButton>
+                  </div>
+                  <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} phase={phase} projectusers={projectusers} />
+                  {user.id === project.manager && (
+                    <IconButton
+                      style={deleteButtonStyle}
+                      onClick={() => handleDeleteButtonClick(phase.id)}
+                    >
+                      <Typography>
+                        Phase löschen
+                      </Typography>
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  )}
+                </Card>
+                <Divider orientation="vertical" flexItem></Divider>
+              </Grid>
             </>
           ))}
-        <Card
-          style={{          
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Card
+            style={{
               flex: "0 0 auto",
               width: "auto",
               display: "flex",
               flexDirection: "column",
               marginBottom: "10px",
               height: "fit-content",
-          }}
-        >
-          {/* Neue Phase hinzufügen */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <TextField
-              id="newPhaseName"
-              label="Neue Phase"
-              value={newPhaseName}
-              onChange={handleNewPhaseNameChange}
-            />
-            <IconButton onClick={addNewPhase}>
-              <Typography variant="body2">hinzufügen</Typography>
-            </IconButton>
-          </div>
-        </Card>
-      </Box>
+            }}
+          >
+            {/* Neue Phase hinzufügen */}
+            <Box style={{ display: "flex", alignItems: "center" }}>
+              <TextField
+                id="newPhaseName"
+                label="Neue Phase"
+                value={newPhaseName}
+                onChange={handleNewPhaseNameChange}
+              />
+              <IconButton onClick={addNewPhase}>
+                <Typography variant="body2">hinzufügen</Typography>
+              </IconButton>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Löschen bestätigen"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Sind Sie sicher, dass Sie diese Phase löschen möchten?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCanceled}>Abbrechen</Button>
+          <Button onClick={handleDeleteConfirmed} color="error">
+            Löschen
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

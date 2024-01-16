@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import { apiget, apiput, apidelete, apipost } from '../API/Api';
+import { apiget, apiput, apidelete } from '../API/Api';
 import { UserAuth } from '../Context/Authcontext';
 
 export default function Profil() {
@@ -20,15 +20,13 @@ export default function Profil() {
   const [helper, setHelper] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingNicknames, setExistingNicknames] = useState([]);
-  const [changeNickname, setChangeNickname] = useState(false);
+  const [disable, setDisable] = useState(true);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     fetchExistingNicknames();
     fetchUserData();
   }, []);
-
 
   const [userGoogleData, setUserGoogleData] = useState("")
   const fetchUserData = async () => {
@@ -102,9 +100,9 @@ export default function Profil() {
         setNachname('');
         setNickname('');
 
-        
-        await logOut();        
-  
+
+        await logOut();
+
         navigate("/");
       } else {
         console.log('Löschen des Profils abgebrochen');
@@ -113,7 +111,7 @@ export default function Profil() {
       console.error('Fehler beim Löschen des Profils:', error);
     }
   };
-  
+
 
   const handleEditProfile = () => {
     setIsEditMode(true);
@@ -128,16 +126,22 @@ export default function Profil() {
   };
 
   const handleNicknameChange = (event) => {
-    const newNickname = event.target.value;
-    setNickname(newNickname);
-
-    // Überprüfe, ob der Nickname bereits existiert
-    if (existingNicknames.includes(newNickname)) {
-      setHelper('Nickname bereits vergeben');
+    setNickname(event.target.value);
+    const regex = /^[a-zA-Z0-9]{4,12}$/;
+    if (regex.test(event.target.value)) {
+      setDisable(false);
+        if (existingNicknames.includes(event.target.value)) {
+            setHelper("Der Nickname existiert bereits");
+            setDisable(false);
+        } else {
+            setHelper('');
+            setDisable(true);
+        }
     } else {
-      setHelper('');
+        setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.");
+        setDisable(false);
     }
-  };
+};
 
   return (
     <>
@@ -176,26 +180,20 @@ export default function Profil() {
               disabled={!isEditMode}
             />
           </Box>
-          <Box mb="1rem" sx={{ display: 'flex', justifyContent: 'center' }}>
-            {!isEditMode && (
-              <Button
-                sx={{ outline: '1px solid blue', color: 'blue', marginRight: '1rem' }}
-                onClick={handleEditProfile}
-              >
-                Profil bearbeiten
-              </Button>
-            )}
+          <Box mb="1rem" sx={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
             <Button
-              sx={{ outline: '1px solid green', color: 'green', marginRight: '1rem' }}
+              variant="contained"
+              color="success"
               onClick={handleSaveProfile}
               endIcon={<SendIcon />}
-              disabled={!isEditMode || !vorname || !nachname || !nickname || !!helper}
+              disabled={!isEditMode || !vorname || !nachname || !disable }
             >
-              Profil {isEditMode ? 'aktualisieren' : 'erstellen'}
+              Profil aktualisieren
             </Button>
             {isEditMode && (
               <Button
-                sx={{ outline: '1px solid red', color: 'red' }}
+                sx={{ backgroundColor: "primary.contrastText" }}
+                style={{ color: "white" }}
                 onClick={handleDeleteProfile}
                 startIcon={<DeleteIcon />}
               >

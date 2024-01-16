@@ -23,6 +23,7 @@ export const AuthContextProvider = ({ children }) => {
 
         const { uid, displayName, photoURL } = result.user;
         var currentUser;
+        console.log(uid);
         try{
           const g_user = await apiget(`google_user/${uid}`)
           const userId = g_user.id ? g_user.id : false
@@ -33,7 +34,7 @@ export const AuthContextProvider = ({ children }) => {
             name: g_user.name,
             nickname: g_user.nickname,
             userid: uid,
-            id: userId
+            id: g_user.id
           };
         }catch{
           currentUser = {

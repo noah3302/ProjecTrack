@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, TextField, Button, Typography, Autocomplete } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/Arbeitsstatistik";
-import Members from "../components/Mitglieder";
 import Phase from "../components/project/Phase";
 import { useParams } from 'react-router-dom';
 import { apiget, apiput, apidelete } from "../API/Api";
@@ -24,9 +23,6 @@ export default function Projekt() {
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
-  const [openMembers, setOpenMembers] = useState(false);
-  const handleOpenMembers = () => setOpenMembers(true);
-  const handleCloseMembers = () => setOpenMembers(false);
   const { user } = UserAuth();
   const navigate = useNavigate();
   const [projectUsers, setProjectUsers] = useState();
@@ -265,18 +261,10 @@ export default function Projekt() {
         <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenSettings}>
           Projekteinstellungen
         </Button>
-        <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor:"secondary.dark"  }} onClick={handleOpenMembers}>
-          Mitglieder
-        </Button>
       </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Arbeitsstatistik />
-        </Box>
-      </Modal>
-      <Modal open={openMembers} onClose={handleCloseMembers}>
-        <Box sx={style}>
-          <Members projectusers={projectUsers} projektid="3" />
         </Box>
       </Modal>
       {project && projectUsers ? (

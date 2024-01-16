@@ -89,14 +89,14 @@ class UserMapper(Mapper):
     def find_by_google_id(self, google_id):
         result = None
         cursor = self._cnx.cursor()
-        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
+        command = "SELECT * FROM user WHERE google_id='{}'".format(google_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (user_id, surname, name, nickname, google_id) = tuples[0]
+            (id, surname, name, nickname, google_id) = tuples[0]
             user = User()
-            user.set_id(user_id)
+            user.set_id(id)
             user.set_surname(surname)
             user.set_name(name)
             user.set_nickname(nickname)
@@ -205,9 +205,9 @@ class UserMapper(Mapper):
         cursor.execute(command)
         self._cnx.commit()
 
-    def delete_members(self, user, project):
+    def delete_members(self, pid, uid):
         cursor = self._cnx.cursor()
-        command = "DELETE FROM members WHERE user_id='{}' and project_id='{}'".format(user, project.get_id())
+        command = "DELETE FROM members WHERE user_id='{}' and project_id='{}'".format(uid, pid)
         cursor.execute(command)
         self._cnx.commit()
 

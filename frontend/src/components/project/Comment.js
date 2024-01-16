@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container, Chip, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Box, Typography, Container, Chip, TextField, IconButton, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import FaceIcon from '@mui/icons-material/Face';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,6 +13,8 @@ const Comment = ({ taskid, projectusers }) => {
     const [newComment, setNewComment] = useState("");
     const [editIndex, setEditIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteCommentIndex, setDeleteCommentIndex] = useState(null);
     const { user } = UserAuth();
 
     const commentload = async () => {
@@ -57,7 +59,7 @@ const Comment = ({ taskid, projectusers }) => {
     };
 
     const isCurrentUserComment = (Comment) => {
-        return Comment.user_id === user.id.toString();
+        return Comment.user_id === user.id;
     };
 
     const handleEdit = (index) => {
@@ -83,14 +85,27 @@ const Comment = ({ taskid, projectusers }) => {
         }
     };
 
-    const handleDelete = async (index, Comment) => {
+    const handleDelete = (index, Comment) => {
+        setDeleteCommentIndex(index);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirmed = async () => {
         try {
-            await apidelete(`coment`, Comment.id);
+            const index = deleteCommentIndex;
+            const Comment = comment[index];
+            await apidelete(`comment`, Comment.id);
             const updatedComments = comment.filter((_, i) => i !== index);
             setComment(updatedComments);
+            setDeleteDialogOpen(false);
         } catch (error) {
             console.error("Fehler beim Löschen des Kommentars:", error);
         }
+    };
+
+    const handleDeleteCanceled = () => {
+        setDeleteCommentIndex(null);
+        setDeleteDialogOpen(false);
     };
 
     const kommentarfeld = {
@@ -150,11 +165,11 @@ const Comment = ({ taskid, projectusers }) => {
                             <div style={{ display: "flex", alignItems: "center" }}>
                                 <Chip
                                     icon={<FaceIcon />}
-                                    label={nicknames[Comment.user_id] || "Unknown"}
+                                    label={nicknames[Comment.user_id] || "User left project"}
                                     style={chipStyle}
                                     size="small"
                                 />
-                                {Comment.user_id === user.id.toString() ? (
+                                {Comment.user_id === user.id ? (
                                     <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
                                         {editIndex === index ? (
                                             <IconButton onClick={handleUpdate}>
@@ -207,6 +222,16 @@ const Comment = ({ taskid, projectusers }) => {
                         }}
                     />
                 </Box>
+                <Dialog open={deleteDialogOpen} onClose={handleDeleteCanceled}>
+                    <DialogTitle>Löschen bestätigen</DialogTitle>
+                    <DialogContent>
+                        <Typography>Sind Sie sicher, dass Sie diesen Kommentar löschen möchten?</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteCanceled}>Abbrechen</Button>
+                        <Button onClick={handleDeleteConfirmed} color="error">Löschen</Button>
+                    </DialogActions>
+                </Dialog>
             </Container>
         </>
     );
