@@ -5,85 +5,7 @@ class TaskMapper(Mapper):
     def __init__(self):
         super().__init__()
 
-    def find_all(self):
-        result = []
-        cursor = self._cnx.cursor()
-        cursor.execute("SELECT * FROM task")
-        tuples = cursor.fetchall()
-
-        for (task_id, tasktitle, description, score, duedate, user_id, phases_id, creator_id) in tuples:
-            task = Task()
-            task.set_id(task_id)
-            task.set_tasktitle(tasktitle)
-            task.set_description(description)
-            task.set_score(score)
-            task.set_duedate(duedate)
-            task.set_user_id(user_id)
-            task.set_phases_id(phases_id)
-            task.set_creator_id(creator_id)
-            result.append(task)
-
-        self._cnx.commit()
-        cursor.close()
-        return result
-
-    def find_by_key(self, key):
-        result = None
-
-        cursor = self._cnx.cursor()
-        command = ("SELECT * FROM task WHERE task_id='{}'"
-                   .format(key))
-        cursor.execute(command)
-        tuples = cursor.fetchall()
-
-        try:
-            (task_id, tasktitle, description, score, duedate, user_id, phases_id, creator_id) = tuples[0]
-            task = Task()
-            task.set_id(task_id)
-            task.set_tasktitle(tasktitle)
-            task.set_description(description)
-            task.set_score(score)
-            task.set_duedate(duedate)
-            task.set_user_id(user_id)
-            task.set_phases_id(phases_id)
-            task.set_creator_id(creator_id)
-            result = task
-
-        except IndexError:
-            result = None
-
-        self._cnx.commit()
-        cursor.close()
-        return result
-
-    def find_by_user_id(self, user_id):
-        result = None
-
-        cursor = self._cnx.cursor()
-        command = ("SELECT * FROM task WHERE task_id='{}'".format(user_id))
-        cursor.execute(command)
-        tuples = cursor.fetchall()
-
-        try:
-            (task_id, tasktitle, description, score, duedate, user_id, phases_id, creator_id) = tuples[0]
-            task = Task()
-            task.set_id(task_id)
-            task.set_tasktitle(tasktitle)
-            task.set_description(description)
-            task.set_score(score)
-            task.set_duedate(duedate)
-            task.set_user_id(user_id)
-            task.set_phases_id(phases_id)
-            task.set_creator_id(creator_id)
-            result = task
-
-        except IndexError:
-            result = None
-
-            self._cnx.commit()
-            cursor.close()
-            return result
-
+    """Liste von Aufgaben basierend auf die Phasen-ID"""
     def find_by_phase_id(self, key):
         result = []
 
@@ -108,6 +30,7 @@ class TaskMapper(Mapper):
         cursor.close()
         return result
 
+    """Liste von Aufgaben, die einer bestimmten Phase und bestimmten Nutzer zugewiesen sind"""
     def find_by_phase_id_and_user_id(self, phases_id, user_id):
         result = []  # Initialisiere result als leere Liste
 
@@ -132,6 +55,7 @@ class TaskMapper(Mapper):
         cursor.close()
         return result
 
+    """Neue Aufgabe wird in der DB hinzugefügt"""
     def insert(self, task):
         cursor = self._cnx.cursor()
         cursor.execute("SELECT COUNT(*) FROM task")
@@ -152,6 +76,7 @@ class TaskMapper(Mapper):
 
         return task
 
+    """Aufgabe wird geupdated in der DB"""
     def update(self, task):
         cursor = self._cnx.cursor()
 
@@ -165,6 +90,7 @@ class TaskMapper(Mapper):
         return task
 
 
+    """Aufgabe wird in der DB gelöscht"""
     def delete(self, task):
         cursor = self._cnx.cursor()
         command = "DELETE FROM task WHERE task_id='{}'".format(task)
