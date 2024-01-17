@@ -6,6 +6,53 @@ class CommentMapper(Mapper):
     def __init__(self):
         super().__init__()
 
+
+    def find_all(self):
+        result = []
+        cursor = self._cnx.cursor()
+        cursor.execute("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment")
+        tuples = cursor.fetchall()
+
+        for (comment_id, comment, creationdate, user_id, task_id) in tuples:
+            comment_obj = Comment()
+            comment_obj.set_id(comment_id)
+            comment_obj.set_comment(comment)
+            comment_obj.set_creationdate(creationdate)
+            comment_obj.set_user_id(user_id)
+            comment_obj.set_task_id(task_id)
+            result.append(comment_obj)
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+
+    def find_by_key(self, key):
+        result = None
+
+        cursor = self._cnx.cursor()
+        command = ("SELECT comment_id, comment, creationdate, user_id, task_id FROM comment WHERE comment_id='{}'"
+                   .format(key))
+        cursor.execute(command)
+        tuples = cursor.fetchall()
+
+        try:
+            (comment_id, comment, creationdate, user_id, task_id) = tuples[0]
+            comment_obj = Comment()
+            comment_obj.set_id(comment_id)
+            comment_obj.set_comment(comment)
+            comment_obj.set_creationdate(creationdate)
+            comment_obj.set_user_id(user_id)
+            comment_obj.set_task_id(task_id)
+            result = comment_obj
+
+        except IndexError:
+            result = None
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
     """Ein Kommentar wird gesucht, der einer bestimmten Aufgaben-ID zugeordnet ist"""
     def find_by_task_id(self, task_id):
         result = []

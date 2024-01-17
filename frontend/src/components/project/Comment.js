@@ -220,6 +220,11 @@ const Comment = ({ taskid, projectusers }) => {
                                 </InputAdornment>
                             ),
                         }}
+                        InputLabelProps={{
+                            style: {
+                                fontSize: '14px', // Hier kannst du die gewünschte Schriftgröße einstellen
+                            },
+                        }}
                     />
                 </Box>
                 <Dialog open={deleteDialogOpen} onClose={handleDeleteCanceled}>

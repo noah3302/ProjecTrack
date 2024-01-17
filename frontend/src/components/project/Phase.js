@@ -15,7 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const Phase = ({ projectusers, projektid, project }) => {
   const [open, setOpen] = useState(false);
-  const [phase, setPhase] = useState([]);
+  const [phasen, setPhasen] = useState([]);
   const [newPhaseName, setNewPhaseName] = useState("");
   const [deletePhaseId, setDeletePhaseId] = useState(null);
   let { id } = useParams();
@@ -30,7 +30,7 @@ const Phase = ({ projectusers, projektid, project }) => {
   const phasenload = async () => {
     const response = await apiget(`phase/${projektid}`);
     const sortedResponse = response.sort((a, b) => a.ranking - b.ranking);
-    setPhase(sortedResponse);
+    setPhasen(sortedResponse);
   };
 
   const updateParentComponent = async (newPhasenid) => {
@@ -41,7 +41,6 @@ const Phase = ({ projectusers, projektid, project }) => {
 
   useEffect(() => {
     phasenload();
-    console.log(project);
   }, []);
 
   const handleDeleteButtonClick = (phaseId) => {
@@ -67,7 +66,7 @@ const Phase = ({ projectusers, projektid, project }) => {
     try {
       await apidelete(`phase/${phaseId}/project/${id}/user/`, user.id);
 
-      setPhase((prevPhase) => {
+      setPhasen((prevPhase) => {
         const updatedPhase = prevPhase.filter(
           (phase) => phase.id !== phaseId
         );
@@ -94,12 +93,11 @@ const Phase = ({ projectusers, projektid, project }) => {
       const newPhase = {
         id: 0,
         phasename: newPhaseName.trim(),
-        ranking: phase.length + 1,
+        ranking: phasen.length + 1,
         project_id: id,
       };
       const response = await apipost("phase", newPhase);
-      console.log(response);
-      setPhase((prevPhase) => [...prevPhase, response]);
+      setPhasen((prevPhase) => [...prevPhase, response]);
       setNewPhaseName("");
     }
   };
@@ -108,7 +106,7 @@ const Phase = ({ projectusers, projektid, project }) => {
   const moveLeftAndLowerIndex = (index) => {
     try {
       if (index > 0) {
-        setPhase((prevPhase) => {
+        setPhasen((prevPhase) => {
           const updatedPhase = [...prevPhase];
           [updatedPhase[index], updatedPhase[index - 1]] = [
             updatedPhase[index - 1],
@@ -142,8 +140,8 @@ const Phase = ({ projectusers, projektid, project }) => {
 
   //Verschiebung rechts
   const handleMoveRight = async (index) => {
-    if (index < phase.length - 1) {
-      const updatedPhase = [...phase];
+    if (index < phasen.length - 1) {
+      const updatedPhase = [...phasen];
       [updatedPhase[index], updatedPhase[index + 1]] = [
         updatedPhase[index + 1],
         updatedPhase[index],
@@ -155,18 +153,18 @@ const Phase = ({ projectusers, projektid, project }) => {
 
       await updatePhases(updatedPhase[index], updatedPhase[index + 1]);
 
-      setPhase(updatedPhase);
+      setPhasen(updatedPhase);
     }
   };
 
   const changePhaseName = async (id, index, newName) => {
     if (newName !== null && newName !== "") {
       try {
-        const updatedData = [...phase];
-        const newphase = phase[index];
+        const updatedData = [...phasen];
+        const newphase = phasen[index];
         updatedData[index].phasename = newName;
         await apiput("phases", id, newphase);
-        setPhase(updatedData);
+        setPhasen(updatedData);
       } catch (error) {
         console.log(error);
       }
@@ -213,8 +211,8 @@ const Phase = ({ projectusers, projektid, project }) => {
   return (
     <>
       <Grid container spacing={2} style={phaseContainerStyle}>
-        {Array.isArray(phase) &&
-          phase.map((phase, index) => (
+        {Array.isArray(phasen) &&
+          phasen.map((phase, index) => (
             <>
               <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={phase.id}>
 
@@ -252,7 +250,16 @@ const Phase = ({ projectusers, projektid, project }) => {
                       <ArrowRightIcon />
                     </IconButton>
                   </div>
-                  <Task key={`${phase.id}-${reloadKey}`} phasenid={phase.id} updateParent={updateParentComponent} newPhasenid={newPhasenid} phase={phase} projectusers={projectusers} />
+                  {phase && (
+                    <Task
+                      key={`${phase.id}-${reloadKey}`}
+                      phasenid={phase.id}
+                      updateParent={updateParentComponent}
+                      newPhasenid={newPhasenid}
+                      phasen={phasen}
+                      projectusers={projectusers}
+                    />
+                  )}
                   {user.id === project.manager && (
                     <IconButton
                       style={deleteButtonStyle}

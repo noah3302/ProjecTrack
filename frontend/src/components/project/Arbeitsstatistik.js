@@ -1,58 +1,80 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart } from '@mui/x-charts/BarChart';
+import { BarChart, PieChart } from '@mui/x-charts';
 import { apiget } from "../../API/Api";
 import { useParams } from 'react-router-dom';
-import { Typography } from '@mui/material';
+import { Typography, CircularProgress, Alert, Box, Button } from '@mui/material';
 
-const Arbeitsstatistik = () => {
-  //Zustände definieren für die Daten und Nicknamen
-  const [data, setData] = useState([]);
+const Arbeitsstatistik = ({ projectusers }) => {
+  const [taskData, setTaskData] = useState([]);
+  const [phasescores, setPhaseScores] = useState([]);
+  const [dueDateData, setDueDateData] = useState([]);
   const [nicknames, setNicknames] = useState([]);
-  let { id } = useParams(); //Id wird aus der URL extrahiert
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  let { id } = useParams();
 
   useEffect(() => {
     const fetchArbeitssta = async () => {
       try {
-        const response = await apiget(`arbeitsstatistik/${id}`); //Daten von der API abrufen
-        console.log(response);
-        //Nicknamen extrahieren und im Zustand speichern
-        const names = Object.keys(response.name); 
-        setNicknames(names);
+        const response = await apiget(`arbeitsstatistik/${id}`);
 
-        const allPhases = names.reduce((acc, name) => { //Phasen werden gesammelt
-          Object.keys(response.name[name]).forEach(phase => { //Alle Phasen werden durchlaufen für jeden Nicknamen
-            if (!acc.includes(phase)) { //Prüfen ob Phase schon im kumulierten Array enthalten ist
-              acc.push(phase); //Falls nein wird sie hinzugefügt
-            }
-          });
-          return acc;
-        }, []);
-        
-        const seriesData = allPhases.map(phase => ({  //Daten für Diagramm
-          data: names.map(name => response.name[name][phase] || 0), //Datenpunkte für alle Phasen
-          label: phase,
-          id: phase,
-          stack: 'total' //Balken werden auf selben Stapel angezeigt
-        }));
-        
-        setData(seriesData); //Im Zustand werden Daten gespeichert
+        // Benutzerdaten extrahieren
+        setTaskData(response.name.user_phase_task_count);
+
+        // Verteilung pro Phase
+        setPhaseScores(response.name.phase_scores);
+
+        // Due Date Daten extrahieren
+        setDueDateData(response.name.due_date_task_count);
+
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Fehler beim Abrufen der Daten:', error);
+        setError('Fehler beim Abrufen der Daten');
       }
     };
-    //Arbeitsstatistik abrufen
+
+    // Arbeitsstatistik abrufen
     fetchArbeitssta();
-  }, []); //wird nur einmal beim Laden der Komponente ausgeführt
+  }, [id, projectusers]);
+
 
   return (
     <>
-      <Typography>Report-Ansicht</Typography>
-      <BarChart
-        width={500}   //Breite der Balken
-        height={300}
-        series={data}
-        xAxis={[{ data: nicknames, scaleType: 'band' }]}
-      />
+      <Typography>Task-Ansicht</Typography>
+      <Box>
+        <Typography>Anzahl der Tasks in jeder Phase</Typography>
+        {taskData && Object.keys(taskData).length > 0 ? (
+          <BarChart
+            width={500}
+            height={300}
+            series={Object.keys(taskData[Object.keys(taskData)[0]]).map(phase => ({
+              data: Object.keys(taskData).map(nickname => taskData[nickname][phase] || 0),
+              label: phase,
+              id: phase,
+              stack: 'total',
+            }))}
+            xAxis={[{ data: Object.keys(taskData), scaleType: 'band' }]}
+          />
+        ) : (
+          <Typography>Keine Daten verfügbar.</Typography>
+        )}
+        {/* <Button onClick={test}>Verteilung der Aufgaben pro Phase</Button>
+        {phasescores && Object.keys(phasescores).length > 0 ? (
+          <PieChart
+            width={500}
+            height={300}
+            data={Object.keys(phasescores).map(phase => ({
+              name: String(phase),
+              value: phasescores[phase],
+            }))}
+            innerRadius={60}
+          />
+        ) : (
+          <Typography>Keine Daten verfügbar.</Typography>
+        )} */}
+      </Box>
     </>
   );
 }

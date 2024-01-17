@@ -25,7 +25,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
-const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
+const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
   const [reloadKey, setReloadKey] = useState(0);
   const [showComment, setShowComment] = useState(false);
   const [taskData, setTaskData] = useState(null);
@@ -46,37 +46,26 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
   }
 
   function getPhaseNames(array) {
-    return array.map((exPhase) => exPhase.phasename);
-  }
+  
+    // Überprüfe, ob array ein Array ist, bevor map aufgerufen wird
+    if (Array.isArray(array)) {
+      return array.map((exPhase) => exPhase.phasename);
+    } else {
+      console.error('getPhaseNames: Das Argument ist kein Array.', array);
+      return []; // Oder eine andere geeignete Rückgabewert
+    }
+  }  
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiget(`phase/task/${phasenid}`);
-        setTaskData(response);
-      } catch (error) {
-        console.error("Fehler beim Abrufen der Phasen:", error);
-      }
-    };
-
-    fetchData();
-  }, [phasenid, reloadKey, newid]);
-
-  if (!taskData) {
-    return <div>Laden...</div>;
-  }
-
-  const handleEdit = (taskId) => {
-    const taskToEdit = taskData.find((task) => task.id === taskId);
-    setEditedTask(taskToEdit);
-    setEditedTitle(taskToEdit.tasktitle);
-    setEditedDescription(taskToEdit.description);
-    setEditedScore(taskToEdit.score);
-    setEditedDueDate(taskToEdit.duedate);
-    setEditedUserId(taskToEdit.user_id);
-    setEditedPhasesId(taskToEdit.phases_id);
-    setEditedCreatorId(taskToEdit.creator_id);
+  const fetchData = async () => {
+    try {
+      const response = await apiget(`phase/task/${phasenid}`);
+      return response;
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Phasen:", error);
+    }
   };
+
+    
 
   const handleSave = async () => {
     try {
@@ -110,12 +99,71 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
       } else {
         const updatedTasks = [...taskData];
         updatedTasks[updatedTaskIndex] = updatedTask;
-        setTaskData(updatedTasks);
+
+        // Sortiere die Tasks erneut nach dem Speichern
+        const sortedTasks = sortTasksByDueDate(updatedTasks);
+        setTaskData(sortedTasks);
       }
 
       setEditedTask(null);
     } catch (error) {
       console.error("Fehler beim Speichern der Änderungen:", error);
+    }
+  };
+
+  const sortTasksByDueDate = (tasks) => {
+    return tasks.sort((a, b) => {
+      return new Date(a.duedate) - new Date(b.duedate);
+    });
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await fetchData();
+      const sortedTasks = sortTasksByDueDate(response);
+      setTaskData(sortedTasks);
+    };
+
+    loadData();
+  }, [phasenid, reloadKey, newid]);
+
+  useEffect(() => {
+    // Wenn sich das duedate ändert, führe die Sortierung erneut durch
+    if (taskData) {
+      const sortedTasks = sortTasksByDueDate(taskData);
+      setTaskData(sortedTasks);
+    }
+  }, [taskData]);
+
+  if (!taskData) {
+    return <div>Laden...</div>;
+  }
+
+  const isTaskOverdue = (dueDate) => {
+    if (!dueDate) {
+      return false;
+    }
+
+    const taskDueDate = new Date(dueDate);
+    const today = new Date();
+
+    return taskDueDate < today;
+  };
+
+  const handleEdit = (taskId) => {
+    const taskToEdit = taskData.find((task) => task.id === taskId);
+  
+    if (taskToEdit) {
+      setEditedTask(taskToEdit);
+      setEditedTitle(taskToEdit.tasktitle);
+      setEditedDescription(taskToEdit.description);
+      setEditedScore(taskToEdit.score);
+      setEditedDueDate(taskToEdit.duedate);
+      setEditedUserId(taskToEdit.user_id);
+      setEditedPhasesId(taskToEdit.phases_id);
+      setEditedCreatorId(taskToEdit.creator_id);
+    } else {
+      console.error("Task nicht gefunden:", taskId);
     }
   };
 
@@ -129,7 +177,6 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
       await apidelete(`tasks`, deleteTaskId);
       const updatedTasks = taskData.filter((task) => task.id !== deleteTaskId);
       setTaskData(updatedTasks);
-      console.log("Task gelöscht!");
       setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Fehler beim Löschen des Tasks:", error);
@@ -193,8 +240,15 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
         updatetasks={setTaskData}
         projectusers={projectusers}
       />
-      {taskData.map((task, index) => (
-        <Box key={index} style={BoxStyle} sx={{ backgroundColor: "white" }}>
+      {taskData && taskData.map((task, index) => (
+        <Box
+        key={index}
+        style={{
+          ...BoxStyle,
+          boxShadow: isTaskOverdue(task.duedate) ? "0 0 10px 1px red" : "none",
+        }}
+        sx={{ backgroundColor: "white" }}
+      >
           <Box style={taskBoxStyle}>
             {editedTask && editedTask.id === task.id ? (
               <TextField
@@ -331,8 +385,8 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               value={
                 editedUserId !== null
                   ? projectusers.find(
-                      (user) => user.id === editedUserId
-                    )?.nickname
+                    (user) => user.id === editedUserId
+                  )?.nickname
                   : ""
               }
               onChange={(event, newValue) => {
@@ -359,7 +413,7 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
           )}
           {editedTask && editedTask.id === task.id ? (
             <Autocomplete
-              options={getPhaseNames(project)}
+              options={getPhaseNames(phasen)}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -368,14 +422,12 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
                 />
               )}
               value={
-                editedPhasesId !== null
-                  ? project.find(
-                      (phase) => phase.id === editedPhasesId
-                    )?.phasename
+                Array.isArray(phasen) && editedPhasesId !== null
+                  ? phasen.find((phasen) => phasen.id === editedPhasesId)?.phasename
                   : ""
-              }
+              }              
               onChange={(event, newValue) => {
-                const selectedPhase = project.find(
+                const selectedPhase = phasen.find(
                   (phase) => phase.phasename === newValue
                 );
                 if (selectedPhase) {
@@ -394,10 +446,10 @@ const Task = ({ phasenid, updateParent, newid, project, projectusers }) => {
               variant="contained"
               onClick={handleSave}
               style={saveButtonStyle}
+              color="success"
               sx={{
                 marginLeft: "auto",
-                backgroundColor: "secondary.dark",
-                color: "lightgrey",
+                color: "white",
               }}
             >
               Speichern

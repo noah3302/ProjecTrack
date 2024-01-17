@@ -27,7 +27,6 @@ export default function Signin() {
   useEffect(() => {
     const checkExistingUser = async () => { //Überprüfen, ob der User bereits einen Account hat
       if (signInDone) {
-        console.log(user);
         if (user && user.id) {
           navigate("/home");  //falls ja, wird der User zur Home-Seite navigiert
         } else {

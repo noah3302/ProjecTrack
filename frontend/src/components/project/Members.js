@@ -34,7 +34,6 @@ const Members = ({ projectusers: initialProjectUsers, projektid }) => {
 
     const moveNameTonotMember = (user) => {
         try {
-            console.log(user)
             const userid = parseInt(user.id);
             apidelete(`project/${projektid}/user`, user.id);
             setProjectusers(prevUsers => prevUsers.filter((value) => value.user_id !== userid));

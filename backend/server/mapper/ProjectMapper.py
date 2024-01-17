@@ -7,6 +7,30 @@ class ProjectMapper(Mapper):
     def __init__(self):
         super().__init__()
 
+    """Abstracte Klasse find all"""
+
+    def find_all(self):
+        result = []
+        cursor = self._cnx.cursor()
+        cursor.execute("SELECT * FROM project")
+        tuples = cursor.fetchall()
+
+        for (project_id, title, start_date, end_date, founder, manager, description) in tuples:
+            project = Project()
+            project.set_id(project_id)
+            project.set_project_title(title)
+            project.set_start_date(start_date)
+            project.set_end_date(end_date)
+            project.set_founder(founder)
+            project.set_manager(manager)
+            project.set_project_description(description)
+            result.append(project)
+
+        self._cnx.commit()
+        cursor.close()
+        return result
+
+
     """Dictionary mit User-ID und den dazugehörigen Nicknames"""
     def get_members_by_project_id(self, project_id):
         result = {}

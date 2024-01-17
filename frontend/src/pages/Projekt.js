@@ -35,6 +35,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
@@ -60,7 +61,7 @@ export default function Projekt() {
 
   const [members, setMembers] = useState([]);
   const [copyProjectusers, setCopyProjectUsers] = useState([]);
-  const [copyManager, setCopyManager] = useState([]);
+  const [copyProject, setCopyProject] = useState([]);
 
   const isSmallScreen = useMediaQuery("(max-width:800px)");
 
@@ -69,6 +70,7 @@ export default function Projekt() {
       try {
         const data = await apiget(`project/${id}`);
         setProject(data);
+        setCopyProject(data);
         const users = await apiget(`project/${id}/users`);
         setProjectUsers(users);
         setCopyProjectUsers(users);
@@ -126,18 +128,16 @@ export default function Projekt() {
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     try {
-      console.log("Start handleSave");
       const updatedproject = {
-        id: id,
-        project_title: project.project_title,
-        project_description: project.project_description,
-        founder: project.founder,
-        manager: copyManager,
-        start_date: project.start_date,
-        end_date: project.end_date,
+        id: copyProject.id,
+        project_title: copyProject.project_title,
+        project_description: copyProject.project_description,
+        founder: copyProject.founder,
+        manager: copyProject.manager,
+        start_date: copyProject.start_date,
+        end_date: copyProject.end_date,
       };
-
-      setProject({ ...project, manager: copyManager });
+      await apiput(`project/${project.id}/user`, user.id, updatedproject);
 
       setProjectUsers(copyProjectusers);
       // API-Aufrufe für hinzugefügte und entfernte Mitglieder durchführen
@@ -160,7 +160,6 @@ export default function Projekt() {
       );
 
       if (allRequestsSucceeded) {
-        console.log("Alle API-Aufrufe erfolgreich");
 
         // Lokale Zustände zurücksetzen
         setPendingAdditions([]);
@@ -181,11 +180,7 @@ export default function Projekt() {
 
         // Nur wenn die API-Aufrufe erfolgreich waren, aktualisiere das Projekt
         setProject(updatedproject);
-      } else {
-        console.log("Nicht alle API-Aufrufe waren erfolgreich");
       }
-
-      console.log("Ende handleSave");
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
@@ -296,9 +291,9 @@ export default function Projekt() {
             <TextField
               label="Projekttitel"
               variant="outlined"
-              value={project.project_title}
+              value={copyProject.project_title}
               onChange={(e) =>
-                setProject({ ...project, project_title: e.target.value })
+                setCopyProject({ ...copyProject, project_title: e.target.value })
               }
               fullWidth
               margin="normal"
@@ -308,9 +303,9 @@ export default function Projekt() {
             <TextField
               label="Beschreibung"
               variant="outlined"
-              value={project.project_description}
+              value={copyProject.project_description}
               onChange={(e) =>
-                setProject({ ...project, project_description: e.target.value })
+                setCopyProject({ ...copyProject, project_description: e.target.value })
               }
               fullWidth
               multiline
@@ -419,7 +414,7 @@ export default function Projekt() {
               type="datetime-local"
               variant="outlined"
               fullWidth
-              value={project.start_date}
+              value={copyProject.start_date}
               InputProps={{
                 readOnly: true, //kann man nicht bearbeiten
                 style: {
@@ -435,9 +430,9 @@ export default function Projekt() {
               type="datetime-local"
               variant="outlined"
               fullWidth
-              value={project.end_date}
+              value={copyProject.end_date}
               onChange={(e) =>
-                setProject({ ...project, end_date: e.target.value })
+                setCopyProject({ ...copyProject, end_date: e.target.value })
               }
               InputLabelProps={{
                 shrink: true,
@@ -445,75 +440,75 @@ export default function Projekt() {
               style={{ marginTop: "10px" }}
               disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
             />
-            <Autocomplete
-              options={projectUsers ? projectUsers : []}
-              disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
-              getOptionLabel={(option) => option.nickname || ""}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Manager"
-                  variant="outlined"
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  style={{
-                    marginTop: "10px",
-                    minWidth: 200,
-                    maxWidth: 480,
-                    width: "40rem",
-                    marginBottom: "10px",
-                  }}
-                />
-              )}
-              value={
-                (projectUsers &&
-                  projectUsers.find((user) => user.id === project.manager)) ||
-                null
-              }
-              onChange={(event, newValue) => {
-                if (newValue) {
-                  setCopyManager({ newValue });
-                }
+
+            <TextField
+              select
+              label="Manager"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
               }}
-            />
+              style={{
+                marginTop: "10px",
+                marginBottom: "10px",
+              }}
+              value={copyProject.manager || ""}
+              onChange={(event) => {
+                const newValue = event.target.value;
+                setCopyProject({ ...copyProject, manager: newValue });
+              }}
+            >
+              {projectUsers && projectUsers.map((user) => (
+                <MenuItem key={user.id} value={user.id}>
+                  {user.nickname}
+                </MenuItem>
+              ))}
+            </TextField>
           </Box>
-          <div
-            style={{ display: "flex", gap: "10px", justifyContent: "center" }}
-          >
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => {
-                handleSave();
-              }}
-            >
-              Speichern
-            </Button>
-            {user?.id === project?.manager && (
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: "primary.contrastText" }}
-                style={{ color: "white" }}
-                onClick={() => {
-                  handleOpenDeleteDialog();
-                }}
-              >
-                Projekt Löschen
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "primary.contrastText" }}
-              style={{ color: "white" }}
-              onClick={() => {
-                handleLeave();
-              }}
-            >
-              Projekt verlassen
-            </Button>
-          </div>
+
+          <Box style={{ display: "grid", gap: "10px", justifyContent: "center" }}>
+            <Grid container spacing={2}>
+              {user?.id === project?.manager && (
+                <>
+                  <Grid  item xs={12} md={4}>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      sx={{ width: "100%" }}
+                      onClick={() => {
+                        handleSave();
+                      }}
+                    >
+                      Speichern
+                    </Button>
+                  </Grid>
+                  <Grid  item xs={12} md={4}>
+                    <Button
+                      variant="contained"
+                      sx={{ color: "white", backgroundColor: "primary.contrastText", width: "100%" }}
+                      onClick={() => {
+                        handleOpenDeleteDialog();
+                      }}
+                    >
+                      Projekt Löschen
+                    </Button>
+                  </Grid>
+                </>
+              )}
+              <Grid  item xs={12} md={4}>
+                <Button
+                  variant="contained"
+                  sx={{ color: "white", backgroundColor: "primary.contrastText", width: "100%" }}
+                  onClick={() => {
+                    handleLeave();
+                  }}
+                >
+                  Projekt verlassen
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
       </Modal>
       <Box style={headerStyle}>
@@ -585,7 +580,7 @@ export default function Projekt() {
       </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Arbeitsstatistik />
+          <Arbeitsstatistik key={id} projectusers={projectUsers} />
         </Box>
       </Modal>
       {project && projectUsers ? (

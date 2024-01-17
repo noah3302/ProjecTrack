@@ -129,7 +129,7 @@ export default function Navbar() {
                     }}
                   >
                     {/* Falls Name verfügbar wird er angezeigt */}
-                    {user?.username} 
+                    {user?.name} 
                   </Typography>
                   <Avatar
                     sx={{ float: "right" }}
@@ -173,15 +173,6 @@ export default function Navbar() {
                       </ListItemIcon>
                       {/* Text für Link */}
                       <ListItemText primary="About" /> 
-                    </ListItemButton>
-                  </Link>
-                  <Link to="/profil" style={unterseiten}>
-                    <ListItemButton>
-                      <ListItemIcon>
-                        <PersonOutlineIcon sx={{ color: "white" }} />
-                      </ListItemIcon>
-                       {/* Text für Link */}
-                      <ListItemText primary="Profil" />
                     </ListItemButton>
                   </Link>
                   {/* Link zum Ausloggen */}
