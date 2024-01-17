@@ -1,32 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, SpeedDial, SpeedDialAction, Typography, Autocomplete, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, IconButton } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  SpeedDial,
+  SpeedDialAction,
+  Typography,
+  Autocomplete,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  IconButton,
+} from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Arbeitsstatistik from "../components/project/Arbeitsstatistik";
 import Phase from "../components/project/Phase";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { apiget, apiput, apidelete, apipost } from "../API/Api";
 import { UserAuth } from "../Context/Authcontext";
 import { useNavigate } from "react-router-dom";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
-import Divider from '@mui/material/Divider';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Tooltip from '@mui/material/Tooltip';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
+import Divider from "@mui/material/Divider";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function Projekt() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [project, setProject] = useState('');
-  const [founderName, setFounderName] = useState('');
+  const [project, setProject] = useState("");
+  const [founderName, setFounderName] = useState("");
   const [openSettings, setOpenSettings] = useState(false);
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
@@ -40,8 +55,14 @@ export default function Projekt() {
   const [notmember, setNotmember] = useState([]);
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [pendingAdditions, setPendingAdditions] = useState([]);
+  const [pendingRemovals, setPendingRemovals] = useState([]);
 
-  const isSmallScreen = useMediaQuery('(max-width:800px)');
+  const [members, setMembers] = useState([]);
+  const [copyProjectusers, setCopyProjectUsers] = useState([]);
+  const [copyManager, setCopyManager] = useState([]);
+
+  const isSmallScreen = useMediaQuery("(max-width:800px)");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,13 +71,21 @@ export default function Projekt() {
         setProject(data);
         const users = await apiget(`project/${id}/users`);
         setProjectUsers(users);
-        const members = await apiget('users');
-        const filteredMembers = members.filter((user) => !users.some((projectUser) => projectUser.id === user.id));
+        setCopyProjectUsers(users);
+
+        // Setze die Mitgliederliste in der State
+        const members = await apiget("users");
+        setMembers(members);
+
+        const filteredMembers = members.filter(
+          (user) => !users.some((projectUser) => projectUser.id === user.id)
+        );
         setNotmember(filteredMembers);
       } catch (error) {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
     };
+
     if (id) {
       fetchData();
     }
@@ -70,11 +99,11 @@ export default function Projekt() {
     bgcolor: "white",
     boxShadow: 24,
     p: 4,
-    width: '70%',
+    width: "70%",
     maxWidth: 500,
     minWidth: 200,
     maxHeight: 700,
-    overflow: 'auto',
+    overflow: "auto",
   };
 
   const headerStyle = {
@@ -97,19 +126,66 @@ export default function Projekt() {
   //Aktualisieren der Daten in die Datenbank
   const handleSave = async () => {
     try {
+      console.log("Start handleSave");
       const updatedproject = {
         id: id,
         project_title: project.project_title,
         project_description: project.project_description,
         founder: project.founder,
-        manager: project.manager,
+        manager: copyManager,
         start_date: project.start_date,
         end_date: project.end_date,
       };
 
-      await apiput(`project/${id}/user`, user.id, updatedproject);
-      handleCloseSettings();
-      setProject(updatedproject);
+      setProject({ ...project, manager: copyManager });
+
+      setProjectUsers(copyProjectusers);
+      // API-Aufrufe für hinzugefügte und entfernte Mitglieder durchführen
+      const addPromises = pendingAdditions.map((user) =>
+        apipost(`project/${id}/user`, user)
+      );
+      const removePromises = pendingRemovals.map((user) =>
+        apidelete(`project/${id}/members`, user.id)
+      );
+
+      // Warte auf das Ergebnis aller API-Aufrufe
+      const results = await Promise.allSettled([
+        ...addPromises,
+        ...removePromises,
+      ]);
+
+      // Prüfe, ob alle API-Aufrufe erfolgreich waren
+      const allRequestsSucceeded = results.every(
+        (result) => result.status === "fulfilled"
+      );
+
+      if (allRequestsSucceeded) {
+        console.log("Alle API-Aufrufe erfolgreich");
+
+        // Lokale Zustände zurücksetzen
+        setPendingAdditions([]);
+        setPendingRemovals([]);
+
+        // Lokale Aktualisierung der Mitgliederliste basierend auf den Änderungen
+        const updatedMembers = projectUsers
+          .filter(
+            (user) => !pendingRemovals.some((removal) => removal.id === user.id)
+          )
+          .concat(pendingAdditions);
+
+        // Aktualisiere die State-Variable nur, wenn der Speichern-Button geklickt wurde
+        setProjectUsers(updatedMembers);
+
+        // Nur wenn die API-Aufrufe erfolgreich waren, schließe die Einstellungen
+        handleCloseSettings();
+
+        // Nur wenn die API-Aufrufe erfolgreich waren, aktualisiere das Projekt
+        setProject(updatedproject);
+      } else {
+        console.log("Nicht alle API-Aufrufe waren erfolgreich");
+      }
+
+      console.log("Ende handleSave");
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Projekts:", error);
     }
@@ -128,7 +204,7 @@ export default function Projekt() {
     try {
       await apidelete(`project/${id}/userid`, user.id);
       navigate("/home");
-      setProject('');
+      setProject("");
     } catch (error) {
       console.error("Fehler beim Löschen des Projekts:", error);
     }
@@ -154,35 +230,35 @@ export default function Projekt() {
     setOpendialog(false);
   };
 
-  const moveNameTonotMember = (user) => {
-    try {
-      apidelete(`project/${id}/members`, user.id);
-      setProjectUsers(prevUsers => prevUsers.filter((value) => value.id !== user.id)); // Überprüfe, ob der Name der ID-Eigenschaft unterschiedlich ist
-      setNotmember(prevNotmember => [...prevNotmember, user]);
-    } catch (error) {
-      console.error("Fehler beim Aktualisieren des Projekts:", error);
-    }
+  const moveNameToprojectusers = (user) => {
+    setPendingAdditions([...pendingAdditions, user]);
+    setNotmember(notmember.filter((value) => value.id !== user.id));
+    setCopyProjectUsers((prevmember) => [...prevmember, user]);
   };
 
-  const moveNameToprojectusers = (user) => {
-    try {
-      apipost(`project/${id}/user`, user)
-      setNotmember(notmember.filter((value) => value.id !== user.id));
-      setProjectUsers(prevmember => [...prevmember, user]);
-    } catch (error) {
-      console.error("Fehler beim Aktualisieren des Projekts:", error);
-    }
+  const moveNameTonotMember = (user) => {
+    setPendingRemovals([...pendingRemovals, user]);
+    setNotmember((prevNotmember) => [...prevNotmember, user]);
+    setCopyProjectUsers((prevUsers) =>
+      prevUsers.filter((value) => value.id !== user.id)
+    );
+  };
+
+  // Funktion zur Überprüfung, ob die Benutzer-ID des Managers übereinstimmt
+  const isManagerUserIdValid = () => {
+    // Hier deine Bedingung zur Überprüfung der Benutzer-ID des Managers
+    return project.manager === user.id; // Ändere dies entsprechend deiner Anforderungen
   };
 
   const listStyle = {
-    width: '100%',
+    width: "100%",
     maxHeight: 200,
-    overflow: 'auto',
+    overflow: "auto",
   };
 
   const handleToggleSpeedDial = () => {
     setSpeedDialOpen((prevState) => ({
-      ...prevState || false,
+      ...(prevState || false),
     }));
   };
 
@@ -199,7 +275,8 @@ export default function Projekt() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bitte wähle zuerst einen Nachfolger, danach kannst du das Projekt verlassen.
+            Bitte wähle zuerst einen Nachfolger, danach kannst du das Projekt
+            verlassen.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -211,27 +288,36 @@ export default function Projekt() {
 
       <Modal open={openSettings} onClose={handleCloseSettings}>
         <Box sx={style}>
-          <Typography variant="h6" mb={2}>Projekteinstellungen</Typography>
+          <Typography variant="h6" mb={2}>
+            Projekteinstellungen
+          </Typography>
+
           <Box style={infoContainerStyle}>
             <TextField
               label="Projekttitel"
               variant="outlined"
               value={project.project_title}
-              onChange={(e) => setProject({ ...project, project_title: e.target.value })}
+              onChange={(e) =>
+                setProject({ ...project, project_title: e.target.value })
+              }
               fullWidth
               margin="normal"
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
+              disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
             />
             <TextField
               label="Beschreibung"
               variant="outlined"
               value={project.project_description}
-              onChange={(e) => setProject({ ...project, project_description: e.target.value })}
+              onChange={(e) =>
+                setProject({ ...project, project_description: e.target.value })
+              }
               fullWidth
               multiline
               rows={4}
               margin="normal"
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
+              disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
             />
             {project && projectUsers ? (
               <Grid
@@ -246,7 +332,7 @@ export default function Projekt() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Box >
+                  <Box>
                     <Paper>
                       <TextField
                         label="Filter user"
@@ -258,13 +344,20 @@ export default function Projekt() {
                       <List dense component="div" role="list" sx={listStyle}>
                         {notmember
                           .filter((user) =>
-                            user.nickname.toLowerCase().includes(notmemberFilter.toLowerCase())
+                            user.nickname
+                              .toLowerCase()
+                              .includes(notmemberFilter.toLowerCase())
                           )
                           .map((user, index) => (
                             <>
-                              <ListItem key={user.user_id} button onClick={() => moveNameToprojectusers(user)}>
+                              <ListItem
+                                key={user.user_id}
+                                button
+                                onClick={() => moveNameToprojectusers(user)}
+                                disabled={!isManagerUserIdValid()}
+                              >
                                 <ListItemText primary={user.nickname} />
-                                <ListItemIcon style={{ color: 'green' }}>
+                                <ListItemIcon style={{ color: "green" }}>
                                   <GroupAddIcon />
                                 </ListItemIcon>
                               </ListItem>
@@ -286,18 +379,31 @@ export default function Projekt() {
                         fullWidth
                       />
                       <List dense component="div" role="list" sx={listStyle}>
-                        {projectUsers.filter((member) =>
-                          member.nickname.toLowerCase().includes(projectusersFilter.toLowerCase())
-                        )
+                        {copyProjectusers
+                          .filter((member) =>
+                            member.nickname
+                              .toLowerCase()
+                              .includes(projectusersFilter.toLowerCase())
+                          )
                           .map((member, index) => (
                             <>
-                              <ListItem key={member.user_id} disabled={member.id === project.founder || member.id === user.id} button onClick={() => moveNameTonotMember(member)}>
+                              <ListItem
+                                key={member.user_id}
+                                disabled={
+                                  !isManagerUserIdValid() ||
+                                  member.id === user.id
+                                }
+                                button
+                                onClick={() => moveNameTonotMember(member)}
+                              >
                                 <ListItemText primary={member.nickname} />
-                                <ListItemIcon style={{ color: 'red' }}>
+                                <ListItemIcon style={{ color: "red" }}>
                                   <GroupRemoveIcon />
                                 </ListItemIcon>
                               </ListItem>
-                              {index !== projectUsers.length - 1 && <Divider />}
+                              {index !== copyProjectusers.length - 1 && (
+                                <Divider />
+                              )}
                             </>
                           ))}
                       </List>
@@ -315,14 +421,14 @@ export default function Projekt() {
               fullWidth
               value={project.start_date}
               InputProps={{
-                readOnly: true,         //kann man nicht bearbeiten
+                readOnly: true, //kann man nicht bearbeiten
                 style: {
-                  pointerEvents: 'none',      //Cursor entfernen
-                  color: 'rgba(0, 0, 0, 0.6)', //Textfarbe
-                  backgroundColor: '#f0f0f0', //Hintergrundfarbe
+                  pointerEvents: "none", //Cursor entfernen
+                  color: "rgba(0, 0, 0, 0.6)", //Textfarbe
+                  backgroundColor: "#f0f0f0", //Hintergrundfarbe
                 },
               }}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
             />
             <TextField
               label="Ende"
@@ -330,15 +436,19 @@ export default function Projekt() {
               variant="outlined"
               fullWidth
               value={project.end_date}
-              onChange={(e) => setProject({ ...project, end_date: e.target.value })}
+              onChange={(e) =>
+                setProject({ ...project, end_date: e.target.value })
+              }
               InputLabelProps={{
                 shrink: true,
               }}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
+              disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
             />
             <Autocomplete
               options={projectUsers ? projectUsers : []}
-              getOptionLabel={(option) => option.nickname || ''}
+              disabled={!isManagerUserIdValid()} // Dynamisch die 'disabled' Eigenschaft setzen
+              getOptionLabel={(option) => option.nickname || ""}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -348,24 +458,36 @@ export default function Projekt() {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  style={{ marginTop: '10px', minWidth: 200, maxWidth: 480, width: "40rem", marginBottom: '10px' }}
+                  style={{
+                    marginTop: "10px",
+                    minWidth: 200,
+                    maxWidth: 480,
+                    width: "40rem",
+                    marginBottom: "10px",
+                  }}
                 />
               )}
-              value={projectUsers && projectUsers.find((user) => user.id === project.manager) || null}
+              value={
+                (projectUsers &&
+                  projectUsers.find((user) => user.id === project.manager)) ||
+                null
+              }
               onChange={(event, newValue) => {
                 if (newValue) {
-                  setProject({ ...project, manager: newValue.id });
-                } else {
-                  setProject({ ...project, manager: '' }); 
+                  setCopyManager({ newValue });
                 }
               }}
             />
-          </Box >
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          </Box>
+          <div
+            style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+          >
             <Button
               variant="contained"
               color="success"
-              onClick={() => { handleSave() }}
+              onClick={() => {
+                handleSave();
+              }}
             >
               Speichern
             </Button>
@@ -374,15 +496,20 @@ export default function Projekt() {
                 variant="contained"
                 sx={{ backgroundColor: "primary.contrastText" }}
                 style={{ color: "white" }}
-                onClick={() => { handleOpenDeleteDialog() }}
+                onClick={() => {
+                  handleOpenDeleteDialog();
+                }}
               >
                 Projekt Löschen
-              </Button>)}
+              </Button>
+            )}
             <Button
               variant="contained"
               sx={{ backgroundColor: "primary.contrastText" }}
               style={{ color: "white" }}
-              onClick={() => { handleLeave() }}
+              onClick={() => {
+                handleLeave();
+              }}
             >
               Projekt verlassen
             </Button>
@@ -390,18 +517,35 @@ export default function Projekt() {
         </Box>
       </Modal>
       <Box style={headerStyle}>
-        <Typography variant="h4" align="center" >{project.project_title}</Typography>
+        <Typography variant="h4" align="center">
+          {project.project_title}
+        </Typography>
         {!isSmallScreen ? (
           <>
-            <Button variant="contained" sx={{ marginLeft: "auto", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpen}>
+            <Button
+              variant="contained"
+              sx={{
+                marginLeft: "auto",
+                color: "lightgrey",
+                backgroundColor: "secondary.dark",
+              }}
+              onClick={handleOpen}
+            >
               Report-Ansicht
             </Button>
-            {user?.id === project?.founder && (
-            <Button variant="contained" sx={{ marginLeft: "5px", color: "lightgrey", backgroundColor: "secondary.dark" }} onClick={handleOpenSettings}>
-              Projekteinstellungen
-            </Button>)}
-          </>          
 
+            <Button
+              variant="contained"
+              sx={{
+                marginLeft: "5px",
+                color: "lightgrey",
+                backgroundColor: "secondary.dark",
+              }}
+              onClick={handleOpenSettings}
+            >
+              Projekteinstellungen
+            </Button>
+          </>
         ) : (
           <>
             <Tooltip title="Report-Ansicht">
@@ -445,7 +589,12 @@ export default function Projekt() {
         </Box>
       </Modal>
       {project && projectUsers ? (
-        <Phase key={id} projectusers={projectUsers} projektid={id} project={project} />
+        <Phase
+          key={id}
+          projectusers={projectUsers}
+          projektid={id}
+          project={project}
+        />
       ) : (
         <Typography>Loading...</Typography>
       )}
