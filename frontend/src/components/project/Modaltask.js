@@ -79,8 +79,6 @@ const Modaltask = ({
         return;
       }
 
-      console.log("Before API call - newTask:", newTask);
-
       const response = await apipost("task", {
         id: newTask.task_id,
         tasktitle: newTask.tasktitle,
@@ -131,7 +129,8 @@ const Modaltask = ({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "400px",
+            width: "90%",
+            maxWidth: "400px",
             bgcolor: "white",
             boxShadow: 24,
             p: 4,
@@ -151,7 +150,7 @@ const Modaltask = ({
                 onChange={(e) =>
                   setNewTask({ ...newTask, tasktitle: e.target.value })
                 }
-                style={{ marginBottom: "10px" }}
+                style={{ marginBottom: "10px", minWidth: "100%" }}
               />
 
               {/* Wird nur angezeigt, wenn das Feld nicht ausgefüllt ist. */}
@@ -170,7 +169,7 @@ const Modaltask = ({
                 onChange={(e) =>
                   setNewTask({ ...newTask, description: e.target.value })
                 }
-                style={{ marginTop: "20px" }}
+                style={{ marginBottom: "10px", minWidth: "100%" }}
               />
 
               {/* Wird nur angezeigt, wenn das Feld nicht ausgefüllt ist. */}
@@ -180,7 +179,7 @@ const Modaltask = ({
                 </Typography>
               )}
 
-              <Typography style={{ marginTop: "20px" }}>
+              <Typography style={{ marginBottom: "10px", minWidth: "100%" }}>
                 Wie schwer ist die Task?
               </Typography>
               <Slider
@@ -202,7 +201,7 @@ const Modaltask = ({
                 onChange={(e) =>
                   setNewTask({ ...newTask, duedate: e.target.value })
                 }
-                style={{ marginBottom: "10px", marginTop: "20px" }}
+                style={{ marginBottom: "20px", minWidth: "100%" }}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -221,14 +220,14 @@ const Modaltask = ({
                   <TextField
                     {...params}
                     label="Verantwortlicher"
-                    style={{ marginBottom: "10px" }}
+                    style={{ marginBottom: "10px", minWidth: "100%" }}
                   />
                 )}
                 value={
                   responsibleUserId !== null
                     ? projectusers.find(
-                        (user) => user.id.toString() === responsibleUserId
-                      )?.nickname
+                      (user) => user.id.toString() === responsibleUserId
+                    )?.nickname
                     : ""
                 }
                 onChange={(event, newValue) => {
@@ -254,15 +253,14 @@ const Modaltask = ({
               )}
             </Box>
             <Button
+              color="success"
               variant="contained"
               sx={{
                 marginLeft: "auto",
-                backgroundColor: "secondary.dark",
               }}
-              color="secondary"
               onClick={handleCreateTask}
-              endIcon={<SendIcon sx={{ color: "lightgrey" }} />}
-              style={{ marginTop: "20px" }}
+              endIcon={<SendIcon sx={{ color: "white" }} />}
+              style={{ minWidth: "100%" }}
               disabled={
                 !responsibleUserId ||
                 !newTask.duedate ||
@@ -270,7 +268,7 @@ const Modaltask = ({
                 !newTask.description
               }
             >
-              <Typography color="lightgrey" align="center">
+              <Typography color="white" align="center">
                 Task erstellen
               </Typography>
             </Button>

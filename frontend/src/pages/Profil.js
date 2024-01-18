@@ -3,12 +3,13 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { useNavigate } from "react-router-dom";
+import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import { apiget, apiput, apidelete } from '../API/Api';
 import { UserAuth } from '../Context/Authcontext';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 export default function Profil() {
   const { user, setUser, logOut } = UserAuth();
@@ -21,6 +22,7 @@ export default function Profil() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingNicknames, setExistingNicknames] = useState([]);
   const [disable, setDisable] = useState(true);
+  const [navigateConfirmationOpen, setNavigateConfirmationOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +30,8 @@ export default function Profil() {
     fetchUserData();
   }, []);
 
-  const [userGoogleData, setUserGoogleData] = useState("")
+  const [userGoogleData, setUserGoogleData] = useState('');
+
   const fetchUserData = async () => {
     apiget(`google_user/${user.userid}`).then((result) => {
       setid(result.id);
@@ -37,9 +40,9 @@ export default function Profil() {
       setNickname(result.nickname || '');
       setgoogleid(result.google_id);
       setIsEditMode(true);
-      setUserGoogleData(result.user)
+      setUserGoogleData(result.user);
     });
-  }
+  };
 
   const fetchExistingNicknames = async (nickname) => {
     try {
@@ -72,7 +75,6 @@ export default function Profil() {
 
   const handleSaveProfile = async () => {
     try {
-
       const profileData = {
         id: id,
         surname: nachname,
@@ -80,41 +82,37 @@ export default function Profil() {
         nickname: nickname,
         google_id: google_id,
       };
-
       await apiput('users', user.id, profileData);
-      await setUser({ ...user, ['id']: id, });
+      await setUser({ ...user, ['id']: id });
     } catch (error) {
       console.error('Fehler beim Speichern des Profils:', error);
     }
   };
 
+  const handleDeleteProfile = () => {
+    setNavigateConfirmationOpen(true);
+  };
 
-  const handleDeleteProfile = async () => {
+  const handleConfirmDeleteProfile = async () => {
     try {
-      const confirmDelete = window.confirm('Möchten Sie Ihr Profil wirklich löschen?');
-      if (confirmDelete) {
-        await apidelete('users', user.id);
+      await apidelete('users', user.id);
+      setid('');
+      setVorname('');
+      setNachname('');
+      setNickname('');
 
-        setid("");
-        setVorname('');
-        setNachname('');
-        setNickname('');
+      await logOut();
 
-
-        await logOut();
-
-        navigate("/");
-      } else {
-        console.log('Löschen des Profils abgebrochen');
-      }
+      navigate('/');
     } catch (error) {
       console.error('Fehler beim Löschen des Profils:', error);
+    } finally {
+      setNavigateConfirmationOpen(false);
     }
   };
 
-
-  const handleEditProfile = () => {
-    setIsEditMode(true);
+  const handleCancelDeleteProfile = () => {
+    setNavigateConfirmationOpen(false);
   };
 
   const handleVornameChange = (event) => {
@@ -130,23 +128,38 @@ export default function Profil() {
     const regex = /^[a-zA-Z0-9]{4,12}$/;
     if (regex.test(event.target.value)) {
       setDisable(false);
-        if (existingNicknames.includes(event.target.value)) {
-            setHelper("Der Nickname existiert bereits");
-            setDisable(false);
-        } else {
-            setHelper('');
-            setDisable(true);
-        }
-    } else {
-        setHelper("Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.");
+      if (existingNicknames.includes(event.target.value)) {
+        setHelper('Der Nickname existiert bereits');
         setDisable(false);
+      } else {
+        setHelper('');
+        setDisable(true);
+      }
+    } else {
+      setHelper(
+        'Der Nickname muss aus 4 bis 12 Buchstaben und/oder Zahlen bestehen.'
+      );
+      setDisable(false);
     }
-};
+  };
+
+  const input = {
+    marginTop: '1rem',
+    backgroundColor: 'white',
+    width: '100%',
+  };
 
   return (
     <>
-      <Box sx={{ marginTop: '8rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Card sx={{ width: '30rem' }}>
+      <Box
+        sx={{
+          marginTop: '8rem',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Card sx={{ width: '20rem' }}>
           <Box sx={{ padding: '2rem' }}>
             <Typography align="center" variant="h5" mb="1rem">
               {isEditMode ? 'Profil bearbeiten' : 'Profil anzeigen'}
@@ -180,35 +193,54 @@ export default function Profil() {
               disabled={!isEditMode}
             />
           </Box>
-          <Box mb="1rem" sx={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleSaveProfile}
-              endIcon={<SendIcon />}
-              disabled={!isEditMode || !vorname || !nachname || !disable }
-            >
-              Profil aktualisieren
-            </Button>
-            {isEditMode && (
-              <Button
-                sx={{ backgroundColor: "primary.contrastText" }}
-                style={{ color: "white" }}
-                onClick={handleDeleteProfile}
-                startIcon={<DeleteIcon />}
-              >
-                Profil löschen
-              </Button>
-            )}
+          <Box mb="1rem" style={{ display: "grid", gap: "10px", justifyContent: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={1}/>
+              <Grid item xs={10}>
+                <Button
+                  sx={{ width: "100%" }}
+                  variant="contained"
+                  color="success"
+                  onClick={handleSaveProfile}
+                  endIcon={<SendIcon />}
+                  disabled={!isEditMode || !vorname || !nachname || !disable}
+                >
+                  Profil aktualisieren
+                </Button>
+              </Grid>
+              <Grid item xs={1}/>
+              <Grid item xs={1}/>
+              <Grid item xs={10}>
+                <Button
+                  sx={{ color: "white", backgroundColor: "primary.contrastText", width: "100%" }}
+                  onClick={handleDeleteProfile}
+                  startIcon={<DeleteIcon />}
+                >
+                  Profil löschen
+                </Button>
+              </Grid>
+              <Grid item xs={1}/>
+            </Grid>
           </Box>
         </Card>
       </Box>
+
+      <Dialog open={navigateConfirmationOpen} onClose={handleCancelDeleteProfile}>
+        <DialogTitle>Profil löschen</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Möchten Sie Ihr Profil wirklich löschen?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDeleteProfile} color="primary">
+            Abbrechen
+          </Button>
+          <Button onClick={handleConfirmDeleteProfile} color="error">
+            Ja, Löschen
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
-
-const input = {
-  marginTop: '1rem',
-  backgroundColor: 'white',
-  width: '100%',
-};

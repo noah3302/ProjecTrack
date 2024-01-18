@@ -10,10 +10,8 @@ export const AuthContextProvider = ({ children }) => {
   const [userdata, setUserdata] = useState(null);
 
   const googleSignIn = async () => {
-    console.log(user);
     if (!user) {
       const provider = new GoogleAuthProvider();
-      console.log("angemeldet", user);
       try {
         const result = await signInWithPopup(auth, provider);
 
@@ -23,7 +21,6 @@ export const AuthContextProvider = ({ children }) => {
 
         const { uid, displayName, photoURL } = result.user;
         var currentUser;
-        console.log(uid);
         try{
           const g_user = await apiget(`google_user/${uid}`)
           const userId = g_user.id ? g_user.id : false
@@ -53,8 +50,6 @@ export const AuthContextProvider = ({ children }) => {
       } catch (error) {
         console.error("Error signing in:", error);
       }
-    }else{
-      console.log("nicht ", user);
     }
   };
 

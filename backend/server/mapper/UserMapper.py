@@ -6,6 +6,7 @@ class UserMapper(Mapper):
     def __init__(self):
         super().__init__()
 
+    """Alle Nutzer aus der DB ausgegeben"""
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
@@ -25,6 +26,7 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
+    """Hier werden Nutzer basierend auf deren Nicknames gesucht"""
     def find_all_nicknames(self):
         result = []
         cursor = self._cnx.cursor()
@@ -40,6 +42,7 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
+    """Liste an Nutzern, die Mitglieder eines bestimmten Projekts sind"""
     def get_members_by_project_id(self, project_id):
         result = []
         cursor = self._cnx.cursor()
@@ -62,6 +65,7 @@ class UserMapper(Mapper):
         return result
 
 
+    """Nutzer mit einer spezifischen User-ID wird gesucht"""
     def find_by_key(self, key):
         result = None
         cursor = self._cnx.cursor()
@@ -86,6 +90,7 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
+    """User wird gesucht, basierend auf einer Google-ID"""
     def find_by_google_id(self, google_id):
         result = None
         cursor = self._cnx.cursor()
@@ -110,32 +115,7 @@ class UserMapper(Mapper):
         cursor.close()
 
         return result
-
-    def exist_by_google_id(self, google_id):
-        result = None
-
-        cursor = self._cnx.cursor()
-        command = "SELECT user_id, surname, name, nickname, google_id FROM user WHERE google_id='{}'".format(google_id)
-        cursor.execute(command)
-        tuples = cursor.fetchall()
-
-        try:
-            (user_id, surname,name, nickname, google_id) = tuples[0]
-            user = User()
-            user.set_id(user_id)
-            user.set_surname(surname)
-            user.set_name(name)
-            user.set_nickname(nickname)
-            user.set_google_id(google_id)
-            result = True
-
-        except IndexError:
-            result = False
-
-        self._cnx.commit()
-        cursor.close()
-        return result
-
+    """User wird gesucht, basierend auf seinem Nickname"""
     def find_by_nickname(self, nickname):
         result = None
 
@@ -161,6 +141,7 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
+    """Nutzer wird einem Projekt hinzugefügt"""
     def add_user_to_project(self, user, project_id):
         cursor = self._cnx.cursor()
         command = "INSERT INTO members (user_id, project_id) VALUES (%s, %s)"
@@ -170,6 +151,7 @@ class UserMapper(Mapper):
         cursor.close()
         return user
 
+    """Nutzer wird in der DB hinzugefügt (User-Tabelle)"""
     def insert(self, user):
         cursor = self._cnx.cursor()
         # Überprüfung, ob bereits Einträge vorhanden sind
@@ -189,6 +171,7 @@ class UserMapper(Mapper):
 
         return user
 
+    """Daten eines bestehenden Nutzers wird geupdated"""
     def update(self, user):
         cursor = self._cnx.cursor()
 
@@ -199,12 +182,14 @@ class UserMapper(Mapper):
         self._cnx.commit()
         cursor.close()
 
+    """Nutzer wird aus der DB gelöscht"""
     def delete(self, user):
         cursor = self._cnx.cursor()
         command = "DELETE FROM user WHERE user_id='{}'".format(user)
         cursor.execute(command)
         self._cnx.commit()
 
+    """Nutzer wird aus dem Projekt gelöscht"""
     def delete_members(self, pid, uid):
         cursor = self._cnx.cursor()
         command = "DELETE FROM members WHERE user_id='{}' and project_id='{}'".format(uid, pid)

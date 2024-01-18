@@ -28,7 +28,6 @@ const Createproject = () => {
 
   useEffect(() => {
     getExistingUsers()
-    console.log(user);
   }, []);
 
   function getUserNames(array) {
@@ -43,7 +42,7 @@ const Createproject = () => {
   };
 
   function localISOTime(d) {
-    var tzoffset = d.getTimezoneOffset() * 60000; // offset in milliseconds
+    var tzoffset = d.getTimezoneOffset() * 60000;
     d.setTime(d.getTime() - tzoffset);
     return d.toISOString().slice(0, -1);
   }
@@ -83,7 +82,6 @@ const Createproject = () => {
         ...member
       }))
     })
-    console.log(user);
     const eigene = {
       id: user.id,
       surname: "",
@@ -91,7 +89,6 @@ const Createproject = () => {
       name: "",
       nickname: "",
     };
-    console.log(eigene);
 
     // sich selber auch als Member zum Projekt hinzufügen
     apiCalls.push(apipost(`project/${newProject.id}/user`, eigene))
@@ -124,7 +121,9 @@ const Createproject = () => {
   };
 
   const handleAddCustomPhase = () => {
+    if (customPhaseValues.length < 8) {
     setCustomPhaseValues([...customPhaseValues, '']);
+    }
   };
 
   const handleRemoveCustomPhase = (index) => {
@@ -150,16 +149,8 @@ const Createproject = () => {
 
   const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate || customPhaseValues.some(value => !value.trim());
 
-  const phaseStyle = {
-    display: 'flex',
-    overflowX: 'auto',
-    gap: '10px',
-    marginTop: '1rem',
-    marginBottom: '1rem',
-  };
-
   return (
-    <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '5rem', maxWidth: '40rem', maxHeight: "40rem", padding: '2rem' }}>
+    <Box sx={{ overflow: "hidden", overflowY: "scroll", marginLeft: 'auto', marginRight: 'auto', minWidth: '15rem', maxWidth: '40rem', maxHeight: "40rem", padding: '1rem' }}>
       <Typography align="center" variant="h5" mb={'1rem'}>
         Projekt erstellen
       </Typography>
@@ -238,7 +229,7 @@ const Createproject = () => {
                   <IconButton
                     color="error"
                     onClick={() => handleRemoveCustomPhase(index)}
-                    style={{ marginLeft: '10px', marginTop: '10px' }}
+                    style={{ marginLeft: '10px', marginBottom: '10px' }}
                   >
                     X
                   </IconButton>
@@ -246,9 +237,11 @@ const Createproject = () => {
               </Grid>
             ))}
             <Grid item xs={12}>
+            {selectedPhase === 'Custom' && customPhaseValues.length < 8 && (
               <Button onClick={handleAddCustomPhase} sx={{ outline: '1px solid green', color: 'green' }}>
                 Hinzufügen
               </Button>
+              )}
             </Grid>
           </Grid>
         </>

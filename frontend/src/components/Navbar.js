@@ -1,15 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Container,
-  Avatar,
-  MenuItem,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Typography, Container, Avatar, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,13 +16,12 @@ import ListItemText from "@mui/material/ListItemText";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-/**Navbar im eingeloggten Zustand */
-
+//Navbar im eingeloggten Zustand
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, logOut } = UserAuth();
 
-  // Logout
+  //Logout
   const handleSignOut = async () => {
     try {
       await logOut();
@@ -41,23 +31,23 @@ export default function Navbar() {
     }
   };
 
+  //Unterseiten stylen
   const unterseiten = {
-    textDecoration: "none",
+    textDecoration: "none", //Entfernt Standard-Textdeko für Link
     color: "white",
     alignItems: "center",
   };
 
-  const [open, setState] = useState(false);
-
-  const toggleDrawer = (open) => (event) => {
-    if (
+  //Verwalten des Öffnungszustands 
+  const [open, setState] = useState(false); 
+  const toggleDrawer = (open) => (event) => { //Ermöglicht umschalten
+    if ( //Überprüfen ob tab oder shift während Tastendruck gedrückt sind
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
     ) {
       return;
     }
-
-    setState(open);
+    setState(open); //Zustand aktualisieren 
   };
 
   return (
@@ -65,27 +55,26 @@ export default function Navbar() {
       <AppBar position="fixed" sx={{ backgroundColor: "primary.main" }}>
         <Container maxWidth="xl" disableGutters>
           <Toolbar sx={{ height: "50px" }}>
-            <IconButton
-              edge="start"
+            <IconButton //Button zum Öffnen des Drawers
+              edge="start" //Icon am Anfang positioniert
               color="black"
-              aria-label="open drawer"
-              onClick={toggleDrawer(true)}
+              aria-label="open drawer" //Barrierefreier Text für Icon
+              onClick={toggleDrawer(true)} //Drawer öffnen
               sx={{
                 mr: 2,
                 display: {
                   xs: "flex",
-                  md: "none",
+                  md: "none", //Icon auf mittelgroßen Bildschirmen nicht sichtbar
                 },
               }}
             >
               <MenuIcon />
             </IconButton>
-
             <Link to="/home" style={unterseiten}></Link>
             <Link to="/home" style={unterseiten}>
               <Typography
                 variant="h6"
-                noWrap
+                noWrap //Verhindert Umbrüche
                 sx={{
                   ml: 1,
                   mr: 2,
@@ -93,7 +82,7 @@ export default function Navbar() {
                   fontWeight: 700,
                   letterSpacing: ".3rem",
                   color: "white",
-                  textDecoration: "none",
+                  textDecoration: "none", //damit keine Unterstreichung beim Link ist
                   fontSize: 50,
                   fontFamily: "monospace",
                   "@media (max-width: 400px)": {
@@ -127,9 +116,7 @@ export default function Navbar() {
                 </MenuItem>
               </Link>
             </Box>
-
             <Box sx={{ flexGrow: 1 }} />
-
             <Box sx={{ marginLeft: 1 }}>
               <Link to={`/profil`} style={unterseiten}>
                 <IconButton>
@@ -137,37 +124,34 @@ export default function Navbar() {
                     sx={{
                       marginRight: "12px",
                       color: "white",
-                      float: "right",
+                      float: "right", //Ausrichtung vom Text nach rechts
                       display: { sm: "flex", xs: "none" },
                     }}
                   >
-                    {user?.username}
+                    {/* Falls Name verfügbar wird er angezeigt */}
+                    {user?.name} 
                   </Typography>
                   <Avatar
                     sx={{ float: "right" }}
                     referrerPolicy="no-referrer"
-                    alt="Remy Sharp"
-                    src={user?.profilePicture}
+                    alt="Remy Sharp" //Alternativer Text für Bild
+                    src={user?.profilePicture} //Quelle vom Profilbild
                   />
                 </IconButton>
               </Link>
             </Box>
-
             <Button
-              onClick={handleSignOut}
+              onClick={handleSignOut} //Ausloggen
               color="primary"
               startIcon={<LogoutIcon />}
               style={unterseiten}
             ></Button>
-
-            {/* The outside of the drawer */}
-            <Drawer
+            <Drawer //seitliches Menü erstellen
               anchor="left"
               open={open}
-              onClose={toggleDrawer(false)}
-              onOpen={toggleDrawer(true)}
+              onClose={toggleDrawer(false)} //um Drawer zu schließen
+              onOpen={toggleDrawer(true)} //um Drawer zu öffnen
             >
-              {/* The inside of the drawer */}
               <Box
                 sx={{
                   p: 2,
@@ -175,36 +159,29 @@ export default function Navbar() {
                   backgroundColor: "#556573",
                 }}
               >
-                <IconButton onClick={toggleDrawer(false)} sx={{ mb: 2 }}>
+                {/* Button zum Schließen */}
+                <IconButton onClick={toggleDrawer(false)} sx={{ mb: 2 }}> 
                   <CloseIcon sx={{ color: "white" }} />
                 </IconButton>
-
-                <Divider sx={{ mb: 2 }} />
-
+                {/* Trennlinie */}
+                <Divider sx={{ mb: 2 }} /> 
                 <Box sx={{ mb: 2 }}>
                   <Link to="/about" style={unterseiten}>
                     <ListItemButton>
                       <ListItemIcon>
                         <InfoOutlinedIcon sx={{ color: "white" }} />
                       </ListItemIcon>
-                      <ListItemText primary="About" />
+                      {/* Text für Link */}
+                      <ListItemText primary="About" /> 
                     </ListItemButton>
                   </Link>
-
-                  <Link to="/profil" style={unterseiten}>
-                    <ListItemButton>
-                      <ListItemIcon>
-                        <PersonOutlineIcon sx={{ color: "white" }} />
-                      </ListItemIcon>
-                      <ListItemText primary="Profil" />
-                    </ListItemButton>
-                  </Link>
-
-                  <Link onClick={handleSignOut} style={unterseiten}>
+                  {/* Link zum Ausloggen */}
+                  <Link onClick={handleSignOut} style={unterseiten}> 
                     <ListItemButton>
                       <ListItemIcon>
                         <LogoutIcon sx={{ color: "white" }} />
                       </ListItemIcon>
+                      {/* Text für Link */}
                       <ListItemText primary="Logout" />
                     </ListItemButton>
                   </Link>

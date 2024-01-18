@@ -181,31 +181,48 @@ class ProjectrackAdministration(object):
             return mapper.find_by_key(id)
 
     """Arbeitsstatistik"""
-
     def get_arbeitsstatistik_by_project_id(self, number):
         user_phase_task_count = {}
+        phase_scores = {}  # Dictionary für die Phasen-Scores
+        overdue_task_count = {}  # Dictionary für die Anzahl der überfälligen Aufgaben
+
         users_dict = {}  # Annahme: Dictionary mit UserId und Nickname
 
         # Erhalte das Dictionary mit UserId und Nickname
         with ProjectMapper() as mapper:
             users_dict = mapper.get_members_by_project_id(number)
 
-        # Erhalte die Phasenids und Phasennamen
+        # Erhalte die Phasenids und Phasennamen mit Ranking
         with PhaseMapper() as mapper:
-            phases = {phase.get_id(): phase.get_phasename() for phase in mapper.get_phases_by_project_id(number)}
+            phases = {phase.get_id(): {'name': phase.get_phasename(), 'ranking': phase.get_ranking()} for phase in
+                      mapper.get_phases_by_project_id(number)}
+
+        # Sortiere die Phasen nach dem Ranking
+        sorted_phases = sorted(phases.items(), key=lambda x: x[1]['ranking'])
 
         with TaskMapper() as mapper:
             for user_id, user_nickname in users_dict.items():
-                user_phase_task_count[
-                    user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
-                for phase_id, phase_name in phases.items():
+                user_phase_task_count[user_nickname] = {}  # Verwende ein Dictionary, um Phasen-IDs und Task-Anzahl zu speichern
+                for phase_id, phase_info in sorted_phases:
                     tasks = mapper.find_by_phase_id_and_user_id(phase_id, user_id)  # Erhalte Tasks für die Phase und Benutzer
-                    score = 0
-                    for task in tasks:
-                        score = score + int(task.get_score())
-                    user_phase_task_count[user_nickname][phase_name] = score  # Speichert die summierten Task scores für den Phasennamen
+                    score = sum(int(task.get_score()) for task in tasks)
+                    user_phase_task_count[user_nickname][phase_info['name']] = score  # Speichert die summierten Task scores für den Phasennamen
 
-        return user_phase_task_count
+                    # Füge die Score-Informationen zum Dictionary für das Kreisdiagramm hinzu
+                    if phase_info['name'] not in phase_scores:
+                        phase_scores[phase_info['name']] = sum(int(task.get_score()) for task in tasks)
+
+                # Zähle die Anzahl der überfälligen Aufgaben für jeden Benutzer
+                overdue_tasks = [task for task in tasks if task.get_duedate() and task.get_duedate() < datetime.now()]
+                overdue_task_count[user_nickname] = len(overdue_tasks)
+
+        # Rückgabe der Daten
+        return {
+            'user_phase_task_count': user_phase_task_count,
+            'phase_scores': phase_scores,
+            'overdue_task_count': overdue_task_count
+        }
+
 
     """Tasks"""
 

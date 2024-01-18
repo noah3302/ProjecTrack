@@ -7,6 +7,8 @@ class ProjectMapper(Mapper):
     def __init__(self):
         super().__init__()
 
+    """Abstracte Klasse find all"""
+
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
@@ -28,6 +30,8 @@ class ProjectMapper(Mapper):
         cursor.close()
         return result
 
+
+    """Dictionary mit User-ID und den dazugehörigen Nicknames"""
     def get_members_by_project_id(self, project_id):
         result = {}
         cursor = self._cnx.cursor()
@@ -43,6 +47,7 @@ class ProjectMapper(Mapper):
         cursor.close()
         return result
 
+    """Liste von Projekten, die Nutzer enthalten, basierend auf die User-ID"""
     def get_projects_by_user_id(self, user_id):
         result = []
         cursor = self._cnx.cursor()
@@ -66,6 +71,7 @@ class ProjectMapper(Mapper):
         cursor.close()
         return result
 
+    """Projekt wird basierend auf die Projekt-ID gesucht"""
     def find_by_key(self, key):
         result = None
 
@@ -93,6 +99,7 @@ class ProjectMapper(Mapper):
         cursor.close()
         return result
 
+    """Neues Projekt wird in der DB-Tabelle gespeichert (Projekt-Tabelle)"""
     def insert(self, project):
         cursor = self._cnx.cursor()
         # Überprüfung, ob bereits Einträge vorhanden sind
@@ -113,6 +120,7 @@ class ProjectMapper(Mapper):
 
         return project
 
+    """Proejkt wird geupdted in der DB"""
     def update(self, project):
         cursor = self._cnx.cursor()
 
@@ -126,6 +134,7 @@ class ProjectMapper(Mapper):
 
         return project
 
+    """Projekt wird gelöscht"""
     def delete(self, project):
         cursor = self._cnx.cursor()
         command = "DELETE FROM project WHERE project_id='{}'".format(project)

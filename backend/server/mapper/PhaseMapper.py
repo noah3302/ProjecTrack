@@ -6,6 +6,10 @@ class PhaseMapper(Mapper):
     def __init__(self):
         super().__init__()
 
+
+    """Abstracte Methode find all"""
+
+
     def find_all(self):
         result = []
         cursor = self._cnx.cursor()
@@ -22,6 +26,9 @@ class PhaseMapper(Mapper):
         self._cnx.commit()
         cursor.close()
         return result
+
+
+    """Liste an Projektphasen die einer ID zugewiesen wurden"""
 
     def find_by_key(self, key):
         result = None
@@ -46,6 +53,7 @@ class PhaseMapper(Mapper):
         cursor.close()
         return result
 
+    """Liste an Projektphasen die einer ID zugewiesen wurden"""
     def get_phases_by_project_id(self, project_id):
         result = []
         cursor = self._cnx.cursor()
@@ -65,6 +73,7 @@ class PhaseMapper(Mapper):
         cursor.close()
         return result
 
+    """ Neue Projektphase wird hinzugefügt"""
     def insert(self, phases):
         cursor = self._cnx.cursor()
         cursor.execute("SELECT COUNT(*) FROM phases")
@@ -83,6 +92,7 @@ class PhaseMapper(Mapper):
 
         return phases
 
+    """Phase wird geupdatet"""
     def update(self, phases):
         cursor = self._cnx.cursor()
 
@@ -93,6 +103,7 @@ class PhaseMapper(Mapper):
         self._cnx.commit()
         cursor.close()
 
+    """Phase wird gelöscht"""
     def delete(self, phases_id):
         cursor = self._cnx.cursor()
         command = "DELETE FROM phases WHERE phases_id='{}'".format(phases_id)
