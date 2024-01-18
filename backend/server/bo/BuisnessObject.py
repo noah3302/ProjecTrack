@@ -1,6 +1,6 @@
 from abc import ABC
 
-# BusinessObject bildet die Supperklasse der anderen Klassen, sie vererbt das Attribut id
+"""BusinessObject bildet die Supperklasse der anderen Klassen, sie vererbt das Attribut id"""
 class BusinessObject(ABC):
     def __init__(self):
         self._id = 0

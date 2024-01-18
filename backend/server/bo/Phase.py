@@ -1,6 +1,6 @@
 from server.bo.BuisnessObject import BusinessObject
 
-
+"""Klasse (Phase), die von einer anderen Klasse (BusinessObject) erbt"""
 class Phase(BusinessObject):
     def __init__(self):
         super().__init__()
@@ -8,6 +8,11 @@ class Phase(BusinessObject):
         self._ranking = 0
         self._project_id = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
     def get_id(self):
         return self._id
 
@@ -35,9 +40,12 @@ class Phase(BusinessObject):
         return "id: {}\nphasename: {}\nranking: {}\nproject_id: {}\n".format(self.get_id(),
                                                  self._phasename, self._ranking, self._project_id,)
 
+    """statische Methode für eine Klasse"""
     @staticmethod
     def from_dict(dictio=dict()):
+        """Erstellt ein Objekt (Phase)"""
         obj = Phase()
+        """Weist dem Objekt Attribute zu"""
         obj.set_id(dictio["id"])
         obj.set_phasename(dictio["phasename"])
         obj.set_ranking(dictio["ranking"])

@@ -1,6 +1,7 @@
 from server.bo.BuisnessObject import BusinessObject
 
 
+"""Klasse (User), die von einer anderen Klasse (BusinessObject)erbt"""
 class User(BusinessObject):
     def __init__(self):
         super().__init__()
@@ -9,6 +10,11 @@ class User(BusinessObject):
         self._nickname = ""
         self._google_id = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
     def get_id(self):
         return self._id
 
@@ -42,10 +48,12 @@ class User(BusinessObject):
         return "id: {}\nsurname: {}\nname: {}\nnickname: {}\ngoogle_id: {}\n".format(self.get_id(),
                                                                                     self._surname, self._name,
                                                                                     self._nickname, self._google_id)
-
+    """statische Methode für eine Klasse"""
     @staticmethod
     def from_dict(dictio=dict()):
+        """Erstellt ein Objekt (User)"""
         obj = User()
+        """Weisst Attribute dem Objekt zu"""
         obj.set_id(dictio["id"])
         obj.set_surname(dictio["surname"])
         obj.set_name(dictio["name"])

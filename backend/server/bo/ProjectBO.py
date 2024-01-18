@@ -1,6 +1,6 @@
 from server.bo.BuisnessObject import BusinessObject
 
-
+"""Klasse (Project), die von einer anderen Klasse (BusinessObject) erbt"""
 class Project(BusinessObject):
     def __init__(self):
         super().__init__()
@@ -11,6 +11,11 @@ class Project(BusinessObject):
         self._start_date = ""
         self._end_date = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
 
     def get_project_title(self):
         return self._project_title
@@ -57,11 +62,14 @@ class Project(BusinessObject):
                                                                                     self._founder, self._manager,
                                                                                     self._start_date, self._end_date,))
 
+    """statische Methode für eine Klasse"""
     @staticmethod
     def from_dict(dictio=None):
         if dictio is None:
             dictio = dict()
+        """Erstellt ein Objekt (Projekt)"""
         obj = Project()
+        """Weisst dem Objekt Attribute zu"""
         obj.set_id(dictio["id"])
         obj.set_project_description(dictio["project_description"])
         obj.set_project_title(dictio["project_title"])

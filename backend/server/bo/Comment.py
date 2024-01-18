@@ -1,5 +1,6 @@
 from server.bo.BuisnessObject import BusinessObject
 
+"""Klasse (Comment), die aus einer anderen Klasse (BusinessObject) erbt """
 class Comment(BusinessObject):
     def __init__(self):
         super().__init__()
@@ -8,6 +9,11 @@ class Comment(BusinessObject):
         self._user_id = 0
         self._task_id = 0
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
 
     def get_id(self):
         return self._id
@@ -40,9 +46,12 @@ class Comment(BusinessObject):
         return "id: {}\ncomment: {}\ncreationdate: {}\nuser_id: {}\ntask_id: {}\n".format(
             self.get_id(), self._comment, self._creationdate, self._user_id, self._task_id)
 
+    """statische Methode für eine Klasse"""
     @staticmethod
     def from_dict(dictio=dict()):
+        """Erstellt ein Objekt (Kommentar)"""
         obj = Comment()
+        """Weist dem Objekt Atrribute zu"""
         obj.set_id(dictio["id"])
         obj.set_comment(dictio["comment"])
         obj.set_creationdate(dictio["creationdate"])

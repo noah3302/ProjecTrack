@@ -1,5 +1,6 @@
 from server.bo.BuisnessObject import BusinessObject
 
+"""Klasse (Task), die von einer anderen Klasse (BusinessObject) erbt"""
 class Task(BusinessObject):
     def __init__(self):
         super().__init__()
@@ -11,6 +12,11 @@ class Task(BusinessObject):
         self._phases_id = ""
         self._creator_id = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
     def get_id(self):
         return self._id
 
@@ -61,9 +67,12 @@ class Task(BusinessObject):
             self.get_id(), self._tasktitle, self._description, self._score,
             self._duedate, self._user_id, self._phases_id, self._creator_id)
 
+    """statische Methode für eine Klasse"""
     @staticmethod
     def from_dict(dictio=dict()):
+        """Erstellt ein Objekt (Task)"""
         obj = Task()
+        """Weisst dem Objekt Attribute zu"""
         obj.set_id(dictio["id"])
         obj.set_tasktitle(dictio["tasktitle"])
         obj.set_description(dictio["description"])
