@@ -8,6 +8,11 @@ class Comment(BusinessObject):
         self._user_id = 0
         self._task_id = 0
 
+    """ 
+    
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+    
+    """
 
     def get_id(self):
         return self._id
@@ -40,6 +45,7 @@ class Comment(BusinessObject):
         return "id: {}\ncomment: {}\ncreationdate: {}\nuser_id: {}\ntask_id: {}\n".format(
             self.get_id(), self._comment, self._creationdate, self._user_id, self._task_id)
 
+    """statischer Helfer, der ein neues Objekt aus einem Wörterbuch erstellt (Comment-Objekt)"""
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Comment()

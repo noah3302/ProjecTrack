@@ -11,6 +11,11 @@ class Task(BusinessObject):
         self._phases_id = ""
         self._creator_id = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
     def get_id(self):
         return self._id
 
@@ -61,6 +66,7 @@ class Task(BusinessObject):
             self.get_id(), self._tasktitle, self._description, self._score,
             self._duedate, self._user_id, self._phases_id, self._creator_id)
 
+    """statischer Helfer, der ein neues Objekt aus einem Wörterbuch erstellt (Task-Objekt)"""
     @staticmethod
     def from_dict(dictio=dict()):
         obj = Task()

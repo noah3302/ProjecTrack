@@ -11,13 +11,16 @@ from server.bo.Comment import Comment
 from server.bo.Task import Task
 from server.admin import ProjectrackAdministration
 
-
+# Initialisiert eine neue Flask-Anwendung
 app = Flask(__name__)
 
+# Aktiviert Cross-Origin Resource Sharing (CORS - Sicherheitsfeature) für die Flask Anwendung
 CORS(app, resources=r'/projectrack/*', supports_credentials=True)
 
+# Initialisiert eine API für die Flask-Anwendung
 api = Api(app, version='1.0', title='projectrack', description='Ein Kanban board')
 
+# Definiert einen Namespace für die API
 api = api.namespace('projectrack')
 
 """Business Object"""
@@ -26,9 +29,9 @@ bo = api.model('BusinessObject', {
     'id': fields.Integer(attribute='_id', description='primarykey BO')
 })
 
-"""Api models für
- die restlichen bo klassen, sie erben alle von bo"""
+"""Api models für die restlichen bo klassen, sie erben alle von bo"""
 
+#Neue API-Datenstruktur in einer Flask-basierten Anwendung (User)
 user = api.inherit('User', bo, {
     'surname': fields.String(attribute='_surname', description='surname des users'),
     'name': fields.String(attribute='_name', description='name des users'),
@@ -36,6 +39,7 @@ user = api.inherit('User', bo, {
     'google_id': fields.String(attribute='_google_id', description='google_id des users')
 })
 
+#Neue API-Datenstruktur in einer Flask-basierten Anwendung (Project)
 project = api.inherit('Project', bo, {
         'project_title': fields.String(attribute='_project_title', description='project_title des Projects'),
         'project_description': fields.String(attribute='_project_description', description='project_description des Projects'),
@@ -45,12 +49,14 @@ project = api.inherit('Project', bo, {
         'end_date': fields.String(attribute='_end_date', description='end_date des Projects')
     })
 
+#Neue API-Datenstruktur in einer Flask-basierten Anwendung (Phase)
 phase = api.inherit('Phase', bo, {
         'phasename': fields.String(attribute='_phasename', description='Phasename des Projects'),
         'ranking': fields.Integer(attribute='_ranking', description='index der Phase'),
         'project_id': fields.Integer(attribute='_project_id', description='Project_id der Phase')
     })
 
+#Neue API-Datenstruktur in einer Flask-basierten Anwendung (Task)
 task = api.inherit('Task', bo, {
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
@@ -61,6 +67,7 @@ task = api.inherit('Task', bo, {
         'creator_id': fields.Integer(attribute='_creator_id', description='creator_id der Task')
 })
 
+#Neue API-Datenstruktur in einer Flask-basierten Anwendung (Kommentar)
 comment = api.inherit('Comment', bo, {
         'comment': fields.String(attribute='_comment', description='Kommentar string'),
         'creationdate': fields.String(attribute='_creationdate', description='Datum der Erstellung des Kommentars'),

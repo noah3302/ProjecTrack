@@ -11,6 +11,11 @@ class Project(BusinessObject):
         self._start_date = ""
         self._end_date = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
 
     def get_project_title(self):
         return self._project_title
@@ -57,6 +62,7 @@ class Project(BusinessObject):
                                                                                     self._founder, self._manager,
                                                                                     self._start_date, self._end_date,))
 
+    """statischer Helfer, der ein neues Objekt aus einem Wörterbuch erstellt (Projekt-Objekt)"""
     @staticmethod
     def from_dict(dictio=None):
         if dictio is None:

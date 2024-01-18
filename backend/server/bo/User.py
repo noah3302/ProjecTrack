@@ -9,6 +9,11 @@ class User(BusinessObject):
         self._nickname = ""
         self._google_id = ""
 
+    """ 
+
+    Get (lesen von Daten) - und Set (ändern und zuweisen von Daten) Methoden
+
+    """
     def get_id(self):
         return self._id
 
@@ -43,6 +48,7 @@ class User(BusinessObject):
                                                                                     self._surname, self._name,
                                                                                     self._nickname, self._google_id)
 
+    """statischer Helfer, der ein neues Objekt aus einem Wörterbuch erstellt (User-Objekt)"""
     @staticmethod
     def from_dict(dictio=dict()):
         obj = User()
