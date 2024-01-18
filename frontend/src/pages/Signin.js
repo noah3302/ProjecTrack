@@ -15,6 +15,7 @@ export default function Signin() {
   const [signInDone, setSignInDone] = useState();
   const navigate = useNavigate();
 
+  //Anmeldung über Google Signin
   const handleGoogleSignIn = async () => { //Anmeldung über Google
     try {
       await googleSignIn();
@@ -24,6 +25,7 @@ export default function Signin() {
     }
   };
 
+  //Überprüfung des Benutzers -> bestehender Account?
   useEffect(() => {
     const checkExistingUser = async () => { //Überprüfen, ob der User bereits einen Account hat
       if (signInDone) {
@@ -38,6 +40,7 @@ export default function Signin() {
     checkExistingUser();
   }, [user, signInDone]);
 
+  //Darstellung und Gestaltung der Signin Seite
   return (
     <>
       <Box sx={{ maxWidth: "40rem", marginRight: "auto", marginLeft: "auto", marginTop: "8rem" }}>

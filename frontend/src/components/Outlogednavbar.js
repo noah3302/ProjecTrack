@@ -10,6 +10,7 @@ const Outlogednavbar = () => {
     alignItems: "center",
   };
 
+  //React-Komponente Navigationsleiste(Navbar)
   return (
     <>
       <AppBar position="fixed" sx={{ backgroundColor: "#blue" }}>

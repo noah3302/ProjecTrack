@@ -25,13 +25,16 @@ export default function Profil() {
   const [navigateConfirmationOpen, setNavigateConfirmationOpen] = useState(false);
   const navigate = useNavigate();
 
+  //Daten bei der Komponantenmontage laden
   useEffect(() => {
     fetchExistingNicknames();
     fetchUserData();
   }, []);
 
+  //Zustandsvariable für den Google Benutzerdaten
   const [userGoogleData, setUserGoogleData] = useState('');
 
+  //Funktion ruft Benutzerdaten auf
   const fetchUserData = async () => {
     apiget(`google_user/${user.userid}`).then((result) => {
       setid(result.id);
@@ -44,6 +47,7 @@ export default function Profil() {
     });
   };
 
+  //Funktion ruft vorhandene Nicknames auf
   const fetchExistingNicknames = async (nickname) => {
     try {
       const data = await apiget('users/nicknames');
@@ -73,6 +77,7 @@ export default function Profil() {
     }
   };
 
+  //Funktion speichert das Profil
   const handleSaveProfile = async () => {
     try {
       const profileData = {
@@ -89,10 +94,12 @@ export default function Profil() {
     }
   };
 
+  //Funktion zum löschen des Profils
   const handleDeleteProfile = () => {
     setNavigateConfirmationOpen(true);
   };
 
+  //Bestätigung zum löschen des Profils 
   const handleConfirmDeleteProfile = async () => {
     try {
       await apidelete('users', user.id);
@@ -111,18 +118,22 @@ export default function Profil() {
     }
   };
 
+  //Funktion bricht das Löschen des Profils ab
   const handleCancelDeleteProfile = () => {
     setNavigateConfirmationOpen(false);
   };
 
+  //Funktion ändert den Vornamen des Nutzers
   const handleVornameChange = (event) => {
     setVorname(event.target.value);
   };
 
+  //Funktion ändert den Nachnamen des Nutzers
   const handleNachnameChange = (event) => {
     setNachname(event.target.value);
   };
 
+  //Funktion ändert Nickname des Nutzers
   const handleNicknameChange = (event) => {
     setNickname(event.target.value);
     const regex = /^[a-zA-Z0-9]{4,12}$/;
@@ -143,6 +154,7 @@ export default function Profil() {
     }
   };
 
+  //Eingabefelder Visualisierung und Gestaltung
   const input = {
     marginTop: '1rem',
     backgroundColor: 'white',

@@ -50,6 +50,7 @@ export default function Navbar() {
     setState(open); //Zustand aktualisieren 
   };
 
+  //React Komponente Navigationsleiste (Benutzerbezogener Bereich)
   return (
     <>
       <AppBar position="fixed" sx={{ backgroundColor: "primary.main" }}>

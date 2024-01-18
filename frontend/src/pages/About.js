@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material";
 
 export default function About() {
   return (
+    //Container für den Inhalt der "Über uns" Seite
     <Box sx={{ p: 4, maxWidth: "800px", margin: "0 auto" }}>
       <Typography variant="h4" gutterBottom>  
         About
@@ -16,7 +17,7 @@ export default function About() {
         Unser Team besteht aus den folgenden Mitgliedern:
       </Typography>
       <ul style={{ listStyleType: "disc", pl: "20px" }}> 
-        <li>Dimitrios Saltsoglidis</li>
+        <li>Dimitrios Saltsoglidis</li> 
         <li>Michele De Rinaldis</li>
         <li>Noah Braun</li>
         <li>Maxine Pedde</li>

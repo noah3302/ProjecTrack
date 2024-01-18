@@ -15,15 +15,19 @@ export const AuthContextProvider = ({ children }) => {
       try {
         const result = await signInWithPopup(auth, provider);
 
-        // Setze den Authentifizierungs-Token als Cookie
+        //Setze den Authentifizierungs-Token als Cookie
         const token = await result.user.getIdToken();
         document.cookie = `token=${token};path=/`;
 
+        //Die Daten des aktuellen angemeldeten Benutzer werden destrukturiert 
         const { uid, displayName, photoURL } = result.user;
+        //Variable initialisiert
         var currentUser;
+        //Informationen über den Benutzer aus der API abgerufen
         try{
           const g_user = await apiget(`google_user/${uid}`)
           const userId = g_user.id ? g_user.id : false
+          //bei vorhandenen Daten, werden diese gepseichert in 'CurrentUser'
           currentUser = {
             username: displayName,
             profilePicture : photoURL,
@@ -34,6 +38,7 @@ export const AuthContextProvider = ({ children }) => {
             id: g_user.id
           };
         }catch{
+          //Bei nicht vorhandenen Daten, wird ein minimales Benutzerobjekt erstellt
           currentUser = {
             username: displayName,
             profilePicture : photoURL,
@@ -86,6 +91,7 @@ export const AuthContextProvider = ({ children }) => {
       }
     });
 
+    //Aktualisierung des Authentifizierungsstatus
     const receiveAuthState = (event) => {
       const { detail: authState } = event;
       setUser(authState);
@@ -93,12 +99,14 @@ export const AuthContextProvider = ({ children }) => {
 
     window.addEventListener('storage', receiveAuthState);
 
+    //Aufräumfunktion
     return () => {
       unsubscribe();
       window.removeEventListener('storage', receiveAuthState);
     };
   }, []);
 
+  //Abmeldung des Benutzers
   const logOut = async () => {
     try {
       localStorage.clear();
@@ -110,6 +118,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  //Funktion schickt anderen Teile der Anwendung den Authentifizierungsstatus
   const broadcastAuthState = (authState) => {
     const event = new CustomEvent('authStateChanged', { detail: authState });
     window.dispatchEvent(event);
@@ -122,6 +131,7 @@ export const AuthContextProvider = ({ children }) => {
   );
 };
 
+//aktuellen Authentifizierungsstatus und die zugehörigen Funktionen abrufen
 export const UserAuth = () => {
   return useContext(AuthContext);
 };

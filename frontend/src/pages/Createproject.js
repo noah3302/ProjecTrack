@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { apiget, apipost } from '../API/Api';
 import { UserAuth } from "../Context/Authcontext";
 
+//Komponente die verschiedene Zustände für die Eingabe von Projektinformationen besitzt
 const Createproject = () => {
   const [name, setName] = useState('');
   const [beschreibung, setBeschreibung] = useState('');
@@ -19,40 +20,47 @@ const Createproject = () => {
   const navigate = useNavigate();
   const { user } = UserAuth();
 
+  //Asynchrone Funktion die Daten aller Benutzer von der API abruft und im ExistingUser speichert
   async function getExistingUsers() {
     const allUsers = await apiget('/users')
     setExistingUsers(allUsers)
     setStartDate("2023-12-01")
     setStartDate("2023-12-01")
   }
-
+  //Funktion wird aufgerufen sobald die Komponente geladen hat
   useEffect(() => {
     getExistingUsers()
   }, []);
 
+  //Array von Benutzerobjekten wird gefiltert um alle Benutzer auszuschließen, deren ID mit der ID 
+  // des aktuellen Benutzers übereinstimmt
   function getUserNames(array) {
     return array.filter((exUser) => {
       return exUser.id != user.id
     }).map((exUser) => exUser.nickname);
   }
 
-
+  //Funktion wird abgerufen, wenn sich der Wert des Namen des Projektes ändert
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
 
+  //Funktion konvertiert einen gegebene Zeit 'd' in das ISO-Datum-Zeit-Format
   function localISOTime(d) {
     var tzoffset = d.getTimezoneOffset() * 60000;
     d.setTime(d.getTime() - tzoffset);
     return d.toISOString().slice(0, -1);
   }
 
+  //Funktion überprüft ob alle benutzerdefinierten Phasen Namen haben
   const createproject = async () => {
     const customPhasesWithoutName = customPhaseValues.filter(value => !value.trim());
     if (customPhasesWithoutName.length > 0) {
       console.error("Bitte benenne alle benutzerdefinierten Phasen.");
       return;
     }
+
+    //Erstellung eines neuen Projektes
     const newProject = await apipost('createproject', {
       id: 0,
       project_title: name,
@@ -65,6 +73,7 @@ const Createproject = () => {
     navigation(newProject)
   }
 
+  //Funktion für das Senden von Daten im Zusammenhang mit den Projektphasen, an die API
   const navigation = async (newProject) => {
     const apiCalls = []
 
@@ -82,6 +91,7 @@ const Createproject = () => {
         ...member
       }))
     })
+    //Objekt
     const eigene = {
       id: user.id,
       surname: "",
@@ -99,10 +109,12 @@ const Createproject = () => {
 
   };
 
+  //Änderung der Projektbeschreibung
   const handleBeschreibungChange = (event) => {
     setBeschreibung(event.target.value);
   };
 
+  //Änderung der Mitgleider eines Projektes
   const handleMembersChange = (event, values) => {
     const selected = existingUsers.filter(selectedUser => {
       return values.includes(selectedUser.nickname)
@@ -110,22 +122,26 @@ const Createproject = () => {
     setSelectedMembers(selected);
   };
 
+  //Änderung der Projektphasen
   const handlePhasenChange = (event) => {
     setSelectedPhase(event.target.value);
   };
 
+  //Änderung der benutzerdefinierten Phasen
   const handleCustomPhaseChange = (index, value) => {
     const updatedCustomPhaseValues = [...customPhaseValues];
     updatedCustomPhaseValues[index] = value;
     setCustomPhaseValues(updatedCustomPhaseValues);
   };
 
+  //neue benutzerdefinierte Phase hinzufügen
   const handleAddCustomPhase = () => {
     if (customPhaseValues.length < 8) {
     setCustomPhaseValues([...customPhaseValues, '']);
     }
   };
 
+  //Funktion um benutzerdefinierte Phasen aus der Liste der benutzerdefinierten Phase zu entfernen
   const handleRemoveCustomPhase = (index) => {
     const updatedCustomPhaseValues = [...customPhaseValues];
     updatedCustomPhaseValues.splice(index, 1);
@@ -145,8 +161,10 @@ const Createproject = () => {
     width: '100%',
   };
 
+  //Array mit Optionen der Projektart
   const options = ['Standard (todo-doing-done)', 'Custom'];
 
+  //Hier wird überprüft ob der Button deaktiviert werden soll
   const isButtonDisabled = !name || !beschreibung || !selectedPhase || !startDate || !endDate || customPhaseValues.some(value => !value.trim());
 
   return (

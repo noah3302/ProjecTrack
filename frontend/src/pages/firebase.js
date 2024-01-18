@@ -1,11 +1,10 @@
-// Import the functions you need from the SDKs you need
+// Importiere die Funktion, die du aus dem SDKs brauchst
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Die Firebase-Konfiguration der Webanwendung
+// Für Firebase JS SDK ab Version 7.20.0 und später ist measurementId optional
 const firebaseConfig = {
   apiKey: "AIzaSyDHdUJ6BTTZVv6G-C51k2qLe-J7yufw7JA",
   authDomain: "projectrack-5dced.firebaseapp.com",
@@ -16,6 +15,6 @@ const firebaseConfig = {
   measurementId: "G-NT7SGELYTZ"
 };
 
-// Initialize Firebase
+// Firebase inizialisieren
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

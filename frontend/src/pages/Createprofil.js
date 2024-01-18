@@ -9,10 +9,12 @@ import Button from '@mui/material/Button';
 import { apiget, apipost } from '../API/Api';
 import { UserAuth } from "../Context/Authcontext";
 
+//Komponente zur Erstellung eines Benutzerprofils
 export default function Createprofil() {
   const navigate = useNavigate();
   const { user, setUser, setUserdata } = UserAuth();
 
+  //Beim ersten Laden der Komponente eine API-Anfrage um Benutzerdaten zu erhalten
   useEffect(() => {
     apiget(`users`).then((data) => {
       const nicknames = data.map((user) => user.nickname);
@@ -20,6 +22,7 @@ export default function Createprofil() {
     });
   }, []);
 
+  // Zustände für Benutzereingaben
   const [existingusers, setExistingusers] = useState('');
   const [vorname, setVorname] = useState('');
   const [nachname, setNachname] = useState('');
@@ -32,8 +35,10 @@ export default function Createprofil() {
     width: '100%',
   };
 
+  //Überprüft ob Zustände leer sind
   const isButtonDisabled = !vorname || !nachname || !nickname;
 
+  //Asynchrone Funktion versucht einen POST-Request an eine API zu senden
   const navigation = async () => {
     try {
       const existingUser = await apipost(`users`, {
@@ -53,14 +58,17 @@ export default function Createprofil() {
     }
   };
 
+  //Funktion für die Änderung des Vornamens
   const handleVornameChange = (event) => {
     setVorname(event.target.value);
   };
 
+  //Funktion für die Änderung des Nachnamens
   const handleNachnameChange = (event) => {
     setNachname(event.target.value);
   };
 
+  //Funktion für die Änderung des Nicknamens
   const handleNicknameChange = (event) => {
     const regex = /^[a-zA-Z0-9]{4,12}$/;
     if (regex.test(event.target.value)) {
@@ -77,6 +85,7 @@ export default function Createprofil() {
     }
   };
 
+  //Profilerstellungsformular
   return (
     <>
       <Box
