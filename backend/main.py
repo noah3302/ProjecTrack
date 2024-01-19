@@ -107,6 +107,7 @@ class UserListOperations(Resource):
 @api.param('id', 'ID des User-Objekts')
 class UserOperations(Resource):
     @api.marshal_with(user)
+    @secured
     def get(self, uid):
         adm = ProjectrackAdministration()
         user = adm.get_user_by_google_id(uid)
@@ -155,6 +156,7 @@ class UserListOperations(Resource):
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'user_id')
 class UserListOperations(Resource):
+    @secured
     def delete(self, id):
         adm = ProjectrackAdministration()
         user = adm.delete_user(id)
@@ -172,6 +174,7 @@ class UserListOperations(Resource):
 class ProjectOperation(Resource):
 
     @api.marshal_list_with(project)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         proposal = adm.project_by_id(id)
@@ -183,7 +186,7 @@ class ProjectOperation(Resource):
 @api.route('/user/<int:id>/projects')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class UserProjectOperations(Resource):
-    #@api.marshal_list_with(project)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         projects = adm.get_projects_by_user_id(id)
@@ -196,6 +199,7 @@ class UserProjectOperations(Resource):
 class ProjectOperations(Resource):
     @api.marshal_with(project)
     @api.expect(project)
+    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Project.from_dict(api.payload)
@@ -214,6 +218,7 @@ class ProjectListOperations(Resource):
 
     @api.marshal_list_with(project, code="201")
     @api.expect(project)
+    @secured
     def put(self, id, userid):
         adm = ProjectrackAdministration()
         proposal = Project.from_dict(api.payload)
@@ -243,6 +248,7 @@ class ProjectListOperations(Resource):
 class ProjectListOperations(Resource):
 
     @api.marshal_list_with(user)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         users = adm.get_all_users_by_project_id(id)
@@ -271,6 +277,7 @@ class ProjectMemberListOperations(Resource):
 @api.route('/project/<int:pid>/members/<int:uid>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectListOperations(Resource):
+    @secured
     def delete(self, pid, uid):
         adm = ProjectrackAdministration()
         project = adm.delete_project_members(pid, uid)
@@ -281,6 +288,7 @@ class ProjectListOperations(Resource):
 @api.route('/project/<int:pid>/userid/<int:uid>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 class ProjectListOperations(Resource):
+    @secured
     def delete(self, pid, uid):
         adm = ProjectrackAdministration()
         project = adm.delete_project(pid, uid)
@@ -292,6 +300,7 @@ class ProjectListOperations(Resource):
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'Projekt id')
 class UserListOperations(Resource):
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         arbeitsstatistik = adm.get_arbeitsstatistik_by_project_id(id)
@@ -306,6 +315,7 @@ class UserListOperations(Resource):
 @api.param('id', 'phases_id')
 class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         phases = adm.get_phase_by_project_id(id)
@@ -318,6 +328,7 @@ class PhaseListOperations(Resource):
 @api.param('id', 'phases_id')
 class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         phases = adm.get_phase_by_phase_id(id)
@@ -331,6 +342,7 @@ class PhaseListOperations(Resource):
 
     @api.marshal_list_with(phase, code="201")
     @api.expect(phase)
+    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Phase.from_dict(api.payload)
@@ -354,6 +366,7 @@ class PhaseListOperations(Resource):
 class ProjectPhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     @api.expect(phase)
+    @secured
     def post(self, id):
         adm = ProjectrackAdministration()
 
@@ -379,6 +392,7 @@ class PhasesListOperations(Resource):
 
     @api.marshal_list_with(phase, code="201")
     @api.expect(phase)
+    @secured
     def put(self, id):
         adm = ProjectrackAdministration()
         proposal = Phase.from_dict(api.payload)
@@ -400,6 +414,7 @@ class PhasesListOperations(Resource):
 @api.param('id', 'id')
 class PhaseListOperations(Resource):
     @api.marshal_list_with(task)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         tasks = adm.get_task_by_phase_id(id)
@@ -412,6 +427,7 @@ class PhaseListOperations(Resource):
 class PhaseListOperations(Resource):
 
     @api.marshal_with(phase, code=200)
+    @secured
     def delete(self, phaseid, projectid, userid):
         adm = ProjectrackAdministration()
         phases = adm.delete_phase(phaseid, projectid, userid)
@@ -430,6 +446,7 @@ class TaskOperations(Resource):
 
     @api.marshal_with(task, code=200)
     @api.expect(task)
+    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Task.from_dict(api.payload)
@@ -455,6 +472,7 @@ class TaskListOperations(Resource):
 
     @api.marshal_list_with(task, code="201")
     @api.expect(task)
+    @secured
     def put(self, id):
         adm = ProjectrackAdministration()
         proposal = Task.from_dict(api.payload)
@@ -479,6 +497,7 @@ class TaskListOperations(Resource):
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'task_id')
 class TaskListOperations(Resource):
+    @secured
     def delete(self, id):
         adm = ProjectrackAdministration()
         tasks = adm.delete_task(id)
@@ -494,6 +513,7 @@ class TaskListOperations(Resource):
 @api.param('id', 'task_id')
 class CommentListOperations(Resource):
     @api.marshal_list_with(comment)
+    @secured
     def get(self, id):
         adm = ProjectrackAdministration()
         comments = adm.get_comment_by_task_id(id)
@@ -507,6 +527,7 @@ class CommentListOperations(Resource):
 
     @api.marshal_list_with(comment, code="201")
     @api.expect(comment)
+    @secured
     def post(self):
         adm = ProjectrackAdministration()
         proposal = Comment.from_dict(api.payload)
@@ -531,6 +552,7 @@ class CommentListOperations(Resource):
 
     @api.marshal_list_with(comment, code=201)
     @api.expect(comment)
+    @secured
     def put(self, id):
         adm = ProjectrackAdministration()
         proposal = Comment.from_dict(api.payload)
@@ -553,6 +575,7 @@ class CommentListOperations(Resource):
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'comment_id')
 class CommentListOperations(Resource):
+    @secured
     def delete(self, id):
         adm = ProjectrackAdministration()
         comments = adm.delete_comment(id)

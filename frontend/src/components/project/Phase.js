@@ -92,7 +92,7 @@ const Phase = ({ projectusers, projektid, project }) => {
 
   //Neue Phase hinzufügen
   const addNewPhase = async () => {
-    if (newPhaseName.trim() !== "") {
+    if (newPhaseName.trim() !== "" && phasen.length < 8) {
       const newPhase = {
         id: 0,
         phasename: newPhaseName.trim(),
@@ -280,29 +280,31 @@ const Phase = ({ projectusers, projektid, project }) => {
             </>
           ))}
         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-          <Card
-            style={{
-              flex: "0 0 auto",
-              width: "auto",
-              display: "flex",
-              flexDirection: "column",
-              marginBottom: "10px",
-              height: "fit-content",
-            }}
-          >
-            {/* Neue Phase hinzufügen */}
-            <Box style={{ display: "flex", alignItems: "center" }}>
-              <TextField
-                id="newPhaseName"
-                label="Neue Phase"
-                value={newPhaseName}
-                onChange={handleNewPhaseNameChange}
-              />
-              <IconButton onClick={addNewPhase}>
-                <Typography variant="body2">hinzufügen</Typography>
-              </IconButton>
-            </Box>
-          </Card>
+          {phasen.length < 8 && (
+            <Card
+              style={{
+                flex: "0 0 auto",
+                width: "auto",
+                display: "flex",
+                flexDirection: "column",
+                marginBottom: "10px",
+                height: "fit-content",
+              }}
+            >
+              {/* Neue Phase hinzufügen */}
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                  id="newPhaseName"
+                  label="Neue Phase"
+                  value={newPhaseName}
+                  onChange={handleNewPhaseNameChange}
+                />
+                <IconButton onClick={addNewPhase} disabled={phasen.length >= 8}>
+                  <Typography variant="body2">hinzufügen</Typography>
+                </IconButton>
+              </Box>
+            </Card>
+          )}
         </Grid>
       </Grid>
       <Dialog
