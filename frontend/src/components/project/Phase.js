@@ -28,15 +28,18 @@ const Phase = ({ projectusers, projektid, project }) => {
   };
 
   const phasenload = async () => {
-    const response = await apiget(`phase/${projektid}`);
+    const response = await apiget(`project/phase/${projektid}`);
     const sortedResponse = response.sort((a, b) => a.ranking - b.ranking);
     setPhasen(sortedResponse);
   };
 
   const updateParentComponent = async (newPhasenid) => {
-    setNewPhasenid(newPhasenid);
-    await phasenload(newPhasenid);
-    setReloadKey(prevKey => prevKey + 1);
+    try {
+      setNewPhasenid(newPhasenid);
+      setReloadKey((prevKey) => prevKey + 1);
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren der Phase:", error);
+    }
   };
 
   useEffect(() => {
@@ -252,7 +255,7 @@ const Phase = ({ projectusers, projektid, project }) => {
                   </div>
                   {phase && (
                     <Task
-                      key={`${phase.id}-${reloadKey}`}
+                      key={newPhasenid === phase.id ? `${phase.id}-${reloadKey}` : phase.id}
                       phasenid={phase.id}
                       updateParent={updateParentComponent}
                       newPhasenid={newPhasenid}

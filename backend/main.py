@@ -301,7 +301,7 @@ class UserListOperations(Resource):
 """Phasen"""
 
 """Phase zu einem Projekt bekommen"""
-@api.route('/phase/<int:id>')
+@api.route('/project/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
 @api.param('id', 'phases_id')
 class PhaseListOperations(Resource):
@@ -309,6 +309,18 @@ class PhaseListOperations(Resource):
     def get(self, id):
         adm = ProjectrackAdministration()
         phases = adm.get_phase_by_project_id(id)
+        return phases
+
+
+"""Phase zu einem Projekt bekommen mit phasenid"""
+@api.route('/phase/<int:id>')
+@api.response(500, "Falls es zu serverseitigen fehler kommt")
+@api.param('id', 'phases_id')
+class PhaseListOperations(Resource):
+    @api.marshal_list_with(phase)
+    def get(self, id):
+        adm = ProjectrackAdministration()
+        phases = adm.get_phase_by_phase_id(id)
         return phases
 
 

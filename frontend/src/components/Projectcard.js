@@ -109,7 +109,7 @@ const Projectcard = () => {
           </Box>
         </Grid>
       </Grid>
-      [/*Modal zum Erstellen eines neuen Projekts*/]
+      {/*Modal zum Erstellen eines neuen Projekts*/}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{

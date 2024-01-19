@@ -34,15 +34,16 @@ class PhaseMapper(Mapper):
         result = None
 
         cursor = self._cnx.cursor()
-        command = ("SELECT phases_id, phasename, project_id FROM phases WHERE phases_id='{}'").format(key)
+        command = ("SELECT * FROM phases WHERE phases_id='{}'").format(key)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
         try:
-            (phases_id, phasename, project_id) = tuples[0]
+            (phases_id, phasename, ranking, project_id) = tuples[0]
             phases = Phase()
             phases.set_id(phases_id)
             phases.set_phasename(phasename)
+            phases.set_ranking(ranking)
             phases.set_project_id(project_id)
             result = phases
 

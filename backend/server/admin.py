@@ -240,6 +240,12 @@ class ProjectrackAdministration(object):
         with PhaseMapper() as mapper:
             return mapper.get_phases_by_project_id(number)
 
+
+    """Phasen by phasenid"""
+    def get_phase_by_phase_id(self, number):
+        with PhaseMapper() as mapper:
+            return mapper.find_by_key(number)
+
     """Phasen hinzufügen zu projekt"""
     def create_phasen(self, number):
         with PhaseMapper() as mapper:
