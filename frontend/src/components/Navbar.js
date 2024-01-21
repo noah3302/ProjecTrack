@@ -58,7 +58,7 @@ export default function Navbar() {
           <Toolbar sx={{ height: "50px" }}>
             <IconButton //Button zum Öffnen des Drawers
               edge="start" //Icon am Anfang positioniert
-              color="black"
+              color="white"
               aria-label="open drawer" //Barrierefreier Text für Icon
               onClick={toggleDrawer(true)} //Drawer öffnen
               sx={{
@@ -174,6 +174,15 @@ export default function Navbar() {
                       </ListItemIcon>
                       {/* Text für Link */}
                       <ListItemText primary="About" /> 
+                    </ListItemButton>
+                  </Link>
+                  <Link to="/profil" style={unterseiten}>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <InfoOutlinedIcon sx={{ color: "white" }} />
+                      </ListItemIcon>
+                      {/* Text für Link */}
+                      <ListItemText primary="Profil" /> 
                     </ListItemButton>
                   </Link>
                   {/* Link zum Ausloggen */}

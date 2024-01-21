@@ -2,5 +2,5 @@ dispatch:
   - url: "*/projectrack/*"
     service: backend
 
-  - url: "projectrack.ey.r.appspot.com/*"
+  - url: "projectrack-411710.ey.r.appspot.com/*"
     service: default
