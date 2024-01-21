@@ -68,17 +68,25 @@ export default function Projekt() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const users = await apiget(`project/${id}/users`);
+ 
+        const isUserInProject = users.some((projectUser) => projectUser.id === user.id);
+       
+        if(!isUserInProject){
+          navigate("/home");
+          return;
+        };
+ 
+        setProjectUsers(users);
+        setCopyProjectUsers(users);
+ 
         const data = await apiget(`project/${id}`);
         setProject(data);
         setCopyProject(data);
-        const users = await apiget(`project/${id}/users`);
-        setProjectUsers(users);
-        setCopyProjectUsers(users);
-
         // Setze die Mitgliederliste in der State
         const members = await apiget("users");
         setMembers(members);
-
+ 
         const filteredMembers = members.filter(
           (user) => !users.some((projectUser) => projectUser.id === user.id)
         );
@@ -87,7 +95,7 @@ export default function Projekt() {
         console.error("Fehler beim Laden des Projekttitels:", error);
       }
     };
-
+ 
     if (id) {
       fetchData();
     }
