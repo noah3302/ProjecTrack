@@ -46,8 +46,9 @@ class UserMapper(Mapper):
     def get_members_by_project_id(self, project_id):
         result = []
         cursor = self._cnx.cursor()
-        command = ("SELECT user.user_id,user.surname,user.name, user.nickname, user.google_id FROM user JOIN members ON user.user_id = members.user_id "
-                   "WHERE members.project_id = '{}';").format(project_id)
+        command = ("SELECT user.user_id,user.surname,user.name, user.nickname, user.google_id FROM user "
+                   "JOIN membership ON user.user_id = membership.user_id "
+                   "WHERE membership.project_id = '{}';").format(project_id)
         cursor.execute(command)
         tuples = cursor.fetchall()
 
@@ -141,15 +142,6 @@ class UserMapper(Mapper):
         cursor.close()
         return result
 
-    """Nutzer wird einem Projekt hinzugefügt"""
-    def add_user_to_project(self, user, project_id):
-        cursor = self._cnx.cursor()
-        command = "INSERT INTO members (user_id, project_id) VALUES (%s, %s)"
-        data = (user.get_id(), project_id)
-        cursor.execute(command, data)
-        self._cnx.commit()
-        cursor.close()
-        return user
 
     """Nutzer wird in der DB hinzugefügt (User-Tabelle)"""
     def insert(self, user):

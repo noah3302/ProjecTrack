@@ -50,11 +50,11 @@ class Task(BusinessObject):
     def set_user_id(self, user_id):
         self._user_id = user_id
 
-    def get_phases_id(self):
-        return self._phases_id
+    def get_phase_id(self):
+        return self._phase_id
 
-    def set_phases_id(self, phases_id):
-        self._phases_id = phases_id
+    def set_phase_id(self, phase_id):
+        self._phase_id = phase_id
 
     def get_creator_id(self):
         return self._creator_id
@@ -63,9 +63,9 @@ class Task(BusinessObject):
         self._creator_id = creator_id
 
     def __str__(self):
-        return "id: {}\ntasktitle: {}\ndescription: {}\nscore: {}\nduedate: {}\nuser_id: {}\nphases_id: {}\ncreator_id: {}\n".format(
+        return "id: {}\ntasktitle: {}\ndescription: {}\nscore: {}\nduedate: {}\nuser_id: {}\nphase_id: {}\ncreator_id: {}\n".format(
             self.get_id(), self._tasktitle, self._description, self._score,
-            self._duedate, self._user_id, self._phases_id, self._creator_id)
+            self._duedate, self._user_id, self._phase_id, self._creator_id)
 
     """statische Methode für eine Klasse"""
     @staticmethod
@@ -79,7 +79,7 @@ class Task(BusinessObject):
         obj.set_score(dictio["score"])
         obj.set_duedate(dictio["duedate"])
         obj.set_user_id(dictio["user_id"])
-        obj.set_phases_id(dictio["phases_id"])
+        obj.set_phase_id(dictio["phase_id"])
         obj.set_creator_id(dictio["creator_id"])
 
         return obj

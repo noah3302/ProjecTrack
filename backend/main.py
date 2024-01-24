@@ -57,7 +57,7 @@ task = api.inherit('Task', bo, {
         'score': fields.String(attribute='_score', description='Score der Task'),
         'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.Integer(attribute='_user_id', description='Userid des Verantwortlichen'),
-        'phases_id': fields.Integer(attribute='_phases_id', description='phase_id der Task'),
+        'phase_id': fields.Integer(attribute='_phase_id', description='phase_id der Task'),
         'creator_id': fields.Integer(attribute='_creator_id', description='creator_id der Task')
 })
 
@@ -268,7 +268,7 @@ class ProjectMemberListOperations(Resource):
         proposal = User.from_dict(api.payload)
 
         if proposal is not None:
-            member = adm.add_member_to_project(proposal, id)
+            member = adm.add_member_to_project(proposal.get_id(), id)
             return member, 200
         else:
             return "", 500
@@ -312,27 +312,27 @@ class UserListOperations(Resource):
 """Phase zu einem Projekt bekommen"""
 @api.route('/project/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'phases_id')
+@api.param('id', 'phase_id')
 class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     @secured
     def get(self, id):
         adm = ProjectrackAdministration()
-        phases = adm.get_phase_by_project_id(id)
-        return phases
+        phase = adm.get_phase_by_project_id(id)
+        return phase
 
 
 """Phase zu einem Projekt bekommen mit phasenid"""
 @api.route('/phase/<int:id>')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'phases_id')
+@api.param('id', 'phase_id')
 class PhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     @secured
     def get(self, id):
         adm = ProjectrackAdministration()
-        phases = adm.get_phase_by_phase_id(id)
-        return phases
+        phase = adm.get_phase_by_phase_id(id)
+        return phase
 
 
 """Phase erstellen"""
@@ -362,7 +362,7 @@ class PhaseListOperations(Resource):
 """Phase erstellen in einem Projekt"""
 @api.route('/project/<int:id>/phases')
 @api.response(500, "Falls es zu serverseitigen fehler kommt")
-@api.param('id', 'phases_id')
+@api.param('id', 'phase_id')
 class ProjectPhaseListOperations(Resource):
     @api.marshal_list_with(phase)
     @api.expect(phase)
@@ -371,18 +371,18 @@ class ProjectPhaseListOperations(Resource):
         adm = ProjectrackAdministration()
 
         if len(api.payload) > 0:
-            phases = []
+            phase = []
             for phase_proposal in api.payload:
                 phaseBO = Phase.from_dict(phase_proposal)
 
                 if phaseBO is not None:
                     # proposal.set_project_id(id)
                     phase = adm.create_phasen(phaseBO)
-                    phases.append(phase)
+                    phase.append(phase)
 
-            return phases, 200
+            return phase, 200
         else:
-            return "No phases in request", 500
+            return "No phase in request", 500
 
 
 """Phase Updaten"""
@@ -430,11 +430,11 @@ class PhaseListOperations(Resource):
     @secured
     def delete(self, phaseid, projectid, userid):
         adm = ProjectrackAdministration()
-        phases = adm.delete_phase(phaseid, projectid, userid)
-        if phases == "error":
+        phase = adm.delete_phase(phaseid, projectid, userid)
+        if phase == "error":
             return "", 403
         else:
-            return phases, 200
+            return phase, 200
 
 
 """Task"""
