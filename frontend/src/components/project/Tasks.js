@@ -79,14 +79,14 @@ const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
         score: editedScore,
         duedate: editedDueDate,
         user_id: editedUserId,
-        phases_id: editedPhasesId,
+        phase_id: editedPhasesId,
         creator_id: editedCreatorId,
       };
 
       await apiput(`task/`, editedTask.id, updatedTask);
 
       const phasenIdAsString = phasenid;
-      const updatedPhasesIdAsString = updatedTask.phases_id;
+      const updatedPhasesIdAsString = updatedTask.phase_id;
 
       if (updatedPhasesIdAsString !== phasenIdAsString) {
         const updatedTasksCurrentPhase = taskData.filter(
@@ -125,6 +125,10 @@ const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
     };
 
     loadData();
+    const intervalId = setInterval(() => {
+      setReloadKey((prevKey) => prevKey + 1);
+    }, 10000);
+    return () => clearInterval(intervalId);
   }, [phasenid, reloadKey, newid]);
 
   useEffect(() => {
@@ -160,7 +164,7 @@ const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
       setEditedScore(taskToEdit.score);
       setEditedDueDate(taskToEdit.duedate);
       setEditedUserId(taskToEdit.user_id);
-      setEditedPhasesId(taskToEdit.phases_id);
+      setEditedPhasesId(taskToEdit.phase_id);
       setEditedCreatorId(taskToEdit.creator_id);
     } else {
       console.error("Task nicht gefunden:", taskId);
@@ -333,6 +337,7 @@ const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
             <Typography variant="body1">{task.description}</Typography>
           )}
           {editedTask && editedTask.id === task.id ? (
+            
             <Slider
               value={editedScore}
               marks
@@ -342,6 +347,7 @@ const Task = ({ phasenid, updateParent, newid, phasen, projectusers }) => {
               valueLabelDisplay="auto"
               onChange={(e) => setEditedScore(e.target.value)}
             />
+            
           ) : (
             <Slider
               disabled={true}

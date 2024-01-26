@@ -85,7 +85,7 @@ class PhaseMapper(Mapper):
             cursor.execute("SELECT MAX(phase_id) AS maxid FROM phase")
             maxid = cursor.fetchone()[0]
             phase.set_id(maxid + 1)
-        command = "INSERT INTO phases (phase_id, phasename, ranking, project_id) VALUES (%s, %s, %s, %s)"
+        command = "INSERT INTO phase (phase_id, phasename, ranking, project_id) VALUES (%s, %s, %s, %s)"
         data = (phase.get_id(), phase.get_phasename(), phase.get_ranking(), phase.get_project_id())
         cursor.execute(command, data)
         self._cnx.commit()

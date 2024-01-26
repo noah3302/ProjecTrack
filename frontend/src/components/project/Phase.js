@@ -42,8 +42,12 @@ const Phase = ({ projectusers, projektid, project }) => {
     }
   };
 
-  useEffect(() => {
-    phasenload();
+  useEffect(() => {     
+    phasenload();     
+    const interval = setInterval(() => {       
+      phasenload();     
+    }, 10000);    
+    return () => clearInterval(interval);   
   }, []);
 
   const handleDeleteButtonClick = (phaseId) => {
@@ -64,6 +68,7 @@ const Phase = ({ projectusers, projektid, project }) => {
     setDeletePhaseId(null);
     setOpen(false);
   };
+  
 
   const handleDeletePhase = async (phaseId) => {
     try {
