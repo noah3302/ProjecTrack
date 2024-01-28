@@ -54,7 +54,7 @@ phase = api.inherit('Phase', bo, {
 task = api.inherit('Task', bo, {
         'tasktitle': fields.String(attribute='_tasktitle', description='Name der Task'),
         'description': fields.String(attribute='_description', description='description der Task'),
-        'score': fields.String(attribute='_score', description='Score der Task'),
+        'score': fields.Integer(attribute='_score', description='Score der Task'),
         'duedate': fields.String(attribute='_duedate', description='Due Date für die Task'),
         'user_id': fields.Integer(attribute='_user_id', description='Userid des Verantwortlichen'),
         'phases_id': fields.Integer(attribute='_phases_id', description='phase_id der Task'),

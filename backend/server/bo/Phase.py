@@ -6,7 +6,7 @@ class Phase(BusinessObject):
         super().__init__()
         self._phasename = ""
         self._ranking = 0
-        self._project_id = ""
+        self._project_id = 0
 
     """ 
 

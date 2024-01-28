@@ -6,11 +6,11 @@ class Task(BusinessObject):
         super().__init__()
         self._tasktitle = ""
         self._description = ""
-        self._score = ""
+        self._score = 0
         self._duedate = ""
-        self._user_id = ""
-        self._phases_id = ""
-        self._creator_id = ""
+        self._user_id = 0
+        self._phases_id = 0
+        self._creator_id = 0
 
     """ 
 
