@@ -34,7 +34,7 @@ const Modaltask = ({
     score: "",
     duedate: "",
     user_id: null,
-    phases_id: phasesid,
+    phase_id: phasesid,
     creator_id: null,
   });
 
@@ -86,7 +86,7 @@ const Modaltask = ({
         score: newTask.score,
         duedate: newTask.duedate,
         user_id: responsibleUserId,
-        phases_id: newTask.phases_id,
+        phase_id: newTask.phase_id,
         creator_id: user ? user.id : null,
       });
 
@@ -99,7 +99,7 @@ const Modaltask = ({
         score: "",
         duedate: "",
         user_id: null,
-        phases_id: phasesid,
+        phase_id: phasesid,
         creator_id: user ? user.id : null,
       });
     } catch (error) {

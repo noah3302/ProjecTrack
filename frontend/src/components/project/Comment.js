@@ -28,8 +28,22 @@ const Comment = ({ taskid, projectusers }) => {
     };
 
     useEffect(() => {
+        const commentload = async () => {
+            try {
+                const response = await apiget(`task/comment/${taskid}`);
+                const sortedResponse = response.slice().sort((a, b) => new Date(a.creationdate) - new Date(b.creationdate));
+                setComment(sortedResponse);
+            } catch (error) {
+                console.error("Fehler beim Laden der Kommentare:", error);
+            }
+        };
+
         commentload();
-    }, []);
+        const intervalId = setInterval(() => {
+            commentload();
+        }, 10000);
+        return () => clearInterval(intervalId);
+    }, [taskid]);
 
     useEffect(() => {
         if (projectusers && projectusers.length > 0) {
@@ -94,7 +108,9 @@ const Comment = ({ taskid, projectusers }) => {
         try {
             const index = deleteCommentIndex;
             const Comment = comment[index];
-            await apidelete(`comment`, Comment.id);
+            console.log(typeof Comment.id); 
+
+            await apidelete(`coment`, Comment.id);
             const updatedComments = comment.filter((_, i) => i !== index);
             setComment(updatedComments);
             setDeleteDialogOpen(false);

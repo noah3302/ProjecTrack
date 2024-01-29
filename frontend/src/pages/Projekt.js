@@ -99,6 +99,9 @@ export default function Projekt() {
     if (id) {
       fetchData();
     }
+    const intervalId = setInterval(fetchData, 10000);
+ 
+    return () => clearInterval(intervalId);
   }, [id, user]);
 
   const style = {
@@ -338,7 +341,7 @@ export default function Projekt() {
                   <Box>
                     <Paper>
                       <TextField
-                        label="Filter user"
+                        label="Verfügbare Mitglieder"
                         variant="outlined"
                         value={notmemberFilter}
                         onChange={(e) => setnotmemberFilter(e.target.value)}
@@ -477,8 +480,7 @@ export default function Projekt() {
 
           <Box style={{ display: "grid", gap: "10px", justifyContent: "center" }}>
             <Grid container spacing={2}>
-              {user?.id === project?.manager && (
-                <>
+              
                   <Grid  item xs={12} md={4}>
                     <Button
                       variant="contained"
@@ -487,6 +489,7 @@ export default function Projekt() {
                       onClick={() => {
                         handleSave();
                       }}
+                      disabled={user?.id != project?.manager}
                     >
                       Speichern
                     </Button>
@@ -498,12 +501,13 @@ export default function Projekt() {
                       onClick={() => {
                         handleOpenDeleteDialog();
                       }}
+                      disabled={user?.id != project?.manager}
                     >
                       Projekt Löschen
                     </Button>
                   </Grid>
-                </>
-              )}
+                
+             
               <Grid  item xs={12} md={4}>
                 <Button
                   variant="contained"

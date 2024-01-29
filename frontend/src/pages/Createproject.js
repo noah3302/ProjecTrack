@@ -15,8 +15,9 @@ const Createproject = () => {
   const [selectedPhase, setSelectedPhase] = useState('');
   const [customPhaseValues, setCustomPhaseValues] = useState(['todo', 'doing', 'done']);
   // new Date().toISOString().split('Z')[0])
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);   
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]); 
+  
   const navigate = useNavigate();
   const { user } = UserAuth();
 
@@ -24,8 +25,7 @@ const Createproject = () => {
   async function getExistingUsers() {
     const allUsers = await apiget('/users')
     setExistingUsers(allUsers)
-    setStartDate("2023-12-01")
-    setStartDate("2023-12-01")
+    
   }
   //Funktion wird aufgerufen sobald die Komponente geladen hat
   useEffect(() => {

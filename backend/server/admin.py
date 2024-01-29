@@ -1,17 +1,9 @@
 from server.bo.User import User
-from server.bo.Task import Task
+from server.bo.Membership import Membership
 from server.bo.ProjectBO import Project
 from server.bo.Phase import Phase
 from server.bo.Comment import Comment
 from server.bo.Task import Task
-
-
-
-
-
-from flask import request
-from google.auth.transport import requests
-import google.oauth2.id_token
 
 
 from server.mapper.UserMapper import UserMapper
@@ -19,6 +11,7 @@ from server.mapper.TaskMapper import TaskMapper
 from server.mapper.ProjectMapper import ProjectMapper
 from server.mapper.PhaseMapper import PhaseMapper
 from server.mapper.CommentMapper import CommentMapper
+from server.mapper.MembershipMapper import MembershipMapper
 from datetime import datetime
 
 
@@ -173,8 +166,11 @@ class ProjectrackAdministration(object):
             return "error"
 
     def delete_project_members(self, pid, uid):
-        with UserMapper() as mapper:
-            return mapper.delete_members(pid, uid)
+        membership = Membership()
+        membership.set_project_id(pid)
+        membership.set_user_id(uid)
+        with MembershipMapper() as mapper:
+            return mapper.delete(membership)
 
     def project_by_id(self, id):
         with ProjectMapper() as mapper:
@@ -262,7 +258,7 @@ class ProjectrackAdministration(object):
             return mapper.insert(phase)
 
     """Phasen aus projekt löschen"""
-    def delete_phase(self,phaseid, projectid, userid):
+    def delete_phase(self, phaseid, projectid, userid):
         with ProjectMapper() as mapper:
             verantwortlicher = mapper.find_by_key(projectid).get_manager()
         if userid == verantwortlicher:
@@ -284,7 +280,7 @@ class ProjectrackAdministration(object):
     """Task"""
     """Task updaten"""
 
-    def update_task(self, id, tasktitle, description, score, duedate, user_id, phases_id, creator_id):
+    def update_task(self, id, tasktitle, description, score, duedate, user_id, phase_id, creator_id):
         task = Task()
         task.set_id(id),
         task.set_tasktitle(tasktitle),
@@ -292,7 +288,7 @@ class ProjectrackAdministration(object):
         task.set_score(score),
         task.set_duedate(duedate),
         task.set_user_id(user_id),
-        task.set_phases_id(phases_id),
+        task.set_phase_id(phase_id),
         task.set_creator_id(creator_id)
         with TaskMapper() as mapper:
             return mapper.update(task)
@@ -306,14 +302,14 @@ class ProjectrackAdministration(object):
         
     """Task hinzufügen"""
     
-    def create_task(self, tasktitle, description, score, duedate, user_id, phases_id, creator_id):
+    def create_task(self, tasktitle, description, score, duedate, user_id, phase_id, creator_id):
         task = Task()
         task.set_tasktitle(tasktitle),
         task.set_description(description),
         task.set_score(score),
         task.set_duedate(duedate),
         task.set_user_id(user_id),
-        task.set_phases_id(phases_id),
+        task.set_phase_id(phase_id),
         task.set_creator_id(creator_id)
 
         with TaskMapper() as mapper:
@@ -379,9 +375,13 @@ class ProjectrackAdministration(object):
         else:
             return "error"
 
-    def add_member_to_project(self, member, project_id):
-        with UserMapper() as mapper:
-            return mapper.add_user_to_project(member, project_id)
+    def add_member_to_project(self, user_id, project_id):
+        membership = Membership()
+        membership.set_user_id(user_id)
+        membership.set_project_id(project_id)
+        with MembershipMapper() as mapper:
+            return mapper.insert(membership)
+
 
 if __name__ == "__main__":
     adm = ProjectrackAdministration()

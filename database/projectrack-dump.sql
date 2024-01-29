@@ -31,17 +31,15 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-DROP TABLE IF EXISTS `members`;
+DROP TABLE IF EXISTS `membership`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `members` (
+CREATE TABLE `membership` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `project_id` int(11) NOT NULL DEFAULT '0',
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade, 
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 DROP TABLE IF EXISTS `project`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
@@ -57,15 +55,15 @@ CREATE TABLE `project` (
   PRIMARY KEY (`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `phases`;
+DROP TABLE IF EXISTS `phase`;
 /*!40101 SET @saved_cs_client     = @character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `phases` (
-  `phases_id` int(11) NOT NULL AUTO_INCREMENT ,
+CREATE TABLE `phase` (
+  `phase_id` int(11) NOT NULL AUTO_INCREMENT ,
   `phasename` varchar(110) NOT NULL DEFAULT '',
   `ranking` int(11) NOT NULL DEFAULT 0,
   `project_id` int(11) NOT NULL DEFAULT '0',
- PRIMARY KEY (`phases_id`),
+ PRIMARY KEY (`phase_id`),
   FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -79,11 +77,11 @@ CREATE TABLE `task` (
   `score` varchar(110) NOT NULL DEFAULT '',
   `duedate` DATETIME(6) NOT NULL DEFAULT '1970-01-01 00:00:00',
   `user_id` int(11) NOT NULL DEFAULT  '0',
-  `phases_id` int(11) NOT NULL DEFAULT  '0',
+  `phase_id` int(11) NOT NULL DEFAULT  '0',
   `creator_id` int(11) NOT NULL DEFAULT  '0',
   PRIMARY KEY (`task_id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) on delete cascade,
-  FOREIGN KEY (`phases_id`) REFERENCES `phases` (`phases_id`) on delete cascade,
+  FOREIGN KEY (`phase_id`) REFERENCES `phase` (`phase_id`) on delete cascade,
   FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) on delete cascade
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
