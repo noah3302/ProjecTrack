@@ -108,7 +108,6 @@ const Comment = ({ taskid, projectusers }) => {
         try {
             const index = deleteCommentIndex;
             const Comment = comment[index];
-            console.log(typeof Comment.id); 
 
             await apidelete(`coment`, Comment.id);
             const updatedComments = comment.filter((_, i) => i !== index);

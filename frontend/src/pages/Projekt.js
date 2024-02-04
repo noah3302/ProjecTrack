@@ -219,10 +219,9 @@ export default function Projekt() {
   //Projekt verlassen
   const handleLeave = async () => {
     try {
-      const a = Number(project.founder);
-      const b = Number(user.id);
-      if (a === b) {
-        setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.founder ist
+
+      if (user.id === project.manager) {
+        setOpendialog(true); // Öffne das Dialogfenster, wenn user.id gleich project.manager ist
       } else {
         await apidelete(`project/${id}/members`, user.id);
         navigate("/home");
